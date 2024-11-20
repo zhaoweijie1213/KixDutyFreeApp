@@ -8,14 +8,18 @@ using AixDutyFreeCrawler.App.Models;
 namespace AixDutyFreeCrawler.App.Services
 {
 
-    public class SeleniumService(ILogger<SeleniumService> logger,IOptionsMonitor<List<AccountModel>> accounts) : ITransientDependency
+    public class SeleniumService(ILogger<SeleniumService> logger) : ISingletonDependency
     {
+        /// <summary>
+        /// driver实例
+        /// </summary>
+        private readonly List<IWebDriver> drivers = new();
+
         /// <summary>
         /// 开始任务
         /// </summary>
-        public Task TaskStartAsync()
+        public Task CreateInstancesAsync(AccountModel account)
         {
-            var account = accounts.CurrentValue.First();
             IWebDriver driver = new ChromeDriver();
             driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/login/");
             //获取标题
@@ -64,61 +68,43 @@ namespace AixDutyFreeCrawler.App.Services
             {
                 logger.LogWarning("TaskStartAsync:{Message}", e.Message);
             }
+            //保存实例到集合
+            drivers.Add(driver);
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// 多页面监控
+        /// 页面监控
         /// </summary>
-        /// <param name="urls"></param>
-        /// <param name="credentials"></param>
         /// <returns></returns>
-        public async Task MonitorPagesWithMultipleAccounts(List<string> urls, List<(string Username, string Password)> credentials)
+        public Task MonitorPages()
         {
-            var tasks = new List<Task>();
 
-            for (int i = 0; i < urls.Count; i++)
-            {
-                string url = urls[i];
-                var credential = credentials[i];
-
-                tasks.Add(Task.Run(() =>
-                {
-                    //var options = new ChromeOptions();
-                    //options.AddArgument("--headless");
-                    //options.AddArgument("--disable-gpu");
-                    //options.AddArgument("--no-sandbox");
-                    //options.AddArgument($"--user-data-dir=/path/to/chrome-profile-{i}");
-                    //options.AddArgument("--incognito");
-
-                    //IWebDriver driver = new ChromeDriver(options);
-                    IWebDriver driver = new ChromeDriver();
-
-                    try
-                    {
-                        driver.Navigate().GoToUrl(url);
-
-                        // 登录步骤
-                        driver.FindElement(By.Name("username")).SendKeys(credential.Username);
-                        driver.FindElement(By.Name("password")).SendKeys(credential.Password);
-                        driver.FindElement(By.Name("login")).Click();
-
-                        // 登录后操作
-                        Console.WriteLine($"User {credential.Username} monitoring page: {url}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error for user {credential.Username} on {url}: {ex.Message}");
-                    }
-                    finally
-                    {
-                        driver.Quit();
-                    }
-                }));
-            }
-
-            await Task.WhenAll(tasks);
         }
+
+        ///// <summary>
+        ///// 多页面监控
+        ///// </summary>
+        ///// <param name="urls"></param>
+        ///// <param name="credentials"></param>
+        ///// <returns></returns>
+        //public async Task MonitorPagesWithMultipleAccounts(List<string> urls)
+        //{
+        //    var tasks = new List<Task>();
+        //    foreach (var item in drivers)
+        //    {
+
+        //    }
+        //    for (int i = 0; i < urls.Count; i++)
+        //    {
+        //        string url = urls[i];
+        //        var credential = credentials[i];
+
+        //        tasks.Add(TaskStartAsync(accounts));
+        //    }
+
+        //    await Task.WhenAll(tasks);
+        //}
 
     }
 }

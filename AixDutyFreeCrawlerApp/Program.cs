@@ -13,6 +13,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMultipleService("^AixDutyFreeCrawler");
 builder.Services.AddHostedService<WorkerService>();
 builder.Services.Configure<List<AccountModel>>(builder.Configuration.GetSection("Accounts"));
+builder.Services.Configure<Products>(builder.Configuration.GetSection("Products"));
 builder.Services.AddQuartz().AddQuartzServer(options =>
 {
     // when shutting down we want jobs to complete gracefully

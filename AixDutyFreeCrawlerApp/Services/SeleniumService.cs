@@ -18,10 +18,10 @@ namespace AixDutyFreeCrawler.App.Services
         /// </summary>
         public readonly List<IWebDriver> drivers = [];
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private readonly IWebDriver monitorDriver = new ChromeDriver();
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //private readonly IWebDriver monitorDriver = new ChromeDriver();
 
         /// <summary>
         /// 创建实例
@@ -78,7 +78,7 @@ namespace AixDutyFreeCrawler.App.Services
         public async Task OrderAsync(IWebDriver driver,string productAddress)
         {
             driver.Navigate().GoToUrl(productAddress);
-            driver.Navigate().GoToUrl(productAddress);
+            await Confirm(driver);
             // 显式等待，等待特定元素加载完成，最多等待 10 秒
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
             bool targetElement = wait.Until(x=>x.Url == productAddress);
@@ -167,10 +167,18 @@ namespace AixDutyFreeCrawler.App.Services
             SelectElement flightnoSelect = new(flightno);
             flightnoSelect.SelectByIndex(1);  // 选择第1个选项
             //是否转机
-            var radioYesButton = driver.FindElement(By.Id("connecting-flight-yes"));
-            var radioNoButton = driver.FindElement(By.Id("connecting-flight-no"));
-            radioYesButton.Click();
-            radioNoButton.Click();
+            //try
+            //{
+            //    var radioYesButton = driver.FindElement(By.Id("connecting-flight-yes"));
+            //    var radioNoButton = driver.FindElement(By.Id("connecting-flight-no"));
+            //    radioYesButton.Click();
+            //    radioNoButton.Click();
+            //}
+            //catch (NoSuchElementException e)
+            //{
+            //    logger.LogWarning("ToCartAsync:{Message}", e.Message);
+            //}
+
 
             //我已了解
             var agreeCheckBox = driver.FindElement(By.Id("agree-products"));
@@ -202,9 +210,17 @@ namespace AixDutyFreeCrawler.App.Services
                 instorePaymentDiv.Click();
                 logger.LogInformation("ToCartAsync:“到店支付”选项已成功选中");
                 //下一步
-                var dwformBilling = driver.FindElement(By.Id("dwfrm_billing"));
-                IWebElement nextButton = dwformBilling.FindElement(By.XPath(".//button[@type='submit' and @name='submit' and contains(@class, 'submit-payment')]"));
-                nextButton.Click();
+                try
+                {
+                    // 使用 XPath 找到 card payment-form 下的 card-body，然后找到 submit-payment 按钮
+                    IWebElement nextButton = driver.FindElement(By.XPath("//div[contains(@class, 'card payment-form')]//div[contains(@class, 'card-body')]//button[contains(@class, 'submit-payment')]"));
+                    nextButton.Click();
+                }
+                catch (NoSuchElementException e)
+                {
+                    logger.LogWarning("OrderAsync:{Message}", e.Message);
+                }
+       
 
             }
             else

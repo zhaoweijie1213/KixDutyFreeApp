@@ -11,24 +11,38 @@ using OpenQA.Selenium.Support.UI;
 namespace AixDutyFreeCrawler.App.Services
 {
 
-    public class SeleniumService(ILogger<SeleniumService> logger) : ISingletonDependency
+    public class SeleniumService(ILogger<SeleniumService> logger) : ITransientDependency
     {
-        /// <summary>
-        /// driver实例
-        /// </summary>
-        public readonly List<IWebDriver> drivers = [];
+        ///// <summary>
+        ///// driver实例
+        ///// </summary>
+        //public readonly List<ChromeDriver> drivers = [];
 
         ///// <summary>
         ///// 
         ///// </summary>
-        //private readonly IWebDriver monitorDriver = new ChromeDriver();
+        //private readonly ChromeDriver monitorDriver = new ChromeDriver();
 
         /// <summary>
         /// 创建实例
         /// </summary>
-        public async Task CreateInstancesAsync(AccountModel account)
+        public async Task<ChromeDriver> CreateInstancesAsync(AccountModel account,bool headless = false)
         {
-            IWebDriver driver = new ChromeDriver();
+            ChromeDriver driver;
+            if (headless)
+            {
+                // 创建 ChromeOptions 实例并设置无头模式
+                var options = new ChromeOptions();
+                options.AddArgument("--headless"); // 启用无头模式
+                options.AddArgument("--disable-gpu"); // 如果您使用的是 Windows 系统，建议添加此行
+                options.AddArgument("--no-sandbox"); // 解决 DevToolsActivePort 文件不存在的报错
+                options.AddArgument("--disable-dev-shm-usage"); // 解决资源不足的问题
+                driver = new ChromeDriver(options);
+            }
+            else
+            {
+                driver = new();
+            }
             driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/login/");
             //获取标题
             var title = driver.Title;
@@ -52,8 +66,9 @@ namespace AixDutyFreeCrawler.App.Services
             {
                 logger.LogWarning("TaskStartAsync:{Message}", e.Message);
             }
-            //保存实例到集合
-            drivers.Add(driver);
+            ////保存实例到集合
+            //drivers.Add(driver);
+            return driver;
         }
 
         ///// <summary>
@@ -75,7 +90,7 @@ namespace AixDutyFreeCrawler.App.Services
         /// 下单
         /// </summary>
         /// <returns></returns>
-        public async Task OrderAsync(IWebDriver driver,string productAddress)
+        public async Task OrderAsync(ChromeDriver driver,string productAddress)
         {
             driver.Navigate().GoToUrl(productAddress);
             await Confirm(driver);
@@ -134,7 +149,7 @@ namespace AixDutyFreeCrawler.App.Services
         /// </summary>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public Task ToCartAsync(IWebDriver driver)
+        public Task ToCartAsync(ChromeDriver driver)
         {
             //去购物车结算
             driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/cart/");
@@ -259,7 +274,7 @@ namespace AixDutyFreeCrawler.App.Services
         /// </summary>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public Task Confirm(IWebDriver driver)
+        public Task Confirm(ChromeDriver driver)
         {
             //查询是否有年龄确认dialog对话框
             try
@@ -296,7 +311,7 @@ namespace AixDutyFreeCrawler.App.Services
         /// </summary>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public Task<bool> CheckInventoryAsync(IWebDriver driver)
+        public Task<bool> CheckInventoryAsync(ChromeDriver driver)
         {
             bool status = true;
             string productName = "";

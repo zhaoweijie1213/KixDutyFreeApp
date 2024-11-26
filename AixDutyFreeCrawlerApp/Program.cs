@@ -7,6 +7,7 @@ using Quartz.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddLog4Net();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -19,6 +20,8 @@ builder.Services.AddQuartz().AddQuartzServer(options =>
     // when shutting down we want jobs to complete gracefully
     options.WaitForJobsToComplete = true;
 });
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

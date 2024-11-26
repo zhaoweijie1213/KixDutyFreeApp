@@ -30,7 +30,7 @@
         /// <summary>
         /// 商品数量变化
         /// </summary>
-        public const string ProductVariation = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Product-Variation?pid=2411900004&quantity=20";
+        public const string ProductVariation = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Product-Variation";
 
         /// <summary>
         /// 添加到购物车

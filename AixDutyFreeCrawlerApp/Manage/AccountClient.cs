@@ -1,7 +1,9 @@
 ﻿using AixDutyFreeCrawler.App.Models;
 using AixDutyFreeCrawler.App.Models.Response;
 using AixDutyFreeCrawler.App.Services;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -16,7 +18,8 @@ namespace AixDutyFreeCrawler.App.Manage
     /// <summary>
     /// 账号客户端
     /// </summary>
-    public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IOptionsMonitor<Products> products, IConfiguration configuration, IHttpClientFactory httpClientFactory) : ITransientDependency
+    public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IOptionsMonitor<Products> products, IConfiguration configuration, IHttpClientFactory httpClientFactory
+        , IMemoryCache memoryCache) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -139,12 +142,26 @@ namespace AixDutyFreeCrawler.App.Manage
                 }
                 // 导航到商品页面
                 driver.Navigate().GoToUrl(product);
-
-                // 等待页面加载（可以根据实际情况调整）
-                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
-
+                if (!memoryCache.TryGetValue(product, out string? productId))
+                {
+                    try
+                    {
+                        var productDetail = driver.FindElement(By.ClassName("product-detail"));
+                        // 获取 data-pid 属性的值 得到商品id
+                        productId = productDetail.GetAttribute("data-pid");
+                        if(product != null)
+                        {
+                            memoryCache.Set(product, productId);
+                        }
+                    }
+                    catch (NoSuchElementException e)
+                    {
+                        logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                    } 
+                }
+       
                 // 检查商品是否有货（需要根据页面元素进行判断）
-                bool isAvailable = IsProductAvailable();
+                bool isAvailable = await IsProductAvailable(productId!);
 
                 if (isAvailable)
                 {
@@ -164,19 +181,27 @@ namespace AixDutyFreeCrawler.App.Manage
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private bool IsProductAvailable()
+        private async Task<bool> IsProductAvailable(string productId)
         {
-            if (driver == null)
+            if (_httpClient == null)
             {
-                throw new Exception("driver不能为null");
+                throw new Exception("_httpClient");
             }
 
             try
             {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                var addToCartButton = wait.Until(d => d.FindElement(By.Id("add-to-cart-button")));
+                var response = await _httpClient.GetAsync(Cart.ProductVariation + $"?pid={productId}&quantity=1");
+                var content = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = JsonConvert.DeserializeObject<ProductVariationResponse>(content);
+                    if (data?.Product?.Availability?.Available == true)
+                    {
+                        return true;
+                    }
+                }
 
-                return addToCartButton.Enabled;
+                return false;
             }
             catch (WebDriverTimeoutException)
             {

@@ -1,4 +1,4 @@
-﻿namespace AixDutyFreeCrawler.App.Services
+﻿namespace AixDutyFreeCrawler.App.Manage
 {
 
     /// <summary>
@@ -7,14 +7,9 @@
     public static class CheckoutServices
     {
         /// <summary>
-        /// 保存航班信息
-        /// </summary>
-        public const string FlightSaveInfo = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Flight-SaveInfo";
-
-        /// <summary>
         /// 提交支付信息
         /// </summary>
-        public const string SubmitPayment= "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/CheckoutServices-SubmitPayment";
+        public const string SubmitPayment = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/CheckoutServices-SubmitPayment";
 
         /// <summary>
         /// 下单

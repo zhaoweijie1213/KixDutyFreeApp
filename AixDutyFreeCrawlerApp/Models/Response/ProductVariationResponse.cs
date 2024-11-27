@@ -261,6 +261,10 @@ namespace AixDutyFreeCrawler.App.Models.Response
         public bool DisplayText { get; set; }
 
         public string? Text { get; set; }
+
+        public bool IsThresholdOver { get; set; }
+
+        public string? ThresholdOverWarningText { get; set; }
     }
 
     public class Option

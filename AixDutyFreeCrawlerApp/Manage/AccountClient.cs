@@ -8,6 +8,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using QYQ.Base.Common.IOCExtensions;
+using System;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
@@ -149,7 +150,7 @@ namespace AixDutyFreeCrawler.App.Manage
                         var productDetail = driver.FindElement(By.ClassName("product-detail"));
                         // 获取 data-pid 属性的值 得到商品id
                         productId = productDetail.GetAttribute("data-pid");
-                        if(product != null)
+                        if (productId != null)
                         {
                             memoryCache.Set(product, productId);
                         }
@@ -157,9 +158,9 @@ namespace AixDutyFreeCrawler.App.Manage
                     catch (NoSuchElementException e)
                     {
                         logger.LogWarning("TaskStartAsync:{Message}", e.Message);
-                    } 
+                    }
                 }
-       
+
                 // 检查商品是否有货（需要根据页面元素进行判断）
                 bool isAvailable = await IsProductAvailable(productId!);
 
@@ -185,7 +186,7 @@ namespace AixDutyFreeCrawler.App.Manage
         {
             if (_httpClient == null)
             {
-                throw new Exception("_httpClient");
+                throw new Exception("_httpClient未初始化");
             }
 
             try
@@ -210,7 +211,11 @@ namespace AixDutyFreeCrawler.App.Manage
             }
         }
 
-        // 下单逻辑
+        /// <summary>
+        /// 下单逻辑
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         private async Task PlaceOrderAsync(string product)
         {
             try
@@ -261,5 +266,201 @@ namespace AixDutyFreeCrawler.App.Manage
             driver?.Quit();
             return Task.CompletedTask;
         }
+
+        #region API请求
+
+        /// <summary>
+        /// 商品数量变化
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProductVariationResponse?> ProductVariationAsync(string productId, int quantity)
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            ProductVariationResponse? data = null;
+            var response = await _httpClient.GetAsync(Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("ProductVariationAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<ProductVariationResponse>(content);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 添加到购物车
+        /// </summary>
+        /// <returns></returns>
+        public async Task<CartAddProductResponse?> CartAddProductAsync(string productId, int quantity)
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            CartAddProductResponse? data = null;
+            var request = new HttpRequestMessage(HttpMethod.Post, Cart.AddProduct);
+            // 构建表单数据
+            var formData = new List<KeyValuePair<string, string>>
+            {
+                new("pid", productId),
+                new("quantity", quantity.ToString())
+            };
+            // 使用 FormUrlEncodedContent 设置请求内容
+            request.Content = new FormUrlEncodedContent(formData);
+            var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<CartAddProductResponse>(content);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 修改购物车商品数量
+        /// </summary>
+        public async Task<CartUpdateQuantityResponse?> CartUpdateQuantityAsync(string productId, int quantity, string uuid)
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            CartUpdateQuantityResponse? data = null;
+            var request = new HttpRequestMessage(HttpMethod.Get, Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
+            var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<CartUpdateQuantityResponse>(content);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 航班信息
+        /// </summary>
+        /// <param name="date">yyyy/MM/dd</param>
+        /// <param name="time">HH:mm</param>
+        /// <returns></returns>
+        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(string date, string time)
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            FlightGetInfoResponse? data = null;
+            var request = new HttpRequestMessage(HttpMethod.Get, Cart.FlightGetInfo + $"?date={date}&time={time}");
+            var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<FlightGetInfoResponse>(content);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 保存航班信息
+        /// </summary>
+        /// <param name="csrfToken"></param>
+        /// <param name="calendarStartDate"></param>
+        /// <param name="departureDate"></param>
+        /// <param name="departureTime"></param>
+        /// <param name="airlinesNo">航空公司</param>
+        /// <param name="flightNo">航班号  其他航班号:other</param>
+        /// <param name="otherflightno">其他航班号</param>
+        /// <param name="connectingFlight">是否转机 yes/no</param>
+        /// <param name="agreeProductLimits"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<FlightSaveInfoResponse?> FlightSaveInfoAsync(string csrfToken, string calendarStartDate, string departureDate, string departureTime, string airlinesNo, string flightNo, string otherflightno
+            , string connectingFlight, string agreeProductLimits = "yes")
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            FlightSaveInfoResponse? data = null;
+            // 构建表单数据
+            var formData = new List<KeyValuePair<string, string>>
+            {
+                new("csrf_token", csrfToken),
+                new("midNightFlight", "no"),
+                new("calendarStartDate", calendarStartDate),
+                new("departureDate", departureDate),
+                new("departureTime", departureTime),
+                new("airlinesNo", airlinesNo),
+                new("flightNo", flightNo),
+                new("otherflightno", otherflightno),
+                new("connectingFlight", connectingFlight),
+                new("agreeProductLimits", agreeProductLimits)
+            };
+            var request = new HttpRequestMessage(HttpMethod.Post, Cart.FlightSaveInfo)
+            {
+                Content = new FormUrlEncodedContent(formData)
+            };
+            var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<FlightSaveInfoResponse>(content);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 提交付款信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<SubmitPaymentResponse> SubmitPaymentAsync(string email,string csrfToken)
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            SubmitPaymentResponse? data = null;
+            // 构建表单数据
+            var formData = new List<KeyValuePair<string, string>>
+            {
+                //new ("hidCardYear", "undefined"),
+                //new ("hidCardMonth", "undefined"),
+                //new ("hidCardNo", ""),
+                //new ("hidCardType", ""),
+                //new ("addressSelector", "new"),
+                //new ("dwfrm_billing_addressFields_firstName", ""),
+                //new ("dwfrm_billing_addressFields_lastName", ""),
+                //new ("dwfrm_billing_addressFields_address1", ""),
+                //new ("dwfrm_billing_addressFields_address2", ""),
+                //new ("dwfrm_billing_addressFields_country", ""),
+                //new ("dwfrm_billing_addressFields_city", ""),
+                //new ("dwfrm_billing_addressFields_postalCode", ""),
+                new ("csrf_token", csrfToken),
+                //new ("localizedNewAddressTitle", "新地址"),
+                new ("dwfrm_billing_contactInfoFields_email", email),
+                //new ("dwfrm_billing_contactInfoFields_phone", ""),
+                new ("dwfrm_billing_paymentMethod", "Instore_Payment") //到店支付
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, CheckoutServices.SubmitPayment)
+            {
+                Content = new FormUrlEncodedContent(formData)
+            };
+            var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<SubmitPaymentResponse>(content);
+            }
+            return data;
+        }
+        #endregion
     }
 }

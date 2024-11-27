@@ -41,5 +41,17 @@
         /// 修改购物车商品数量
         /// </summary>
         public const string UpdateQuantity = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Cart-UpdateQuantity";
+
+        /// <summary>
+        /// 获取航班信息
+        /// </summary>
+        public const string FlightGetInfo = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Flight-GetInfo?date=2024/12/07&time=18:19";
+
+        /// <summary>
+        /// 保存航班信息
+        /// </summary>
+        public const string FlightSaveInfo = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Flight-SaveInfo";
+
+
     }
 }

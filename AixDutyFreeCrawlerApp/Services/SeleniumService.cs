@@ -7,6 +7,7 @@ using AixDutyFreeCrawler.App.Models;
 using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 using OpenQA.Selenium.Support.UI;
+using AixDutyFreeCrawler.App.Models.Response;
 
 namespace AixDutyFreeCrawler.App.Services
 {
@@ -26,9 +27,10 @@ namespace AixDutyFreeCrawler.App.Services
         /// <summary>
         /// 创建实例
         /// </summary>
-        public async Task<ChromeDriver> CreateInstancesAsync(AccountModel account,bool headless = false)
+        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountModel account, bool headless = false)
         {
             ChromeDriver driver;
+            bool isLogin = false;
             if (headless)
             {
                 // 创建 ChromeOptions 实例并设置无头模式
@@ -60,7 +62,9 @@ namespace AixDutyFreeCrawler.App.Services
                 //点击登录按钮
                 var loginSubmit = driver.FindElement(By.XPath("//div[contains(@class, 'login-submit-button') and contains(@class, 'pt-1')]//button[contains(@class, 'btn') and contains(@class, 'btn-block') and contains(@class, 'btn-primary') and contains(@class, 'btn-login')]"));
                 loginSubmit.Click();
-                logger.LogInformation("TaskStartAsync.登录:{email}",email);
+                logger.LogInformation("TaskStartAsync.登录:{email}", email);
+                isLogin = await IsLogin(driver);
+
             }
             catch (NoSuchElementException e)
             {
@@ -68,23 +72,30 @@ namespace AixDutyFreeCrawler.App.Services
             }
             ////保存实例到集合
             //drivers.Add(driver);
-            return driver;
+            return new(driver, isLogin);
         }
 
-        ///// <summary>
-        ///// 商品页面库存监控(不登录)
-        ///// </summary>
-        ///// <param name="productAddress"></param>
-        ///// <returns></returns>
-        //public async Task<bool> MonitorPagesAsync(string productAddress)
-        //{
-        //    bool status = true;
-        //    monitorDriver.Navigate().GoToUrl(productAddress);
-        //    await Confirm(monitorDriver);
-        //    return await CheckInventoryAsync(monitorDriver);
-        //}
-
-
+        /// <summary>
+        /// 检测是否登录
+        /// </summary>
+        /// <param name="driver"></param>
+        /// <returns></returns>
+        public Task<bool> IsLogin(ChromeDriver driver)
+        {
+            bool isLogin = false;
+            try
+            {
+                var loginShow = driver.FindElement(By.ClassName("login-show-redirect"));
+            }
+            catch (NoSuchElementException)
+            {
+                isLogin = true;
+                //登录成功
+                var accountInfo = driver.FindElement(By.Id("myaccount"));
+                logger.LogInformation("登录成功:{name}", accountInfo.FindElement(By.ClassName("name")).Text);
+            }
+            return Task.FromResult(isLogin);
+        }
 
         /// <summary>
         /// 下单

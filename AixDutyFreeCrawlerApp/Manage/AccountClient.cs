@@ -7,8 +7,10 @@ using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using QYQ.Base.Common.Extension;
 using QYQ.Base.Common.IOCExtensions;
 using System;
+using System.Collections.Concurrent;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
@@ -32,12 +34,24 @@ namespace AixDutyFreeCrawler.App.Manage
         /// <summary>
         /// 浏览器实例
         /// </summary>
-        private IWebDriver? driver;
+        private ChromeDriver? driver;
 
         /// <summary>
         /// 异步令牌
         /// </summary>
         private readonly CancellationTokenSource _cancellationTokenSource = new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private AccountModel Account {  get; set; } = new AccountModel();
+
+        /// <summary>
+        /// 是否成功登录
+        /// </summary>
+        private bool IsLoginSuccess { get; set; } = false;
+
+        private ConcurrentDictionary<string, ProductMonitorInfo> ProductsMonitor { get; set; } = new();
 
 
         /// <summary>
@@ -46,15 +60,26 @@ namespace AixDutyFreeCrawler.App.Manage
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public async Task InitAsync(AccountModel account)
+        public async Task<bool> InitAsync(AccountModel account)
         {
+            Account = account;
             bool headless = configuration.GetSection("Headless").Get<bool>();
             //_httpClient = httpClientFactory.CreateClient(account.Email);
-            driver = await seleniumService.CreateInstancesAsync(account, headless);
-            logger.LogInformation("InitAsync.初始化完成");
-            //设置httpClient Cookie
-            _httpClient = httpClientFactory.CreateClient(account.Email);
-            ConfigureHttpClientWithCookies();
+            var res = await seleniumService.CreateInstancesAsync(account, headless);
+            driver = res.Item1;
+            IsLoginSuccess = res.Item2;
+            if (IsLoginSuccess)
+            {
+                logger.LogInformation("InitAsync.初始化完成");
+                //设置httpClient Cookie
+                _httpClient = httpClientFactory.CreateClient(account.Email);
+                ConfigureHttpClientWithCookies();
+            }
+            else
+            {
+                logger.LogError("InitAsync:{account}登录失败", account.Email);
+            }
+            return IsLoginSuccess;
         }
 
         /// <summary>
@@ -94,9 +119,9 @@ namespace AixDutyFreeCrawler.App.Manage
         /// <summary>
         /// 开始监控
         /// </summary>
-        public void StartMonitoring()
+        public Task StartMonitoringAsync()
         {
-            Task.Run(() => MonitorProductsAsync(_cancellationTokenSource.Token));
+            return Task.Run(() => MonitorProductsAsync(_cancellationTokenSource.Token));
         }
 
         /// <summary>
@@ -122,7 +147,7 @@ namespace AixDutyFreeCrawler.App.Manage
                 }
 
                 // 设置检查间隔
-                await Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
         }
 
@@ -161,53 +186,24 @@ namespace AixDutyFreeCrawler.App.Manage
                     }
                 }
 
-                // 检查商品是否有货（需要根据页面元素进行判断）
-                bool isAvailable = await IsProductAvailable(productId!);
-
-                if (isAvailable)
+                if (IsLoginSuccess)
                 {
-                    // 触发下单逻辑
-                    await PlaceOrderAsync(product);
-                }
-            }
-            catch (Exception ex)
-            {
-                // 记录异常日志
-                logger.LogError($"检查商品时出错：{ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 判断商品是否有货
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        private async Task<bool> IsProductAvailable(string productId)
-        {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
-
-            try
-            {
-                var response = await _httpClient.GetAsync(Cart.ProductVariation + $"?pid={productId}&quantity=1");
-                var content = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = JsonConvert.DeserializeObject<ProductVariationResponse>(content);
-                    if (data?.Product?.Availability?.Available == true)
+                    // 检查商品是否有货（需要根据页面元素进行判断）
+                    var res = await ProductVariationAsync(productId!, 1);
+                    bool isAvailable = res?.Product?.Availability?.Available ?? false;
+                    if (isAvailable)
                     {
-                        return true;
+                        logger.LogInformation("账号:{Account}\t商品:{brandName}可用,最大定购数{MaxOrderQuantity}", Account.Email, res?.Product?.BrandName, res?.Product?.Availability?.MaxOrderQuantity);
+                        // 触发下单逻辑
+                        await PlaceOrderAsync(res!.Product!);
                     }
                 }
-
-                return false;
+     
             }
-            catch (WebDriverTimeoutException)
-            {
-                // 元素在指定时间内未出现，可能是无货状态
-                return false;
+            catch (Exception ex)
+            { 
+                // 记录异常日志
+                logger.LogError($"CheckProductAvailabilityAsync.检查商品时出错：{ex.Message}");
             }
         }
 
@@ -216,7 +212,7 @@ namespace AixDutyFreeCrawler.App.Manage
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        private async Task PlaceOrderAsync(string product)
+        private async Task PlaceOrderAsync(Product product)
         {
             try
             {
@@ -224,33 +220,25 @@ namespace AixDutyFreeCrawler.App.Manage
                 {
                     throw new Exception("driver不能为null");
                 }
-                // 添加商品到购物车
-                var addToCartButton = driver.FindElement(By.Id("add-to-cart-button"));
-                addToCartButton.Click();
+               
+                if (!string.IsNullOrEmpty(product.Id))
+                {
+                    var res = await CartAddProductAsync(product.Id, product.Availability?.MaxOrderQuantity ?? 10);
+                    if (res?.Error == false)
+                    {
+                        logger.LogInformation("PlaceOrderAsync.商品 {BrandName} 加入购物车成功！", product.BrandName);
 
-                // 等待购物车页面加载
-                await Task.Delay(TimeSpan.FromSeconds(2));
-
-                // 进入结算页面
-                driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/checkout/");
-
-                // 填写订单信息，选择支付方式等
-                // 需要根据页面实际情况进行元素定位和操作
-
-                // 提交订单
-                var placeOrderButton = driver.FindElement(By.Id("place-order-button"));
-                placeOrderButton.Click();
-
-                // 等待订单确认页面加载
-                await Task.Delay(TimeSpan.FromSeconds(2));
-
-                // 记录下单成功的信息
-                logger.LogInformation($"商品 {product} 下单成功！");
+                    }
+                }
+                else
+                {
+                    logger.LogWarning("PlaceOrderAsync.找不到商品Id");
+                }
             }
             catch (Exception ex)
             {
                 // 记录异常日志
-                logger.LogError($"下单时出错：{ex.Message}");
+                logger.BaseErrorLog("PlaceOrderAsync", ex);
             }
         }
 
@@ -419,7 +407,7 @@ namespace AixDutyFreeCrawler.App.Manage
         /// 提交付款信息
         /// </summary>
         /// <returns></returns>
-        public async Task<SubmitPaymentResponse> SubmitPaymentAsync(string email,string csrfToken)
+        public async Task<SubmitPaymentResponse?> SubmitPaymentAsync(string email,string csrfToken)
         {
             if (_httpClient == null)
             {
@@ -454,13 +442,35 @@ namespace AixDutyFreeCrawler.App.Manage
             };
             var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            logger.LogInformation("SubmitPaymentAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<SubmitPaymentResponse>(content);
             }
             return data;
         }
+
+        /// <summary>
+        /// 下单
+        /// </summary>
+        /// <returns></returns>
+        public async Task<PlaceOrderResponse?> PlaceOrderAsync()
+        {
+            if (_httpClient == null)
+            {
+                throw new Exception("_httpClient未初始化");
+            }
+            PlaceOrderResponse? data = null;
+            var response = await _httpClient.PostAsync(CheckoutServices.PlaceOrder, null);
+            var content = await response.Content.ReadAsStringAsync();
+            logger.LogInformation("PlaceOrderAsync.响应:{content}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                data = JsonConvert.DeserializeObject<PlaceOrderResponse>(content);
+            }
+            return data;
+        }
+
         #endregion
     }
 }

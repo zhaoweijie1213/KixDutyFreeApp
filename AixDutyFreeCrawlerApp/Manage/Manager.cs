@@ -24,14 +24,23 @@ namespace AixDutyFreeCrawler.App.Manage
             foreach (var account in accounts.CurrentValue)
             {
                 var accountClient = serviceProvider.GetService<AccountClient>()!;
-                tasks.Add(accountClient.InitAsync(account));
+                //tasks.Add(accountClient.InitAsync(account));
                 if (Clients.TryAdd(account.Email, accountClient))
                 {
                     tasks.Add(Task.Run(async () =>
                     {
                         try
                         {
-                            await accountClient.InitAsync(account);
+                            var status = await accountClient.InitAsync(account);
+                            if (!status)
+                            {
+                                //账号登录失败
+                            }
+                            else
+                            {
+                                //开始监控商品
+                                await accountClient.StartMonitoringAsync();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -48,6 +57,8 @@ namespace AixDutyFreeCrawler.App.Manage
                 }
             }
             await Task.WhenAll(tasks);
+
+
         }
 
         /// <summary>

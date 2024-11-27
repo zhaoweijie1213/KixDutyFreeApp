@@ -171,7 +171,7 @@ namespace AixDutyFreeCrawler.App.Models.Response
 
         public object? CustomerName { get; set; }
 
-        public FlightData? FlightData { get; set; }
+        public SubmitPaymentFlightData? FlightData { get; set; }
 
         public string? ReservationType { get; set; }
     }
@@ -198,33 +198,42 @@ namespace AixDutyFreeCrawler.App.Models.Response
     public class SubmitPaymentTotals
     {
         public int SubTotal { get; set; }
-        public string? TotalShippingCost { get; set; }
-        public int GrandTotal { get; set; }
-        public string? TotalTax { get; set; }
-        public DiscountTotal OrderLevelDiscountTotal { get; set; }
-        public DiscountTotal ShippingLevelDiscountTotal { get; set; }
-        public List<object> Discounts { get; set; }
-        public string? DiscountsHtml { get; set; }
-        public string? SubTotalFormatted { get; set; }
-        public int EstimatedTotal { get; set; }
-        public string? EstimatedTotalFormatted { get; set; }
-        public int ProductLevelDiscountTotal { get; set; }
-        public string? ProductLevelDiscountTotalFormatted { get; set; }
-        public int TotalSavedAmount { get; set; }
-        public string? TotalSavedAmountFormatted { get; set; }
-        public string? GrandTotalFormatted { get; set; }
-    }
 
-    public class DiscountTotal
-    {
-        public int Value { get; set; }
-        public string? Formatted { get; set; }
+        public string? TotalShippingCost { get; set; }
+
+        public int GrandTotal { get; set; }
+
+        public string? TotalTax { get; set; }
+
+        public DiscountTotal? OrderLevelDiscountTotal { get; set; }
+
+        public DiscountTotal? ShippingLevelDiscountTotal { get; set; }
+
+        public List<object>? Discounts { get; set; }
+
+        public string? DiscountsHtml { get; set; }
+
+        public string? SubTotalFormatted { get; set; }
+
+        public int EstimatedTotal { get; set; }
+
+        public string? EstimatedTotalFormatted { get; set; }
+
+        public int ProductLevelDiscountTotal { get; set; }
+
+        public string? ProductLevelDiscountTotalFormatted { get; set; }
+
+        public int TotalSavedAmount { get; set; }
+
+        public string? TotalSavedAmountFormatted { get; set; }
+
+        public string? GrandTotalFormatted { get; set; }
     }
 
     public class Steps
     {
-        public Step Shipping { get; set; }
-        public Step Billing { get; set; }
+        public Step? Shipping { get; set; }
+        public Step? Billing { get; set; }
     }
 
     public class Step
@@ -235,142 +244,131 @@ namespace AixDutyFreeCrawler.App.Models.Response
 
     public class OrderItems
     {
-        public List<Item> Items { get; set; }
+        public List<SubmitPaymentItem>? Items { get; set; }
+
         public int TotalQuantity { get; set; }
     }
 
-    public class Item
+    public class SubmitPaymentItem
     {
         public string? BrandCode { get; set; }
+
         public string? BrandName { get; set; }
+
         public int SelectedQuantity { get; set; }
+
         public string? MinOrderQuantity { get; set; }
+
         public string? MaxOrderQuantity { get; set; }
-        public Availability Availability { get; set; }
+
+        public SubmitPaymentAvailability? Availability { get; set; }
+
         public bool Available { get; set; }
+
         public bool PlusButtonDisabled { get; set; }
+
         public bool MinusButtonDisabled { get; set; }
-        public List<Quantity> Quantities { get; set; }
+
+        public List<Quantity>? Quantities { get; set; }
+
         public string? Uuid { get; set; }
+
         public string? Id { get; set; }
+
         public string? ProductName { get; set; }
+
         public string? ProductType { get; set; }
+
         public string? Brand { get; set; }
-        public Price Price { get; set; }
+
+        public SubmitPaymentPrice? Price { get; set; }
+
         public string? RenderedPrice { get; set; }
-        public Images Images { get; set; }
-        public object VariationAttributes { get; set; }
+
+        public Images? Images { get; set; }
+
+        public object? VariationAttributes { get; set; }
+
         public int Quantity { get; set; }
+
         public bool IsGift { get; set; }
-        public List<Promotion> ApplicablePromotions { get; set; }
+
+        public List<Promotion>? ApplicablePromotions { get; set; }
+
         public string? RenderedPromotions { get; set; }
+
         public string? UUID { get; set; }
+
         public bool IsOrderable { get; set; }
+
         public string? ShipmentUUID { get; set; }
+
         public bool IsBonusProductLineItem { get; set; }
-        public PriceTotal PriceTotal { get; set; }
-        public QuantityOptions QuantityOptions { get; set; }
-        public List<object> Options { get; set; }
-        public object BonusProductLineItemUUID { get; set; }
-        public object PreOrderUUID { get; set; }
-        public List<object> DiscountLineItems { get; set; }
+
+        public PriceTotal? PriceTotal { get; set; }
+
+        public QuantityOptions? QuantityOptions { get; set; }
+
+        public List<object>? Options { get; set; }
+
+        public object? BonusProductLineItemUUID { get; set; }
+
+        public object? PreOrderUUID { get; set; }
+
+        public List<object>? DiscountLineItems { get; set; }
+
         public bool IsAllowSameDayReservation { get; set; }
+
         public bool IsAllowSameDayPickUp { get; set; }
+
         public bool IsAgeVerificationRequired { get; set; }
+
         public string? ProductUrl { get; set; }
-        public object IsLotteryExclusive { get; set; }
-        public List<Category> Categories { get; set; }
+
+        public object? IsLotteryExclusive { get; set; }
+
+        public List<Category>? Categories { get; set; }
+
         public bool IsSameDayPickup { get; set; }
-        public List<Promotion> Promotions { get; set; }
-        public object BonusProducts { get; set; }
+
+        public List<Promotion>? Promotions { get; set; }
+
+        public object? BonusProducts { get; set; }
     }
 
-    public class Availability
+    public class SubmitPaymentAvailability
     {
         public bool Available { get; set; }
+
         public string? MaxOrderQuantity { get; set; }
+
         public bool Quantity { get; set; }
-        public List<Message> Messages { get; set; }
+
+        public List<Message>? Messages { get; set; }
+
         public string? MaxQuantitySafetyStock { get; set; }
+
         public bool IsMaxQuantityLimitedStock { get; set; }
+
         public int MaxQuantityLimitedStock { get; set; }
+
         public string? Status { get; set; }
+
         public bool IsQuantityLimited { get; set; }
     }
 
-    public class Message
+    public class SubmitPaymentPrice
     {
-        public string? ClassName { get; set; }
-        public WarningMsg WarningMsg { get; set; }
+        public SubmitPaymentSales? Sales { get; set; }
+        public object? List { get; set; }
     }
 
-    public class WarningMsg
-    {
-        public bool IsThresholdOver { get; set; }
-        public string? ThresholdOverWarningText { get; set; }
-    }
-
-    public class Quantity
-    {
-        public string? Value { get; set; }
-        public bool Selected { get; set; }
-        public string? Url { get; set; }
-    }
-
-    public class Price
-    {
-        public Sales Sales { get; set; }
-        public object List { get; set; }
-    }
-
-    public class Sales
+    public class SubmitPaymentSales
     {
         public int Value { get; set; }
         public string? Currency { get; set; }
         public string? Formatted { get; set; }
         public string? DecimalPrice { get; set; }
-    }
-
-    public class Images
-    {
-        public List<ImageInfo> Small { get; set; }
-    }
-
-    public class ImageInfo
-    {
-        public string? Index { get; set; }
-        public string? Alt { get; set; }
-        public string? Title { get; set; }
-        public string? Url { get; set; }
-        public string? AbsURL { get; set; }
-    }
-
-    public class Promotion
-    {
-        public string? Id { get; set; }
-        public string? Name { get; set; }
-        public object CallOutMsg { get; set; }
-        public string? Details { get; set; }
-        public string? PromotionClass { get; set; }
-    }
-
-    public class PriceTotal
-    {
-        public string? Price { get; set; }
-        public string? RenderedPrice { get; set; }
-    }
-
-    public class QuantityOptions
-    {
-        public int MinOrderQuantity { get; set; }
-        public int MaxOrderQuantity { get; set; }
-    }
-
-    public class Category
-    {
-        public string? HtmlValue { get; set; }
-        public UrlInfo Url { get; set; }
-        public string? Id { get; set; }
     }
 
     public class UrlInfo
@@ -380,26 +378,31 @@ namespace AixDutyFreeCrawler.App.Models.Response
 
     public class Billing
     {
-        public BillingAddress BillingAddress { get; set; }
-        public Payment Payment { get; set; }
+        public BillingAddress? BillingAddress { get; set; }
+
+        public Payment? Payment { get; set; }
+
         public string? MatchingAddressId { get; set; }
     }
 
     public class BillingAddress
     {
-        public AddressInfo Address { get; set; }
+        public AddressInfo? Address { get; set; }
     }
 
     public class Payment
     {
-        public List<PaymentMethodInfo> ApplicablePaymentMethods { get; set; }
-        public List<PaymentCard> ApplicablePaymentCards { get; set; }
-        public List<SelectedPaymentInstrument> SelectedPaymentInstruments { get; set; }
+        public List<PaymentMethodInfo>? ApplicablePaymentMethods { get; set; }
+
+        public List<PaymentCard>? ApplicablePaymentCards { get; set; }
+
+        public List<SelectedPaymentInstrument>? SelectedPaymentInstruments { get; set; }
     }
 
     public class PaymentMethodInfo
     {
         public string? ID { get; set; }
+
         public string? Name { get; set; }
     }
 
@@ -419,160 +422,260 @@ namespace AixDutyFreeCrawler.App.Models.Response
     public class Shipping
     {
         public string? UUID { get; set; }
-        public ProductLineItems ProductLineItems { get; set; }
-        public List<object> ApplicableShippingMethods { get; set; }
-        public SelectedShippingMethod SelectedShippingMethod { get; set; }
+
+        public ProductLineItems? ProductLineItems { get; set; }
+
+        public List<object>? ApplicableShippingMethods { get; set; }
+
+        public SelectedShippingMethod? SelectedShippingMethod { get; set; }
+
         public string? MatchingAddressId { get; set; }
-        public object ShippingAddress { get; set; }
+
+        public object? ShippingAddress { get; set; }
+
         public bool IsGift { get; set; }
-        public object GiftMessage { get; set; }
+
+        public object? GiftMessage { get; set; }
     }
 
     public class ProductLineItems
     {
-        public List<Item> Items { get; set; }
+        public List<Item>? Items { get; set; }
+
         public int TotalQuantity { get; set; }
     }
 
     public class SelectedShippingMethod
     {
         public string? ID { get; set; }
+
         public string? DisplayName { get; set; }
+
         public string? Description { get; set; }
-        public object EstimatedArrivalTime { get; set; }
+
+        public object? EstimatedArrivalTime { get; set; }
+
         public bool Default { get; set; }
+
         public string? ShippingCost { get; set; }
+
         public bool Selected { get; set; }
     }
 
-    public class FlightData
+    public class SubmitPaymentFlightData
     {
         public string? AirlinesNo { get; set; }
+
         public string? FlightNo { get; set; }
+
         public string? ConnectingFlight { get; set; }
+
         public string? DepartureTime { get; set; }
+
         public string? DepartureDate { get; set; }
+
         public string? ReservationDate { get; set; }
+
         public string? ReservationTime { get; set; }
+
         public int DateDiff { get; set; }
+
         public int Day { get; set; }
+
         public string? PickupStoreCode { get; set; }
+
         public string? MidNightFlight { get; set; }
+
         public string? Airlines { get; set; }
+
         public string? AgreeProductLimits { get; set; }
+
         public string? ProductType { get; set; }
+
         public string? ReservationType { get; set; }
     }
 
     public class SubmitPaymentResponseForm
     {
         public bool Valid { get; set; }
+
         public string? HtmlName { get; set; }
+
         public string? DynamicHtmlName { get; set; }
-        public object Error { get; set; }
+
+        public object? Error { get; set; }
+
         public string? Attributes { get; set; }
+
         public string? FormType { get; set; }
-        public ShippingAddressUseAsBillingAddress ShippingAddressUseAsBillingAddress { get; set; }
-        public AddressFields AddressFields { get; set; }
-        public ContactInfoFields ContactInfoFields { get; set; }
-        public PaymentMethodField PaymentMethod { get; set; }
-        public CreditCardFields CreditCardFields { get; set; }
-        public GmoCreditCardFields GmoCreditCardFields { get; set; }
-        public Subscribe Subscribe { get; set; }
-        public Base Base { get; set; }
+
+        public ShippingAddressUseAsBillingAddress? ShippingAddressUseAsBillingAddress { get; set; }
+
+        public AddressFields? AddressFields { get; set; }
+
+        public ContactInfoFields? ContactInfoFields { get; set; }
+
+        public PaymentMethodField? PaymentMethod { get; set; }
+
+        public CreditCardFields? CreditCardFields { get; set; }
+
+        public GmoCreditCardFields? GmoCreditCardFields { get; set; }
+
+        public Subscribe? Subscribe { get; set; }
+
+        public object? Base { get; set; }
     }
 
     public class ShippingAddressUseAsBillingAddress
     {
         public string? HtmlValue { get; set; }
+
         public string? Mandatory { get; set; }
+
         public string? DynamicHtmlName { get; set; }
+
         public string? HtmlName { get; set; }
+
         public bool Valid { get; set; }
+
         public string? Label { get; set; }
+
         public bool Checked { get; set; }
+
         public bool Selected { get; set; }
+
         public string? FormType { get; set; }
     }
 
     public class AddressFields
     {
         public bool Valid { get; set; }
+
         public string? HtmlName { get; set; }
+
         public string? DynamicHtmlName { get; set; }
-        public object Error { get; set; }
+
+        public object? Error { get; set; }
+
         public string? Attributes { get; set; }
+
         public string? FormType { get; set; }
-        public FormField AddressId { get; set; }
-        public FormField FirstName { get; set; }
-        public FormField LastName { get; set; }
-        public FormField Address1 { get; set; }
-        public FormField Address2 { get; set; }
-        public FormField City { get; set; }
-        public FormField PostalCode { get; set; }
-        public FormField Country { get; set; }
-        public FormField Phone { get; set; }
-        public FormAction Apply { get; set; }
-        public FormAction Remove { get; set; }
+
+        public FormField? AddressId { get; set; }
+
+        public FormField? FirstName { get; set; }
+
+        public FormField? LastName { get; set; }
+
+        public FormField? Address1 { get; set; }
+
+        public FormField? Address2 { get; set; }
+
+        public FormField? City { get; set; }
+
+        public FormField? PostalCode { get; set; }
+
+        public FormField? Country { get; set; }
+
+        public FormField? Phone { get; set; }
+
+        public FormAction? Apply { get; set; }
+
+        public FormAction? Remove { get; set; }
     }
 
     public class FormField
     {
         public string? HtmlValue { get; set; }
+
         public string? Mandatory { get; set; }
+
         public string? DynamicHtmlName { get; set; }
+
         public string? HtmlName { get; set; }
+
         public bool Valid { get; set; }
+
         public string? Label { get; set; }
+
         public int? MaxLength { get; set; }
+
         public int? MinLength { get; set; }
+
         public string? RegEx { get; set; }
+
         public string? Description { get; set; }
+
         public string? FormType { get; set; }
-        public List<Option> Options { get; set; }
+
+        public List<SubmitPaymentOption>? Options { get; set; }
+
         public string? SelectedOption { get; set; }
     }
 
     public class FormAction
     {
-        public object Description { get; set; }
-        public object Label { get; set; }
+        public object? Description { get; set; }
+
+        public object? Label { get; set; }
+
         public bool Submitted { get; set; }
+
         public bool Triggered { get; set; }
+
         public string? FormType { get; set; }
     }
 
-    public class Option
+    public class SubmitPaymentOption
     {
         public bool Checked { get; set; }
+
         public string? HtmlValue { get; set; }
+
         public string? Label { get; set; }
+
         public string? Id { get; set; }
+
         public bool Selected { get; set; }
+
         public string? Value { get; set; }
     }
 
     public class ContactInfoFields
     {
         public bool Valid { get; set; }
+
         public string? HtmlName { get; set; }
+
         public string? DynamicHtmlName { get; set; }
-        public object Error { get; set; }
+
+        public object? Error { get; set; }
+
         public string? Attributes { get; set; }
+
         public string? FormType { get; set; }
-        public FormField Phone { get; set; }
-        public FormField Email { get; set; }
+
+        public FormField? Phone { get; set; }
+
+        public FormField? Email { get; set; }
     }
 
     public class PaymentMethodField
     {
         public string? HtmlValue { get; set; }
+
         public bool Mandatory { get; set; }
+
         public string? DynamicHtmlName { get; set; }
+
         public string? HtmlName { get; set; }
+
         public bool Valid { get; set; }
+
         public int? MaxLength { get; set; }
+
         public int? MinLength { get; set; }
+
         public string? RegEx { get; set; }
         public string? FormType { get; set; }
     }
@@ -580,10 +683,15 @@ namespace AixDutyFreeCrawler.App.Models.Response
     public class CreditCardFields
     {
         public bool Valid { get; set; }
+
         public string? HtmlName { get; set; }
+
         public string? DynamicHtmlName { get; set; }
-        public object Error { get; set; }
+
+        public object? Error { get; set; }
+
         public string? Attributes { get; set; }
+
         public string? FormType { get; set; }
         // 其他字段...
     }
@@ -591,29 +699,35 @@ namespace AixDutyFreeCrawler.App.Models.Response
     public class GmoCreditCardFields
     {
         public bool Valid { get; set; }
+
         public string? HtmlName { get; set; }
+
         public string? DynamicHtmlName { get; set; }
-        public object Error { get; set; }
+
+        public object? Error { get; set; }
+
         public string? Attributes { get; set; }
+
         public string? FormType { get; set; }
-        // 其他字段...
     }
 
     public class Subscribe
     {
         public string? HtmlValue { get; set; }
-        public string? Mandatory { get; set; }
-        public string? DynamicHtmlName { get; set; }
-        public string? HtmlName { get; set; }
-        public bool Valid { get; set; }
-        public bool Checked { get; set; }
-        public bool Selected { get; set; }
-        public string? FormType { get; set; }
-    }
 
-    public class Base
-    {
-        // 如果有具体的属性，可以在此添加
+        public string? Mandatory { get; set; }
+
+        public string? DynamicHtmlName { get; set; }
+
+        public string? HtmlName { get; set; }
+
+        public bool Valid { get; set; }
+
+        public bool Checked { get; set; }
+
+        public bool Selected { get; set; }
+
+        public string? FormType { get; set; }
     }
 
 }

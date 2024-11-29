@@ -1,5 +1,7 @@
 ﻿using AixDutyFreeCrawler.App.Models;
+using AixDutyFreeCrawler.App.Models.Entity;
 using AixDutyFreeCrawler.App.Models.Response;
+using AixDutyFreeCrawler.App.Repository;
 using AixDutyFreeCrawler.App.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -22,7 +24,7 @@ namespace AixDutyFreeCrawler.App.Manage
     /// 账号客户端
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IOptionsMonitor<Products> products, IConfiguration configuration, IHttpClientFactory httpClientFactory
-        , IMemoryCache memoryCache) : ITransientDependency
+        , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -50,8 +52,6 @@ namespace AixDutyFreeCrawler.App.Manage
         /// 是否成功登录
         /// </summary>
         private bool IsLoginSuccess { get; set; } = false;
-
-        private ConcurrentDictionary<string, ProductMonitorInfo> ProductsMonitor { get; set; } = new();
 
 
         /// <summary>
@@ -155,10 +155,10 @@ namespace AixDutyFreeCrawler.App.Manage
         /// <summary>
         /// 检查单个商品是否有货
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productAddress"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task CheckProductAvailabilityAsync(string product, CancellationToken cancellationToken)
+        private async Task CheckProductAvailabilityAsync(string productAddress, CancellationToken cancellationToken)
         {
             try
             {
@@ -166,37 +166,70 @@ namespace AixDutyFreeCrawler.App.Manage
                 {
                     throw new Exception("driver不能为null");
                 }
+                
                 // 导航到商品页面
-                driver.Navigate().GoToUrl(product);
-                if (!memoryCache.TryGetValue(product, out string? productId))
+                driver.Navigate().GoToUrl(productAddress);
+                if (!memoryCache.TryGetValue(productAddress, out ProductInfoEntity? product))
                 {
-                    try
+                    product = await productInfoRepository.FindByAddressAsync(productAddress);
+                    if (product == null || product?.UpdateTime <= DateTime.Now.AddDays(-7))
                     {
-                        var productDetail = driver.FindElement(By.ClassName("product-detail"));
-                        // 获取 data-pid 属性的值 得到商品id
-                        productId = productDetail.GetAttribute("data-pid");
-                        if (productId != null)
+                        try
                         {
-                            memoryCache.Set(product, productId);
+                            var productDetail = driver.FindElement(By.ClassName("product-detail"));
+                            // 获取 data-pid 属性的值 得到商品id
+                            string productId = productDetail.GetAttribute("data-pid");
+                            if (productId != null)
+                            {
+                                product = new ProductInfoEntity()
+                                {
+                                    Id = productId,
+                                    Address = productAddress,
+                                    CreateTime = DateTime.Now,
+                                    UpdateTime = DateTime.Now
+                                };
+                                product = await productInfoRepository.InsertAsync(product);
+                            }
+                        }
+                        catch (NoSuchElementException e)
+                        {
+                            logger.LogWarning("TaskStartAsync:{Message}", e.Message);
                         }
                     }
-                    catch (NoSuchElementException e)
-                    {
-                        logger.LogWarning("TaskStartAsync:{Message}", e.Message);
-                    }
+                    //else
+                    //{
+
+                    //}
+                    memoryCache.Set(productAddress, product, TimeSpan.FromMinutes(5));
                 }
 
-                if (IsLoginSuccess)
+                if (IsLoginSuccess && !string.IsNullOrEmpty(product?.Id))
                 {
-                    // 检查商品是否有货（需要根据页面元素进行判断）
-                    var res = await ProductVariationAsync(productId!, 1);
-                    bool isAvailable = res?.Product?.Availability?.Available ?? false;
-                    if (isAvailable)
+                    //判断是否已经加入购物车
+                    var prodicrMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
+                    if (prodicrMonitor != null && prodicrMonitor.Setup == OrderSetup.AddedToCart)
                     {
-                        logger.LogInformation("账号:{Account}\t商品:{brandName}可用,最大定购数{MaxOrderQuantity}", Account.Email, res?.Product?.BrandName, res?.Product?.Availability?.MaxOrderQuantity);
-                        // 触发下单逻辑
-                        await PlaceOrderAsync(res!.Product!);
+                        logger.LogInformation("{Account}\t{Name}已加入购物车，不需要检测", Account.Email, product.Name);
+                        return;
                     }
+                    else
+                    {
+                        // 检查商品是否有货（需要根据页面元素进行判断）
+                        var res = await ProductVariationAsync(product.Id, 1);
+                        if (res != null && string.IsNullOrEmpty(product.Name))
+                        {
+                            product.Name = res.Product?.ProductName ?? "";
+                            await productInfoRepository.UpdateAsync(product);
+                        }
+                        bool isAvailable = res?.Product?.Availability?.Available ?? false;
+                        if (isAvailable)
+                        {
+                            logger.LogInformation("账号:{Account}\t商品:{Name}可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
+                            // 触发下单逻辑
+                            await PlaceOrderAsync(res!.Product!);
+                        }
+                    }
+         
                 }
      
             }
@@ -227,6 +260,73 @@ namespace AixDutyFreeCrawler.App.Manage
                     if (res?.Error == false)
                     {
                         logger.LogInformation("PlaceOrderAsync.商品 {BrandName} 加入购物车成功！", product.BrandName);
+                        //跳转到购物车页面
+                        await seleniumService.ToCartAsync(driver);
+                        var date = configuration.GetSection("FlightDate").Get<DateTime>();
+                        //获取航班信息
+                        var flightInfo = await GetFlightDataAsync(date);
+                        if (flightInfo != null) 
+                        {
+                            try
+                            {
+                                // 查找csrf_token
+                                var csrfTokenElement = driver.FindElement(By.Name("csrf_token"));
+                                // 获取元素的 value 属性值
+                                string csrfToken = csrfTokenElement.GetAttribute("value");
+                                //保存航班信息
+                                var saveInfo = await FlightSaveInfoAsync(
+                                    csrfToken: csrfToken,
+                                    calendarStartDate: DateTime.Now.ToString("yyyy/MM/dd"),
+                                    departureDate: date.ToString("yyyy/MM/dd"),
+                                    departureTime: date.ToString("HH:mm"),
+                                    airlinesNo: flightInfo.First().Flightno1,
+                                    flightNo: flightInfo.First().Flightno2,
+                                    otherflightno: "",
+                                    connectingFlight: "no");
+                                //判断是否可以下单
+                                if (saveInfo?.AllowCheckout == true)
+                                {
+                                    //调用下单逻辑,跳转结算界面
+                                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp" + saveInfo.RedirectUrl);
+                                    var dwfrm_billing = driver.FindElement(By.Id("driver"));
+                                    // 查找csrf_token
+                                    var billingCsrfTokenElement = dwfrm_billing.FindElement(By.Name("csrf_token"));
+                                    // 获取元素的 value 属性值
+                                    string billingCsrfToken = csrfTokenElement.GetAttribute("value");
+                                    var submitPayment = await SubmitPaymentAsync(billingCsrfToken, csrfToken);
+                                    if (submitPayment?.Error == false)
+                                    {
+                                        //最终确认下单
+                                        var placeOrder = await PlaceOrderAsync();
+                                        if (placeOrder?.Error == false)
+                                        {
+                                            logger.LogInformation("PlaceOrderAsync.下单成功");
+                                        }
+                                        else
+                                        {
+                                            logger.LogWarning("PlaceOrderAsync.下单失败");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        logger.LogWarning("PlaceOrderAsync.提交付款信息失败");
+                                    }
+                                }
+                                else
+                                {
+                                    logger.LogWarning("PlaceOrderAsync.无法下单，请检查航班信息是否正确!");
+                                }
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                // 未找到元素，处理异常
+                                logger.LogError("PlaceOrderAsync.未能找到csrf_token的输入元素");
+                            }
+                        }
+                        else
+                        {
+                            logger.LogWarning("PlaceOrderAsync.未获取到{date}航班信息", date.ToString("D"));
+                        }
 
                     }
                 }
@@ -242,6 +342,26 @@ namespace AixDutyFreeCrawler.App.Manage
             }
         }
 
+        /// <summary>
+        /// 获取航班信息
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public async Task<List<FlightData>?> GetFlightDataAsync(DateTime date)
+        {
+            string key = $"FlightData_{date:yyyy/MM/dd HH:mm}";
+            if(!memoryCache.TryGetValue(key, out List<FlightData>? data))
+            {
+                //获取航班信息
+                var flightInfo = await FlightGetInfoAsync(date);
+                data = flightInfo?.FlightData;
+                if (data != null)
+                {
+                    memoryCache.Set(key, data, TimeSpan.FromHours(1));
+                }
+            }
+            return data;
+        }
 
         /// <summary>
         /// 退出
@@ -335,14 +455,14 @@ namespace AixDutyFreeCrawler.App.Manage
         /// <param name="date">yyyy/MM/dd</param>
         /// <param name="time">HH:mm</param>
         /// <returns></returns>
-        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(string date, string time)
+        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(DateTime dateTime)
         {
             if (_httpClient == null)
             {
                 throw new Exception("_httpClient未初始化");
             }
             FlightGetInfoResponse? data = null;
-            var request = new HttpRequestMessage(HttpMethod.Get, Cart.FlightGetInfo + $"?date={date}&time={time}");
+            var request = new HttpRequestMessage(HttpMethod.Get, Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
             var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);

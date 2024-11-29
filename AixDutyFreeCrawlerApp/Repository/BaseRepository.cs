@@ -51,10 +51,6 @@ namespace AixDutyFreeCrawler.App.Repository
         /// </summary>
         protected ISqlSugarClient Db => GetSqlSugarClient();
 
-
-        private const int maxRetryCount = 3; // 最大重试次数
-        private int currentRetryCount = 0; // 当前重试计数
-
         /// <summary>
         /// 获取SqlSugarClient客户端
         /// </summary>

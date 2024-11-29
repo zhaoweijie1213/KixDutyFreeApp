@@ -25,12 +25,12 @@
         /// <summary>
         /// 航空公司编号
         /// </summary>
-        public string? Flightno1 { get; set; }
+        public string Flightno1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 航班号
         /// </summary>
-        public string? Flightno2 { get; set; }
+        public string Flightno2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 

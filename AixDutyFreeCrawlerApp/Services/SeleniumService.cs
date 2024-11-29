@@ -64,7 +64,6 @@ namespace AixDutyFreeCrawler.App.Services
                 loginSubmit.Click();
                 logger.LogInformation("TaskStartAsync.登录:{email}", email);
                 isLogin = await IsLogin(driver);
-
             }
             catch (NoSuchElementException e)
             {
@@ -83,19 +82,42 @@ namespace AixDutyFreeCrawler.App.Services
         public Task<bool> IsLogin(ChromeDriver driver)
         {
             bool isLogin = false;
+
             try
             {
-                var loginShow = driver.FindElement(By.ClassName("login-show-redirect"));
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+
+                // 尝试查找表示已登录状态的元素
+                var accountInfo = wait.Until(driver =>
+                {
+                    try
+                    {
+                        // 查找登录后才会显示的元素，例如账户信息
+                        var element = driver.FindElement(By.Id("myaccount"));
+                        return element.Displayed ? element : null;
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        return null;
+                    }
+                });
+
+                if (accountInfo != null)
+                {
+                    isLogin = true;
+                    var nameElement = accountInfo.FindElement(By.ClassName("name"));
+                    logger.LogInformation("登录成功: {name}", nameElement.Text);
+                }
             }
-            catch (NoSuchElementException)
+            catch (WebDriverTimeoutException)
             {
-                isLogin = true;
-                //登录成功
-                var accountInfo = driver.FindElement(By.Id("myaccount"));
-                logger.LogInformation("登录成功:{name}", accountInfo.FindElement(By.ClassName("name")).Text);
+                isLogin = false;
+                logger.LogWarning("未检测到登录状态，超时未找到指定元素。");
             }
+
             return Task.FromResult(isLogin);
         }
+
 
         /// <summary>
         /// 下单
@@ -164,96 +186,119 @@ namespace AixDutyFreeCrawler.App.Services
         {
             //去购物车结算
             driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/cart/");
-            DateTime datetime = DateTime.Now.AddDays(15);
-            //填写日期和时间
-            var date = driver.FindElement(By.Id("departureDate"));
-            date.SendKeys(datetime.ToString("yyyy/MM/dd"));
-            var timeInput = driver.FindElement(By.Id("departureTime"));
-            // 使用 JavaScript 来设置输入框的值
-            string script = $"arguments[0].removeAttribute('readonly'); arguments[0].value = '{datetime:HH:ss}';";
-            ((IJavaScriptExecutor)driver).ExecuteScript(script, timeInput);
-            logger.LogInformation("ToCartAsync.时间输入框的值已被设置为{datetime}", datetime.ToString("yyyy/MM/dd HH:ss"));
-            //选择航空公司
-            // 找到下拉框元素
-            IWebElement dropdownElement = driver.FindElement(By.Id("airlines"));
-            // 创建 SelectElement 对象
-            SelectElement select = new(dropdownElement);
-            foreach (var option in select.Options)
+            try
             {
-                if (option.Text.Contains("四川航空"))
+                // 等待页面加载完成
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+                wait.Until(d =>
                 {
-                    select.SelectByText(option.Text);
-                    logger.LogInformation("ToCartAsync.已成功选择航空公司：{option}", option.Text);
-                    break;
-                }
-            }
-            //选择航班号
-            var flightno = driver.FindElement(By.Id("flightno"));
-            // 创建 SelectElement 对象
-            SelectElement flightnoSelect = new(flightno);
-            flightnoSelect.SelectByIndex(1);  // 选择第1个选项
-            //是否转机
-            //try
-            //{
-            //    var radioYesButton = driver.FindElement(By.Id("connecting-flight-yes"));
-            //    var radioNoButton = driver.FindElement(By.Id("connecting-flight-no"));
-            //    radioYesButton.Click();
-            //    radioNoButton.Click();
-            //}
-            //catch (NoSuchElementException e)
-            //{
-            //    logger.LogWarning("ToCartAsync:{Message}", e.Message);
-            //}
+                    return ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete");
+                });
 
-
-            //我已了解
-            var agreeCheckBox = driver.FindElement(By.Id("agree-products"));
-            // 检查复选框的值是否为 "yes"
-            string value = agreeCheckBox.GetAttribute("value");
-            string classAttribute = agreeCheckBox.GetAttribute("class");
-            if (value != "yes"||(classAttribute != null && classAttribute.Contains("is-invalid")))
-            {
-                agreeCheckBox.Click();
+                // 页面加载完成，添加日志
+                logger.LogInformation("ToCartAsync:购物车页面已成功加载");
             }
-            //下一步
-            // 找到 name 为 "flight-form" 的表单
-            IWebElement formElement = driver.FindElement(By.Name("flight-form"));
-            // 在表单上下文中查找提交按钮
-            IWebElement submitButton = formElement.FindElement(By.CssSelector("button[type='submit']"));
-            // 点击提交按钮
-            submitButton.Click();
-            logger.LogInformation("ToCartAsync:提交按钮已被成功点击，等待跳转到结算页面...");
-            // 显式等待，直到 URL 变为目标结算页面的 URL
-            WebDriverWait wait = new(driver, TimeSpan.FromSeconds(10));
-            bool urlIsCorrect = wait.Until(d =>
-                d.Url.Contains("https://www.kixdutyfree.jp/cn/checkout"));
-            if (urlIsCorrect)
+            catch (WebDriverTimeoutException)
             {
-                logger.LogInformation("ToCartAsync:成功跳转到结算页面！");
-                // 找到包含“到店支付”的 div 元素
-                IWebElement instorePaymentDiv = driver.FindElement(By.XPath("//div[contains(@class, 'tab-link') and contains(@class, 'instore-payment-select')]"));
-                // 点击该元素以选择“到店支付”
-                instorePaymentDiv.Click();
-                logger.LogInformation("ToCartAsync:“到店支付”选项已成功选中");
-                //下一步
-                try
-                {
-                    // 使用 XPath 找到 card payment-form 下的 card-body，然后找到 submit-payment 按钮
-                    IWebElement nextButton = driver.FindElement(By.XPath("//div[contains(@class, 'card payment-form')]//div[contains(@class, 'card-body')]//button[contains(@class, 'submit-payment')]"));
-                    nextButton.Click();
-                }
-                catch (NoSuchElementException e)
-                {
-                    logger.LogWarning("OrderAsync:{Message}", e.Message);
-                }
-       
-
-            }
-            else
-            {
-                logger.LogInformation("ToCartAsync:未成功跳转到结算页面！");
+                // 处理页面加载超时的情况
+                logger.LogError("ToCartAsync:购物车页面加载超时");
+                throw;
             }
             return Task.CompletedTask;
+            #region 交互
+
+            //DateTime datetime = DateTime.Now.AddDays(15);
+            ////填写日期和时间
+            //var date = driver.FindElement(By.Id("departureDate"));
+            //date.SendKeys(datetime.ToString("yyyy/MM/dd"));
+            //var timeInput = driver.FindElement(By.Id("departureTime"));
+            //// 使用 JavaScript 来设置输入框的值
+            //string script = $"arguments[0].removeAttribute('readonly'); arguments[0].value = '{datetime:HH:ss}';";
+            //((IJavaScriptExecutor)driver).ExecuteScript(script, timeInput);
+            //logger.LogInformation("ToCartAsync.时间输入框的值已被设置为{datetime}", datetime.ToString("yyyy/MM/dd HH:ss"));
+            ////选择航空公司
+            //// 找到下拉框元素
+            //IWebElement dropdownElement = driver.FindElement(By.Id("airlines"));
+            //// 创建 SelectElement 对象
+            //SelectElement select = new(dropdownElement);
+            //foreach (var option in select.Options)
+            //{
+            //    if (option.Text.Contains("四川航空"))
+            //    {
+            //        select.SelectByText(option.Text);
+            //        logger.LogInformation("ToCartAsync.已成功选择航空公司：{option}", option.Text);
+            //        break;
+            //    }
+            //}
+            ////选择航班号
+            //var flightno = driver.FindElement(By.Id("flightno"));
+            //// 创建 SelectElement 对象
+            //SelectElement flightnoSelect = new(flightno);
+            //flightnoSelect.SelectByIndex(1);  // 选择第1个选项
+            ////是否转机
+            ////try
+            ////{
+            ////    var radioYesButton = driver.FindElement(By.Id("connecting-flight-yes"));
+            ////    var radioNoButton = driver.FindElement(By.Id("connecting-flight-no"));
+            ////    radioYesButton.Click();
+            ////    radioNoButton.Click();
+            ////}
+            ////catch (NoSuchElementException e)
+            ////{
+            ////    logger.LogWarning("ToCartAsync:{Message}", e.Message);
+            ////}
+
+
+            ////我已了解
+            //var agreeCheckBox = driver.FindElement(By.Id("agree-products"));
+            //// 检查复选框的值是否为 "yes"
+            //string value = agreeCheckBox.GetAttribute("value");
+            //string classAttribute = agreeCheckBox.GetAttribute("class");
+            //if (value != "yes"||(classAttribute != null && classAttribute.Contains("is-invalid")))
+            //{
+            //    agreeCheckBox.Click();
+            //}
+            ////下一步
+            //// 找到 name 为 "flight-form" 的表单
+            //IWebElement formElement = driver.FindElement(By.Name("flight-form"));
+            //// 在表单上下文中查找提交按钮
+            //IWebElement submitButton = formElement.FindElement(By.CssSelector("button[type='submit']"));
+            //// 点击提交按钮
+            //submitButton.Click();
+            //logger.LogInformation("ToCartAsync:提交按钮已被成功点击，等待跳转到结算页面...");
+            //// 显式等待，直到 URL 变为目标结算页面的 URL
+            //WebDriverWait wait = new(driver, TimeSpan.FromSeconds(10));
+            //bool urlIsCorrect = wait.Until(d =>
+            //    d.Url.Contains("https://www.kixdutyfree.jp/cn/checkout"));
+            //if (urlIsCorrect)
+            //{
+            //    logger.LogInformation("ToCartAsync:成功跳转到结算页面！");
+            //    // 找到包含“到店支付”的 div 元素
+            //    IWebElement instorePaymentDiv = driver.FindElement(By.XPath("//div[contains(@class, 'tab-link') and contains(@class, 'instore-payment-select')]"));
+            //    // 点击该元素以选择“到店支付”
+            //    instorePaymentDiv.Click();
+            //    logger.LogInformation("ToCartAsync:“到店支付”选项已成功选中");
+            //    //下一步
+            //    try
+            //    {
+            //        // 使用 XPath 找到 card payment-form 下的 card-body，然后找到 submit-payment 按钮
+            //        IWebElement nextButton = driver.FindElement(By.XPath("//div[contains(@class, 'card payment-form')]//div[contains(@class, 'card-body')]//button[contains(@class, 'submit-payment')]"));
+            //        nextButton.Click();
+            //    }
+            //    catch (NoSuchElementException e)
+            //    {
+            //        logger.LogWarning("OrderAsync:{Message}", e.Message);
+            //    }
+
+
+            //}
+            //else
+            //{
+            //    logger.LogInformation("ToCartAsync:未成功跳转到结算页面！");
+            //}
+
+            #endregion
+
         }
 
         ///// <summary>
@@ -303,16 +348,16 @@ namespace AixDutyFreeCrawler.App.Services
             {
                 logger.LogWarning("TaskStartAsync:{Message}", e.Message);
             }
-            ////同意网站cookie
-            //try
-            //{
-            //    var trustCookie = driver.FindElement(By.Id("onetrust-accept-btn-handler"));
-            //    trustCookie.Click();
-            //}
-            //catch (NoSuchElementException e)
-            //{
-            //    logger.LogWarning("TaskStartAsync:{Message}", e.Message);
-            //}
+            //同意网站cookie
+            try
+            {
+                var trustCookie = driver.FindElement(By.Id("onetrust-accept-btn-handler"));
+                trustCookie.Click();
+            }
+            catch (NoSuchElementException e)
+            {
+                logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+            }
 
             return Task.CompletedTask;
         }

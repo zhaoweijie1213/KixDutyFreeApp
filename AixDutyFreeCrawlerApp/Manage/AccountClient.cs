@@ -234,9 +234,9 @@ namespace AixDutyFreeCrawler.App.Manage
      
             }
             catch (Exception ex)
-            { 
+            {
                 // 记录异常日志
-                logger.LogError($"CheckProductAvailabilityAsync.检查商品时出错：{ex.Message}");
+                logger.BaseErrorLog($"CheckProductAvailabilityAsync.检查商品时出错", ex);
             }
         }
 
@@ -288,12 +288,15 @@ namespace AixDutyFreeCrawler.App.Manage
                                 {
                                     //调用下单逻辑,跳转结算界面
                                     driver.Navigate().GoToUrl("https://www.kixdutyfree.jp" + saveInfo.RedirectUrl);
-                                    var dwfrm_billing = driver.FindElement(By.Id("driver"));
+                                    // 等待页面加载完成
+                                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
+                                    wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                                    var dwfrm_billing = driver.FindElement(By.Id("dwfrm_billing"));
                                     // 查找csrf_token
                                     var billingCsrfTokenElement = dwfrm_billing.FindElement(By.Name("csrf_token"));
                                     // 获取元素的 value 属性值
-                                    string billingCsrfToken = csrfTokenElement.GetAttribute("value");
-                                    var submitPayment = await SubmitPaymentAsync(billingCsrfToken, csrfToken);
+                                    string billingCsrfToken = billingCsrfTokenElement.GetAttribute("value");
+                                    var submitPayment = await SubmitPaymentAsync(Account.Email, billingCsrfToken);
                                     if (submitPayment?.Error == false)
                                     {
                                         //最终确认下单
@@ -575,7 +578,7 @@ namespace AixDutyFreeCrawler.App.Manage
         /// </summary>
         /// <returns></returns>
         public async Task<PlaceOrderResponse?> PlaceOrderAsync()
-        {
+        { 
             if (_httpClient == null)
             {
                 throw new Exception("_httpClient未初始化");

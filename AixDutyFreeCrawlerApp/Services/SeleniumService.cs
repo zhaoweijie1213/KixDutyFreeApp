@@ -189,7 +189,7 @@ namespace AixDutyFreeCrawler.App.Services
             try
             {
                 // 等待页面加载完成
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
                 wait.Until(d =>
                 {
                     return ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete");
@@ -348,16 +348,16 @@ namespace AixDutyFreeCrawler.App.Services
             {
                 logger.LogWarning("TaskStartAsync:{Message}", e.Message);
             }
-            //同意网站cookie
-            try
-            {
-                var trustCookie = driver.FindElement(By.Id("onetrust-accept-btn-handler"));
-                trustCookie.Click();
-            }
-            catch (NoSuchElementException e)
-            {
-                logger.LogWarning("TaskStartAsync:{Message}", e.Message);
-            }
+            ////同意网站cookie
+            //try
+            //{
+            //    var trustCookie = driver.FindElement(By.Id("onetrust-accept-btn-handler"));
+            //    trustCookie.Click();
+            //}
+            //catch (NoSuchElementException e)
+            //{
+            //    logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+            //}
 
             return Task.CompletedTask;
         }

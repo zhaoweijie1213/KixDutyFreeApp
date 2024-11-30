@@ -1,4 +1,5 @@
 ﻿using AixDutyFreeCrawler.App.Models.Config;
+using AixDutyFreeCrawler.App.Models.Entity;
 using AixDutyFreeCrawler.App.Repository.Interface;
 using SqlSugar;
 
@@ -8,7 +9,7 @@ namespace AixDutyFreeCrawler.App.Repository
     /// 
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class, new()
+    public class BaseRepository<TEntity> where TEntity : class, new()
     {
         /// <summary>
         /// 
@@ -62,11 +63,11 @@ namespace AixDutyFreeCrawler.App.Repository
                 DbType = dbType,
                 IsAutoCloseConnection = true,
                 InitKeyType = InitKeyType.Attribute,
-                  MoreSettings = new ConnMoreSettings()
-                  {
+                MoreSettings = new ConnMoreSettings()
+                {
 
-                      SqliteCodeFirstEnableDefaultValue = true //启用默认值
-                  }
+                    SqliteCodeFirstEnableDefaultValue = true //启用默认值
+                }
             };
             if (!string.IsNullOrEmpty(_connectionString))
             {
@@ -79,7 +80,11 @@ namespace AixDutyFreeCrawler.App.Repository
             }
 
             SqlSugarClient db = new(config);
-            return ConfigDb(db);
+            db = ConfigDb(db);
+            // 自动创建表，如果表不存在
+            db.CodeFirst.InitTables<ProductInfoEntity>();
+            db.CodeFirst.InitTables<ProductMonitorEntity>();
+            return db;
         }
 
         /// <summary>

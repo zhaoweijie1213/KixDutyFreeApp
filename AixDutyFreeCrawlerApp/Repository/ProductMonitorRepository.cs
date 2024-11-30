@@ -3,7 +3,7 @@ using QYQ.Base.Common.IOCExtensions;
 
 namespace AixDutyFreeCrawler.App.Repository
 {
-    public class ProductMonitorRepository(Logger<ProductMonitorRepository> logger, IConfiguration configuration)
+    public class ProductMonitorRepository(ILogger<ProductMonitorRepository> logger, IConfiguration configuration)
         : BaseRepository<ProductMonitorEntity>(logger, configuration.GetConnectionString("DefaultConnection")!), ITransientDependency
     {
         /// <summary>

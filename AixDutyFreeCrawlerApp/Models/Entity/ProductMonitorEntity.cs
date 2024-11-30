@@ -46,6 +46,11 @@ namespace AixDutyFreeCrawler.App.Models.Entity
     public enum OrderSetup
     {
         /// <summary>
+        /// 暂时无货
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// 已将商品添加到购物车
         /// </summary>
         AddedToCart = 1,

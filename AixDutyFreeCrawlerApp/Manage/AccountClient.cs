@@ -260,6 +260,28 @@ namespace AixDutyFreeCrawler.App.Manage
                             // 触发下单逻辑
                             await PlaceOrderAsync(res!.Product!);
                         }
+                        else
+                        {
+                            ProductMonitorEntity productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
+                            if (productMonitor != null)
+                            {
+                                productMonitor.Setup = OrderSetup.None;
+                                productMonitor.UpdateTime = DateTime.Now;
+                                await productMonitorRepository.UpdateAsync(productMonitor);
+                            }
+                            else
+                            {
+                                productMonitor = new ProductMonitorEntity()
+                                {
+                                    ProductId = product.Id,
+                                    Account = Account.Email,
+                                    CreateTime = DateTime.Now,
+                                    UpdateTime = DateTime.Now,
+                                    Setup = OrderSetup.None
+                                };
+                                productMonitor = await productMonitorRepository.InsertAsync(productMonitor);
+                            }
+                        }
                     }
          
                 }

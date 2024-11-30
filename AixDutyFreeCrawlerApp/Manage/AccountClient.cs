@@ -339,6 +339,9 @@ namespace AixDutyFreeCrawler.App.Manage
                                 //判断是否可以下单
                                 if (saveInfo?.AllowCheckout == true)
                                 {
+                                    productMonitor.Setup = OrderSetup.FlightInfoSaved;
+                                    productMonitor.UpdateTime = DateTime.Now;
+                                    await productMonitorRepository.UpdateAsync(productMonitor);
                                     //调用下单逻辑,跳转结算界面
                                     driver.Navigate().GoToUrl("https://www.kixdutyfree.jp" + saveInfo.RedirectUrl);
                                     // 等待页面加载完成
@@ -352,10 +355,16 @@ namespace AixDutyFreeCrawler.App.Manage
                                     var submitPayment = await SubmitPaymentAsync(Account.Email, billingCsrfToken);
                                     if (submitPayment?.Error == false)
                                     {
+                                        productMonitor.Setup = OrderSetup.PaymentSubmitted;
+                                        productMonitor.UpdateTime = DateTime.Now;
+                                        await productMonitorRepository.UpdateAsync(productMonitor);
                                         //最终确认下单
                                         var placeOrder = await PlaceOrderAsync();
                                         if (placeOrder?.Error == false)
                                         {
+                                            productMonitor.Setup = OrderSetup.Completed;
+                                            productMonitor.UpdateTime = DateTime.Now;
+                                            await productMonitorRepository.UpdateAsync(productMonitor);
                                             logger.LogInformation("PlaceOrderAsync.下单成功");
                                         }
                                         else

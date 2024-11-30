@@ -14,7 +14,7 @@ namespace AixDutyFreeCrawler.App.Repository
         /// <returns></returns>
         public Task<ProductMonitorEntity> QueryAsync(string account, string productId)
         {
-            return Db.Queryable<ProductMonitorEntity>().FirstAsync(i => i.Account == account && i.ProductId == productId);
+            return Db.Queryable<ProductMonitorEntity>().OrderByDescending(i => i.UpdateTime).FirstAsync(i => i.Account == account && i.ProductId == productId);
         }
     }
 }

@@ -34,9 +34,52 @@ namespace AixDutyFreeCrawler.App.Manage
         private HttpClient? _httpClient { get; set; }
 
         /// <summary>
+        /// 浏览器实例后备字段
+        /// </summary>
+        private ChromeDriver? _driver;
+
+        private readonly object _driverLock = new object();
+
+        /// <summary>
         /// 浏览器实例
         /// </summary>
-        private ChromeDriver? driver;
+        private ChromeDriver? driver
+        {
+            get
+            {
+                lock (_driverLock)
+                {
+                    return _driver;
+                }
+            }
+            set
+            {
+                lock (_driverLock)
+                {
+                    _driver = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 封装的方法
+        /// </summary>
+        /// <param name="action"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void PerformDriverAction(Action<ChromeDriver> action)
+        {
+            lock (_driverLock)
+            {
+                if (driver != null)
+                {
+                    action(driver);
+                }
+                else
+                {
+                    throw new InvalidOperationException("driver 未初始化");
+                }
+            }
+        }
 
         /// <summary>
         /// 异步令牌
@@ -73,7 +116,8 @@ namespace AixDutyFreeCrawler.App.Manage
                 logger.LogInformation("InitAsync.初始化完成");
                 //设置httpClient Cookie
                 _httpClient = httpClientFactory.CreateClient(account.Email);
-                ConfigureHttpClientWithCookies();
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                //ConfigureHttpClientWithCookies();
             }
             else
             {
@@ -83,35 +127,26 @@ namespace AixDutyFreeCrawler.App.Manage
         }
 
         /// <summary>
-        /// 设置Cookie
-        /// </summary>
-        /// <exception cref="Exception"></exception>
-        private void ConfigureHttpClientWithCookies()
-        {
-            if (driver == null || _httpClient == null)
-            {
-                throw new Exception("driver 或者_httpClient 不能为 null");
-            }
-            SyncCookies();
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-            logger.LogInformation("HttpClient 已配置完成，并同步了浏览器的 Cookie。");
-        }
-
-        /// <summary>
         /// 同步cookie
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void SyncCookies()
+        private string GetCookies()
         {
             if (driver == null || _httpClient == null)
             {
                 throw new Exception("driver 或者_httpClient 不能为 null");
             }
-            // 从 Selenium WebDriver 获取 Cookie
-            var seleniumCookies = driver.Manage().Cookies.AllCookies;
-            // 将 Cookie 转换为字符串
-            var cookieHeader = string.Join("; ", seleniumCookies.Select(c => $"{c.Name}={c.Value}"));
-            _httpClient.DefaultRequestHeaders.Add("Cookie", cookieHeader);
+
+            lock (_driverLock)
+            {
+                // 从 Selenium WebDriver 获取 Cookie
+                var seleniumCookies = driver.Manage().Cookies.AllCookies;
+                // 将 Cookie 转换为字符串
+                var cookieHeader = string.Join("; ", seleniumCookies.Select(c => $"{c.Name}={c.Value}"));
+                //_httpClient.DefaultRequestHeaders.Add("Cookie", cookieHeader);
+                return cookieHeader;
+            }
+      
         }
 
 
@@ -172,7 +207,7 @@ namespace AixDutyFreeCrawler.App.Manage
                 if (!memoryCache.TryGetValue(productAddress, out ProductInfoEntity? product))
                 {
                     product = await productInfoRepository.FindByAddressAsync(productAddress);
-                    if (product == null || product?.UpdateTime <= DateTime.Now.AddDays(-7))
+                    if (product == null)
                     {
                         try
                         {
@@ -181,6 +216,7 @@ namespace AixDutyFreeCrawler.App.Manage
                             string productId = productDetail.GetAttribute("data-pid");
                             if (productId != null)
                             {
+
                                 product = new ProductInfoEntity()
                                 {
                                     Id = productId,
@@ -196,18 +232,14 @@ namespace AixDutyFreeCrawler.App.Manage
                             logger.LogWarning("TaskStartAsync:{Message}", e.Message);
                         }
                     }
-                    //else
-                    //{
-
-                    //}
                     memoryCache.Set(productAddress, product, TimeSpan.FromMinutes(5));
                 }
 
                 if (IsLoginSuccess && !string.IsNullOrEmpty(product?.Id))
                 {
-                    //判断是否已经加入购物车
+                    //查询最新订单,判断是否已经加入购物车
                     var prodicrMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
-                    if (prodicrMonitor != null && prodicrMonitor.Setup == OrderSetup.AddedToCart)
+                    if (prodicrMonitor != null && prodicrMonitor.Setup != OrderSetup.Completed)
                     {
                         logger.LogInformation("{Account}\t{Name}已加入购物车，不需要检测", Account.Email, product.Name);
                         return;
@@ -256,10 +288,31 @@ namespace AixDutyFreeCrawler.App.Manage
                
                 if (!string.IsNullOrEmpty(product.Id))
                 {
+                    //添加到购物车
                     var res = await CartAddProductAsync(product.Id, product.Availability?.MaxOrderQuantity ?? 10);
+             
                     if (res?.Error == false)
                     {
                         logger.LogInformation("PlaceOrderAsync.商品 {BrandName} 加入购物车成功！", product.BrandName);
+                        ProductMonitorEntity productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
+                        if (productMonitor != null)
+                        {
+                            productMonitor.Setup = OrderSetup.AddedToCart;
+                            productMonitor.UpdateTime = DateTime.Now;
+                            await productMonitorRepository.UpdateAsync(productMonitor);
+                        }
+                        else
+                        {
+                            productMonitor = new ProductMonitorEntity()
+                            {
+                                ProductId = product.Id,
+                                Account = Account.Email,
+                                CreateTime = DateTime.Now,
+                                UpdateTime = DateTime.Now,
+                                Setup = OrderSetup.AddedToCart
+                            };
+                            productMonitor = await productMonitorRepository.InsertAsync(productMonitor);
+                        }
                         //跳转到购物车页面
                         await seleniumService.ToCartAsync(driver);
                         var date = configuration.GetSection("FlightDate").Get<DateTime>();
@@ -391,7 +444,10 @@ namespace AixDutyFreeCrawler.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             ProductVariationResponse? data = null;
-            var response = await _httpClient.GetAsync(Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
+            var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("ProductVariationAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -419,6 +475,8 @@ namespace AixDutyFreeCrawler.App.Manage
                 new("pid", productId),
                 new("quantity", quantity.ToString())
             };
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
             // 使用 FormUrlEncodedContent 设置请求内容
             request.Content = new FormUrlEncodedContent(formData);
             var response = await _httpClient.SendAsync(request);
@@ -442,6 +500,8 @@ namespace AixDutyFreeCrawler.App.Manage
             }
             CartUpdateQuantityResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Get, Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
@@ -466,6 +526,8 @@ namespace AixDutyFreeCrawler.App.Manage
             }
             FlightGetInfoResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Get, Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
@@ -516,6 +578,8 @@ namespace AixDutyFreeCrawler.App.Manage
             {
                 Content = new FormUrlEncodedContent(formData)
             };
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
@@ -563,6 +627,8 @@ namespace AixDutyFreeCrawler.App.Manage
             {
                 Content = new FormUrlEncodedContent(formData)
             };
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("SubmitPaymentAsync.响应:{content}", content);
@@ -584,7 +650,10 @@ namespace AixDutyFreeCrawler.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             PlaceOrderResponse? data = null;
-            var response = await _httpClient.PostAsync(CheckoutServices.PlaceOrder, null);
+            var request = new HttpRequestMessage(HttpMethod.Post, CheckoutServices.PlaceOrder);
+            request.Headers.Remove("Cookie");
+            request.Headers.Add("Cookie", GetCookies());
+            var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("PlaceOrderAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)

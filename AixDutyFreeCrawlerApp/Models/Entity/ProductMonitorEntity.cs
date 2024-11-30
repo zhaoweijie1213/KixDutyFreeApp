@@ -46,33 +46,28 @@ namespace AixDutyFreeCrawler.App.Models.Entity
     public enum OrderSetup
     {
         /// <summary>
-        /// 初始状态，未开始任何流程
-        /// </summary>
-        None = 0,
-
-        /// <summary>
-        /// 已登录
-        /// </summary>
-        LoggedIn = 1,
-
-        /// <summary>
         /// 已将商品添加到购物车
         /// </summary>
-        AddedToCart = 2,
+        AddedToCart = 1,
 
         /// <summary>
         /// 已保存航班信息
         /// </summary>
-        FlightInfoSaved = 3,
+        FlightInfoSaved = 2,
 
         /// <summary>
         /// 已提交支付信息
         /// </summary>
-        PaymentSubmitted = 4,
+        PaymentSubmitted = 3,
 
         /// <summary>
         /// 订单已下单
         /// </summary>
-        OrderPlaced = 5
+        OrderPlaced = 4,
+
+        /// <summary>
+        /// 订单完成
+        /// </summary>
+        Completed = 5
     }
 }

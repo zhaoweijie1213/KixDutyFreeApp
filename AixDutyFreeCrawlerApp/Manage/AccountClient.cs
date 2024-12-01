@@ -96,12 +96,10 @@ namespace AixDutyFreeCrawler.App.Manage
         /// </summary>
         private bool IsLoginSuccess { get; set; } = false;
 
-
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
+        /// <param name="account"></param>
         /// <returns></returns>
         public async Task<bool> InitAsync(AccountModel account)
         {

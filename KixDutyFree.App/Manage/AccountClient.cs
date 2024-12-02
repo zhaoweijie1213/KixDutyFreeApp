@@ -1,4 +1,5 @@
 ﻿using KixDutyFree.App.Models;
+using KixDutyFree.App.Models.Config;
 using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Repository;
@@ -24,7 +25,7 @@ namespace KixDutyFree.App.Manage
     /// 账号客户端
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IOptionsMonitor<Products> products, IConfiguration configuration, IHttpClientFactory httpClientFactory
-        , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository) : ITransientDependency
+        , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository,IOptionsMonitor<FlightInfoModel> flightInfoModel) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -39,6 +40,11 @@ namespace KixDutyFree.App.Manage
         private ChromeDriver? _driver;
 
         private readonly object _driverLock = new object();
+
+        /// <summary>
+        /// 错误次数
+        /// </summary>
+        private int ErrorCount { get; set; } = 0;
 
         /// <summary>
         /// 浏览器实例
@@ -121,6 +127,8 @@ namespace KixDutyFree.App.Manage
             {
                 logger.LogError("InitAsync:{account}登录失败", account.Email);
             }
+            //开始监控商品
+            await StartMonitoringAsync();
             return IsLoginSuccess;
         }
 
@@ -174,14 +182,38 @@ namespace KixDutyFree.App.Manage
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                foreach (var product in products.CurrentValue.Urls)
+                if (ErrorCount > 10 || driver == null)
                 {
-                    await CheckProductAvailabilityAsync(product, cancellationToken);
+                    await RelodAsync();
+                    break;
+                }
+                else
+                {
+                    foreach (var product in products.CurrentValue.Urls)
+                    {
+                        await CheckProductAvailabilityAsync(product, cancellationToken);
+                    }
                 }
 
+                bool status = await seleniumService.IsLogin(driver);
+                if (!status) 
+                {
+                    await RelodAsync();
+                }
                 // 设置检查间隔
                 await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
+        }
+
+        /// <summary>
+        /// 重置客户端
+        /// </summary>
+        /// <returns></returns>
+        public async Task RelodAsync()
+        {
+            logger.LogInformation("MonitorProductsAsync.重新初始化客户端: {Email}", Account.Email);
+            await QuitAsync();
+            await InitAsync(Account);
         }
 
 
@@ -195,6 +227,7 @@ namespace KixDutyFree.App.Manage
         {
             try
             {
+                if (cancellationToken.IsCancellationRequested) return;
                 if (driver == null)
                 {
                     throw new Exception("driver不能为null");
@@ -239,7 +272,7 @@ namespace KixDutyFree.App.Manage
                     var prodicrMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
                     if (prodicrMonitor != null && prodicrMonitor.Setup != OrderSetup.Completed)
                     {
-                        logger.LogInformation("{Account}\t{Name}已加入购物车，不需要检测", Account.Email, product.Name);
+                        logger.LogInformation("{Account}\t{Name}已有订单,订单状态{Setup}", Account.Email, product.Name, prodicrMonitor.Setup.ToString());
                         return;
                     }
                     else
@@ -307,17 +340,17 @@ namespace KixDutyFree.App.Manage
                 {
                     throw new Exception("driver不能为null");
                 }
-               
+
                 if (!string.IsNullOrEmpty(product.Id))
                 {
                     //添加到购物车
                     var res = await CartAddProductAsync(product.Id, product.Availability?.MaxOrderQuantity ?? 10);
-             
+
                     if (res?.Error == false)
                     {
                         logger.LogInformation("PlaceOrderAsync.商品 {BrandName} 加入购物车成功！", product.BrandName);
                         ProductMonitorEntity productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
-                        if (productMonitor != null)
+                        if (productMonitor != null && productMonitor.Setup != OrderSetup.Completed)
                         {
                             productMonitor.Setup = OrderSetup.AddedToCart;
                             productMonitor.UpdateTime = DateTime.Now;
@@ -337,10 +370,10 @@ namespace KixDutyFree.App.Manage
                         }
                         //跳转到购物车页面
                         await seleniumService.ToCartAsync(driver);
-                        var date = configuration.GetSection("FlightDate").Get<DateTime>();
+                        var date = flightInfoModel.CurrentValue.Date;
                         //获取航班信息
-                        var flightInfo = await GetFlightDataAsync(date);
-                        if (flightInfo != null) 
+                        var flightInfo = await GetFlightDataAsync(flightInfoModel.CurrentValue.Date);
+                        if (flightInfo != null)
                         {
                             try
                             {
@@ -348,14 +381,19 @@ namespace KixDutyFree.App.Manage
                                 var csrfTokenElement = driver.FindElement(By.Name("csrf_token"));
                                 // 获取元素的 value 属性值
                                 string csrfToken = csrfTokenElement.GetAttribute("value");
+
+                                var flight = flightInfo.First(i => i.AirlineName.Contains(flightInfoModel.CurrentValue.AirlineName) && i.Flightno2 == flightInfoModel.CurrentValue.FlightNo);
+
+                                //string airlinesNo = flightInfo.First().Flightno1;
+                                //string flightNo= flightInfo.First().Flightno2;
                                 //保存航班信息
                                 var saveInfo = await FlightSaveInfoAsync(
                                     csrfToken: csrfToken,
                                     calendarStartDate: DateTime.Now.ToString("yyyy/MM/dd"),
                                     departureDate: date.ToString("yyyy/MM/dd"),
                                     departureTime: date.ToString("HH:mm"),
-                                    airlinesNo: flightInfo.First().Flightno1,
-                                    flightNo: flightInfo.First().Flightno2,
+                                    airlinesNo: flight.Flightno1,
+                                    flightNo: flight.Flightno2,
                                     otherflightno: "",
                                     connectingFlight: "no");
                                 //判断是否可以下单
@@ -384,7 +422,7 @@ namespace KixDutyFree.App.Manage
                                         var placeOrder = await PlaceOrderAsync();
                                         if (placeOrder?.Error == false)
                                         {
-                                            productMonitor.Setup = OrderSetup.Completed;
+                                            productMonitor.Setup = OrderSetup.OrderPlaced;
                                             productMonitor.UpdateTime = DateTime.Now;
                                             productMonitor.OrderId = placeOrder.OrderID;
                                             productMonitor.OrderToken = placeOrder.OrderToken;
@@ -426,6 +464,7 @@ namespace KixDutyFree.App.Manage
             }
             catch (Exception ex)
             {
+                ErrorCount++;
                 // 记录异常日志
                 logger.BaseErrorLog("PlaceOrderAsync", ex);
             }
@@ -461,6 +500,7 @@ namespace KixDutyFree.App.Manage
             // 停止监控
             StopMonitoring();
             driver?.Quit();
+            logger.LogInformation("QuitAsync.停止实例:{email}", Account.Email);
             return Task.CompletedTask;
         }
 

@@ -1,4 +1,5 @@
 ﻿using KixDutyFree.App.Models;
+using KixDutyFree.App.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QYQ.Base.Common.IOCExtensions;
@@ -6,7 +7,7 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.App.Manage
 {
-    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, IOptionsMonitor<List<AccountModel>> accounts) : ISingletonDependency
+    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, IOptionsMonitor<List<AccountModel>> accounts, SeleniumService seleniumService) : ISingletonDependency
     {
         /// <summary>
         /// 
@@ -31,16 +32,8 @@ namespace KixDutyFree.App.Manage
                     {
                         try
                         {
-                            var status = await accountClient.InitAsync(account);
-                            if (!status)
-                            {
-                                //账号登录失败
-                            }
-                            else
-                            {
-                                //开始监控商品
-                                await accountClient.StartMonitoringAsync();
-                            }
+                            await accountClient.InitAsync(account);
+               
                         }
                         catch (Exception ex)
                         {
@@ -60,6 +53,7 @@ namespace KixDutyFree.App.Manage
 
 
         }
+
 
         /// <summary>
         /// 停止

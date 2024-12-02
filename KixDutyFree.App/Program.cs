@@ -4,6 +4,7 @@ using QYQ.Base.Common.IOCExtensions;
 using KixDutyFree.App.Models;
 using Quartz;
 using Quartz.AspNetCore;
+using KixDutyFree.App.Models.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddMultipleService("^KixDutyFree");
 builder.Services.AddHostedService<WorkerService>();
 builder.Services.Configure<List<AccountModel>>(builder.Configuration.GetSection("Accounts"));
 builder.Services.Configure<Products>(builder.Configuration.GetSection("Products"));
+builder.Services.Configure<FlightInfoModel>(builder.Configuration.GetSection("FlightInfo"));
 builder.Services.AddQuartz().AddQuartzServer(options =>
 {
     // when shutting down we want jobs to complete gracefully

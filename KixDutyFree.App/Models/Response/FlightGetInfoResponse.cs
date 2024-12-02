@@ -55,6 +55,6 @@
         /// <summary>
         /// 
         /// </summary>
-        public string? AirlineName { get; set; }
+        public string AirlineName { get; set; } = string.Empty;
     }
 }

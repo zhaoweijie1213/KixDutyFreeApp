@@ -249,6 +249,7 @@ namespace KixDutyFree.App.Manage
                         if (res != null && string.IsNullOrEmpty(product.Name))
                         {
                             product.Name = res.Product?.ProductName ?? "";
+                            product.Image = res.Product?.Images?.Large?.FirstOrDefault()?.AbsUrl ?? "";
                             await productInfoRepository.UpdateAsync(product);
                         }
                         bool isAvailable = res?.Product?.Availability?.Available ?? false;
@@ -260,6 +261,7 @@ namespace KixDutyFree.App.Manage
                         }
                         else
                         {
+                            logger.LogInformation("账号:{Account}\t商品:{Name}不可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                             ProductMonitorEntity productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
                             if (productMonitor != null)
                             {
@@ -384,6 +386,8 @@ namespace KixDutyFree.App.Manage
                                         {
                                             productMonitor.Setup = OrderSetup.Completed;
                                             productMonitor.UpdateTime = DateTime.Now;
+                                            productMonitor.OrderId = placeOrder.OrderID;
+                                            productMonitor.OrderToken = placeOrder.OrderToken;
                                             await productMonitorRepository.UpdateAsync(productMonitor);
                                             logger.LogInformation("PlaceOrderAsync.下单成功");
                                         }

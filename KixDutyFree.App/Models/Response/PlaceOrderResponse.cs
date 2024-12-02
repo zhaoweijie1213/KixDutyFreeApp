@@ -28,12 +28,12 @@
         /// <summary>
         /// 
         /// </summary>
-        public string? OrderID { get; set; }
+        public string OrderID { get; set; } = string.Empty;
 
         /// <summary>
         /// 
         /// </summary>
-        public string? OrderToken { get; set; }
+        public string OrderToken { get; set; } = string.Empty;
 
         /// <summary>
         /// 

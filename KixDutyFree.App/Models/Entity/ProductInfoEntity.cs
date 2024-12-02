@@ -22,6 +22,11 @@ namespace KixDutyFree.App.Models.Entity
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// 图片
+        /// </summary>
+        public string Image { get; set; } = string.Empty;
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }

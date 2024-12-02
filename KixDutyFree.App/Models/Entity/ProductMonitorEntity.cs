@@ -25,6 +25,16 @@ namespace KixDutyFree.App.Models.Entity
         public string ProductId { get; set; } = string.Empty;
 
         /// <summary>
+        /// 订单Id
+        /// </summary>
+        public string OrderId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string OrderToken { get; set; } = string.Empty;
+
+        /// <summary>
         /// 订单当前的步骤状态
         /// </summary>
         public OrderSetup Setup { get; set; }

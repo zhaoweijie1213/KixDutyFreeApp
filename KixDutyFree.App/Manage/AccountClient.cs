@@ -90,7 +90,12 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 异步令牌
         /// </summary>
-        private readonly CancellationTokenSource _cancellationTokenSource = new();
+        private CancellationTokenSource _cancellationTokenSource { get; set; } = new();
+
+        ///// <summary>
+        ///// 监控状态
+        ///// </summary>
+        //private bool MonitorStatus { get; set; } = false;
 
         /// <summary>
         /// 
@@ -162,6 +167,14 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         public Task StartMonitoringAsync()
         {
+            //MonitorStatus = true;
+
+            // 如果已有取消令牌源，先取消并释放
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+
+            // 创建新的取消令牌源
+            _cancellationTokenSource = new CancellationTokenSource();
             return Task.Run(() => MonitorProductsAsync(_cancellationTokenSource.Token));
         }
 
@@ -170,7 +183,9 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         public void StopMonitoring()
         {
-            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+            //_cancellationTokenSource = null;
         }
 
         /// <summary>
@@ -180,7 +195,7 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task MonitorProductsAsync(CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 if (ErrorCount > 10 || driver == null)
                 {
@@ -201,7 +216,7 @@ namespace KixDutyFree.App.Manage
                     await RelodAsync();
                 }
                 // 设置检查间隔
-                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
         }
 
@@ -278,7 +293,7 @@ namespace KixDutyFree.App.Manage
                     else
                     {
                         // 检查商品是否有货（需要根据页面元素进行判断）
-                        var res = await ProductVariationAsync(product.Id, 1);
+                        var res = await ProductVariationAsync(product.Id, 1, cancellationToken);
                         if (res != null && string.IsNullOrEmpty(product.Name))
                         {
                             product.Name = res.Product?.ProductName ?? "";
@@ -290,7 +305,7 @@ namespace KixDutyFree.App.Manage
                         {
                             logger.LogInformation("账号:{Account}\t商品:{Name}可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                             // 触发下单逻辑
-                            await PlaceOrderAsync(res!.Product!);
+                            await PlaceOrderAsync(res!.Product!, cancellationToken);
                         }
                         else
                         {
@@ -332,10 +347,11 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        private async Task PlaceOrderAsync(Product product)
+        private async Task PlaceOrderAsync(Product product, CancellationToken cancellationToken)
         {
             try
             {
+                if (cancellationToken.IsCancellationRequested) return;
                 if (driver == null)
                 {
                     throw new Exception("driver不能为null");
@@ -343,8 +359,17 @@ namespace KixDutyFree.App.Manage
 
                 if (!string.IsNullOrEmpty(product.Id))
                 {
+                    int quantity = 0;
+                    if (Account.Quantity >=0)
+                    {
+                        quantity = Account.Quantity;
+                    }
+                    else
+                    {
+                        quantity = product.Availability?.MaxOrderQuantity ?? 1;
+                    }
                     //添加到购物车
-                    var res = await CartAddProductAsync(product.Id, product.Availability?.MaxOrderQuantity ?? 10);
+                    var res = await CartAddProductAsync(product.Id, quantity, cancellationToken);
 
                     if (res?.Error == false)
                     {
@@ -372,7 +397,7 @@ namespace KixDutyFree.App.Manage
                         await seleniumService.ToCartAsync(driver);
                         var date = flightInfoModel.CurrentValue.Date;
                         //获取航班信息
-                        var flightInfo = await GetFlightDataAsync(flightInfoModel.CurrentValue.Date);
+                        var flightInfo = await GetFlightDataAsync(Account.Date, cancellationToken);
                         if (flightInfo != null)
                         {
                             try
@@ -382,7 +407,7 @@ namespace KixDutyFree.App.Manage
                                 // 获取元素的 value 属性值
                                 string csrfToken = csrfTokenElement.GetAttribute("value");
 
-                                var flight = flightInfo.First(i => i.AirlineName.Contains(flightInfoModel.CurrentValue.AirlineName) && i.Flightno2 == flightInfoModel.CurrentValue.FlightNo);
+                                var flight = flightInfo.First(i => i.AirlineName.Contains(Account.AirlineName) && i.Flightno2 == Account.FlightNo);
 
                                 //string airlinesNo = flightInfo.First().Flightno1;
                                 //string flightNo= flightInfo.First().Flightno2;
@@ -395,6 +420,7 @@ namespace KixDutyFree.App.Manage
                                     airlinesNo: flight.Flightno1,
                                     flightNo: flight.Flightno2,
                                     otherflightno: "",
+                                    cancellationToken: cancellationToken,
                                     connectingFlight: "no");
                                 //判断是否可以下单
                                 if (saveInfo?.AllowCheckout == true)
@@ -412,14 +438,14 @@ namespace KixDutyFree.App.Manage
                                     var billingCsrfTokenElement = dwfrm_billing.FindElement(By.Name("csrf_token"));
                                     // 获取元素的 value 属性值
                                     string billingCsrfToken = billingCsrfTokenElement.GetAttribute("value");
-                                    var submitPayment = await SubmitPaymentAsync(Account.Email, billingCsrfToken);
+                                    var submitPayment = await SubmitPaymentAsync(Account.Email, billingCsrfToken, cancellationToken);
                                     if (submitPayment?.Error == false)
                                     {
                                         productMonitor.Setup = OrderSetup.PaymentSubmitted;
                                         productMonitor.UpdateTime = DateTime.Now;
                                         await productMonitorRepository.UpdateAsync(productMonitor);
                                         //最终确认下单
-                                        var placeOrder = await PlaceOrderAsync();
+                                        var placeOrder = await PlaceOrderAsync(cancellationToken);
                                         if (placeOrder?.Error == false)
                                         {
                                             productMonitor.Setup = OrderSetup.OrderPlaced;
@@ -475,13 +501,13 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<List<FlightData>?> GetFlightDataAsync(DateTime date)
+        public async Task<List<FlightData>?> GetFlightDataAsync(DateTime date, CancellationToken cancellationToken)
         {
             string key = $"FlightData_{date:yyyy/MM/dd HH:mm}";
-            if(!memoryCache.TryGetValue(key, out List<FlightData>? data))
+            if (!memoryCache.TryGetValue(key, out List<FlightData>? data))
             {
                 //获取航班信息
-                var flightInfo = await FlightGetInfoAsync(date);
+                var flightInfo = await FlightGetInfoAsync(date, cancellationToken);
                 data = flightInfo?.FlightData;
                 if (data != null)
                 {
@@ -510,7 +536,7 @@ namespace KixDutyFree.App.Manage
         /// 商品数量变化
         /// </summary>
         /// <returns></returns>
-        public async Task<ProductVariationResponse?> ProductVariationAsync(string productId, int quantity)
+        public async Task<ProductVariationResponse?> ProductVariationAsync(string productId, int quantity, CancellationToken cancellationToken)
         {
             if (_httpClient == null)
             {
@@ -520,7 +546,7 @@ namespace KixDutyFree.App.Manage
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", GetCookies());
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("ProductVariationAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -534,7 +560,7 @@ namespace KixDutyFree.App.Manage
         /// 添加到购物车
         /// </summary>
         /// <returns></returns>
-        public async Task<CartAddProductResponse?> CartAddProductAsync(string productId, int quantity)
+        public async Task<CartAddProductResponse?> CartAddProductAsync(string productId, int quantity, CancellationToken cancellationToken)
         {
             if (_httpClient == null)
             {
@@ -552,7 +578,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             // 使用 FormUrlEncodedContent 设置请求内容
             request.Content = new FormUrlEncodedContent(formData);
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -565,7 +591,7 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 修改购物车商品数量
         /// </summary>
-        public async Task<CartUpdateQuantityResponse?> CartUpdateQuantityAsync(string productId, int quantity, string uuid)
+        public async Task<CartUpdateQuantityResponse?> CartUpdateQuantityAsync(string productId, int quantity, string uuid, CancellationToken cancellationToken)
         {
             if (_httpClient == null)
             {
@@ -575,7 +601,7 @@ namespace KixDutyFree.App.Manage
             var request = new HttpRequestMessage(HttpMethod.Get, Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", GetCookies());
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -591,7 +617,7 @@ namespace KixDutyFree.App.Manage
         /// <param name="date">yyyy/MM/dd</param>
         /// <param name="time">HH:mm</param>
         /// <returns></returns>
-        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(DateTime dateTime)
+        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(DateTime dateTime, CancellationToken cancellationToken)
         {
             if (_httpClient == null)
             {
@@ -601,7 +627,7 @@ namespace KixDutyFree.App.Manage
             var request = new HttpRequestMessage(HttpMethod.Get, Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", GetCookies());
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -626,7 +652,7 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         public async Task<FlightSaveInfoResponse?> FlightSaveInfoAsync(string csrfToken, string calendarStartDate, string departureDate, string departureTime, string airlinesNo, string flightNo, string otherflightno
-            , string connectingFlight, string agreeProductLimits = "yes")
+            , string connectingFlight, CancellationToken cancellationToken, string agreeProductLimits = "yes")
         {
             if (_httpClient == null)
             {
@@ -653,7 +679,7 @@ namespace KixDutyFree.App.Manage
             };
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", GetCookies());
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -667,7 +693,7 @@ namespace KixDutyFree.App.Manage
         /// 提交付款信息
         /// </summary>
         /// <returns></returns>
-        public async Task<SubmitPaymentResponse?> SubmitPaymentAsync(string email,string csrfToken)
+        public async Task<SubmitPaymentResponse?> SubmitPaymentAsync(string email,string csrfToken, CancellationToken cancellationToken)
         {
             if (_httpClient == null)
             {
@@ -702,7 +728,7 @@ namespace KixDutyFree.App.Manage
             };
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", GetCookies());
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("SubmitPaymentAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -716,7 +742,7 @@ namespace KixDutyFree.App.Manage
         /// 下单
         /// </summary>
         /// <returns></returns>
-        public async Task<PlaceOrderResponse?> PlaceOrderAsync()
+        public async Task<PlaceOrderResponse?> PlaceOrderAsync(CancellationToken cancellationToken)
         { 
             if (_httpClient == null)
             {
@@ -726,7 +752,7 @@ namespace KixDutyFree.App.Manage
             var request = new HttpRequestMessage(HttpMethod.Post, CheckoutServices.PlaceOrder);
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", GetCookies());
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("PlaceOrderAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)

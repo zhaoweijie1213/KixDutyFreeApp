@@ -106,7 +106,7 @@ namespace KixDutyFree.App.Services
                 {
                     isLogin = true;
                     var nameElement = accountInfo.FindElement(By.ClassName("name"));
-                    logger.LogInformation("登录成功: {name}", nameElement.Text);
+                    logger.LogInformation("已登录: {name}", nameElement.Text);
                 }
             }
             catch (WebDriverTimeoutException)

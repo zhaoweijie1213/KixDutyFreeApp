@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.App.Manage
 {
-    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, IOptionsMonitor<List<AccountModel>> accounts, SeleniumService seleniumService) : ISingletonDependency
+    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage) : ISingletonDependency
     {
         /// <summary>
         /// 
@@ -20,9 +20,11 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task InitClientAsync() 
         {
+            var accounts = await cacheManage.GetAccountAsync();
+            if (accounts == null) return;
             //初始化各个账号的实例
             List<Task> tasks = [];
-            foreach (var account in accounts.CurrentValue)
+            foreach (var account in accounts)
             {
                 var accountClient = serviceProvider.GetService<AccountClient>()!;
                 //tasks.Add(accountClient.InitAsync(account));
@@ -33,7 +35,6 @@ namespace KixDutyFree.App.Manage
                         try
                         {
                             await accountClient.InitAsync(account);
-               
                         }
                         catch (Exception ex)
                         {
@@ -50,8 +51,6 @@ namespace KixDutyFree.App.Manage
                 }
             }
             await Task.WhenAll(tasks);
-
-
         }
 
 

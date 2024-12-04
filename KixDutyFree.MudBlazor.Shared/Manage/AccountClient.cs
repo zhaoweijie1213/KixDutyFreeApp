@@ -5,6 +5,8 @@ using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Repository;
 using KixDutyFree.App.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OpenQA.Selenium;

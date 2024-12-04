@@ -1,4 +1,6 @@
 ﻿using KixDutyFree.App.Models.Entity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using QYQ.Base.Common.IOCExtensions;
 
 namespace KixDutyFree.App.Repository

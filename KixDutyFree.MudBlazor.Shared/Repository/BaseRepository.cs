@@ -1,6 +1,7 @@
 ﻿using KixDutyFree.App.Models.Config;
 using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Repository.Interface;
+using Microsoft.Extensions.Logging;
 using SqlSugar;
 
 namespace KixDutyFree.App.Repository

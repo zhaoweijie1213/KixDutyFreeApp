@@ -1,7 +1,9 @@
 ﻿
 using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using QYQ.Base.Common.Extension;
 using System.Diagnostics;

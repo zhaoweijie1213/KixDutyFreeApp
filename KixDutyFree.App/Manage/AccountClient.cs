@@ -413,8 +413,14 @@ namespace KixDutyFree.App.Manage
                                 // 获取元素的 value 属性值
                                 string csrfToken = csrfTokenElement.GetAttribute("value");
 
-                                var flight = flightInfo.First(i => i.AirlineName.Contains(Account.AirlineName) && i.Flightno2 == Account.FlightNo);
-
+                                var flight = flightInfo.FirstOrDefault(i => i.AirlineName.Contains(Account.AirlineName) && i.Flightno2 == Account.FlightNo);
+                                string otherflightno = "";
+                                if (flight == null)
+                                {
+                                    flight = flightInfo.First(i => i.AirlineName.Contains(Account.AirlineName));
+                                    flight.Flightno2 = "other";
+                                    otherflightno = Account.FlightNo;
+                                }
                                 //string airlinesNo = flightInfo.First().Flightno1;
                                 //string flightNo= flightInfo.First().Flightno2;
                                 //保存航班信息

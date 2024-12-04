@@ -1,0 +1,42 @@
+﻿@page "/products"
+@using KixDutyFree.App.Models.Entity
+@using KixDutyFree.Shared.Services
+@inject ProductService productService
+@inject IJSRuntime JSRuntime
+
+
+<PageTitle>Products</PageTitle>
+
+<MudGrid Justify="Justify.Center">
+
+    @foreach (var product in products)
+    {
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardMedia Image="@product.Image" Height="400" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">@product.Name</MudText>
+                    <MudText Typo="Typo.body2">ID: @product.Id</MudText>
+                    <MudText Typo="Typo.body2">创建日期: @product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OpenProductPage(product.Address))">商品页面</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    public List<ProductInfoEntity> products { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productService.GetProductsAsync();
+    }
+
+    private async Task OpenProductPage(string address)
+    {
+        await JSRuntime.InvokeVoidAsync("open", address, "_blank");
+    }
+}

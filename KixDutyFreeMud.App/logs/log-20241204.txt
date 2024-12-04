@@ -25386,3 +25386,669 @@ System.Threading.Tasks.TaskCanceledException: A task was canceled.
    at KixDutyFree.App.Manage.AccountClient.InitAsync(AccountModel account)
    at KixDutyFree.App.Manage.Manager.<>c__DisplayClass9_1.<<InitClientAsync>b__0>d.MoveNext()
 [2024-12-04 16:33:38.341 INF] KixDutyFree.App.Manage.AccountClient - QuitAsync.停止实例:zhaoweijie1108@qq.com
+[2024-12-04 16:52:48.199 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 16:52:48.224 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 16:52:48.226 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 16:52:48.227 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 16:52:48.228 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 16:52:48.229 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 16:52:48.230 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 16:52:48.231 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 16:52:48.238 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 16:52:48.301 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 16:52:48.323 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 16:52:48.324 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 16:52:48.325 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 16:52:48.326 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 16:52:48.327 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:52:48.775 DBG] MudBlazor.PopoverService - Adding entry for "8535b8ca-f5ec-4834-be72-ef70cb5db022"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:52:48.778 DBG] MudBlazor.PopoverService - Updating entry for "8535b8ca-f5ec-4834-be72-ef70cb5db022"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:52:48.879 DBG] MudBlazor.PopoverService - Removed entry for "8535b8ca-f5ec-4834-be72-ef70cb5db022". 0 total observers after remove.
+[2024-12-04 16:52:49.386 DBG] MudBlazor.PopoverService - Adding entry for "e92f2a16-3f72-4ee8-bd16-8f4f652f0138"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:52:49.387 DBG] MudBlazor.PopoverService - Updating entry for "e92f2a16-3f72-4ee8-bd16-8f4f652f0138"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:52:49.435 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 16:53:15.922 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:53:43.417 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:54:11.523 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:54:17.163 DBG] MudBlazor.PopoverService - Updating entry for "e92f2a16-3f72-4ee8-bd16-8f4f652f0138"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:54:17.187 DBG] MudBlazor.PopoverService - Adding entry for "067214ab-64c2-4e6b-bcfd-ecaf4adf4092"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:54:17.189 DBG] MudBlazor.PopoverService - Updating entry for "067214ab-64c2-4e6b-bcfd-ecaf4adf4092"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:54:17.201 DBG] MudBlazor.PopoverService - Removed entry for "067214ab-64c2-4e6b-bcfd-ecaf4adf4092". 0 total observers after remove.
+[2024-12-04 16:54:21.106 DBG] MudBlazor.PopoverService - Adding entry for "681f1888-a395-4f05-886e-32e788d05285"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:54:21.108 DBG] MudBlazor.PopoverService - Updating entry for "681f1888-a395-4f05-886e-32e788d05285"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:54:21.111 DBG] MudBlazor.PopoverService - Removed entry for "681f1888-a395-4f05-886e-32e788d05285". 0 total observers after remove.
+[2024-12-04 16:54:21.138 DBG] MudBlazor.PopoverService - Removed entry for "e92f2a16-3f72-4ee8-bd16-8f4f652f0138". 0 total observers after remove.
+[2024-12-04 16:54:21.142 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 16:54:21.423 DBG] MudBlazor.PopoverService - Adding entry for "9bb6b201-4210-4730-acfb-a027e176643c"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:54:21.428 DBG] MudBlazor.PopoverService - Updating entry for "9bb6b201-4210-4730-acfb-a027e176643c"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:54:21.442 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 16:54:24.696 DBG] MudBlazor.PopoverService - Removed entry for "9bb6b201-4210-4730-acfb-a027e176643c". 0 total observers after remove.
+[2024-12-04 16:54:24.698 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 16:54:28.349 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 16:54:28.374 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 16:54:28.375 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 16:54:28.376 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 16:54:28.377 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 16:54:28.378 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 16:54:28.379 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 16:54:28.379 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 16:54:28.386 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 16:54:28.448 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 16:54:28.469 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 16:54:28.470 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 16:54:28.471 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 16:54:28.472 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 16:54:28.473 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:54:28.928 DBG] MudBlazor.PopoverService - Adding entry for "45ab6cc2-1d83-4b9a-ba8e-5e55cc4b65ac"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:54:28.932 DBG] MudBlazor.PopoverService - Updating entry for "45ab6cc2-1d83-4b9a-ba8e-5e55cc4b65ac"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:54:29.027 DBG] MudBlazor.PopoverService - Removed entry for "45ab6cc2-1d83-4b9a-ba8e-5e55cc4b65ac". 0 total observers after remove.
+[2024-12-04 16:54:29.284 DBG] MudBlazor.PopoverService - Adding entry for "8a61fe87-26a6-48cf-a887-6d90af64c1bf"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 16:54:29.287 DBG] MudBlazor.PopoverService - Updating entry for "8a61fe87-26a6-48cf-a887-6d90af64c1bf"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 16:54:29.334 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 16:54:54.342 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:55:23.427 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:55:48.179 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:56:12.084 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:56:35.438 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:56:59.906 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:57:25.397 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:57:49.058 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 16:58:05.826 INF] Microsoft.Hosting.Lifetime - Application is shutting down...
+[2024-12-04 16:58:05.832 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED shutting down.
+[2024-12-04 16:58:05.834 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED paused.
+[2024-12-04 16:58:05.836 DBG] Quartz.Simpl.TaskSchedulingThreadPool - Shutting down threadpool...
+[2024-12-04 16:58:05.837 DBG] Quartz.Simpl.TaskSchedulingThreadPool - Waiting for 0 threads to complete.
+[2024-12-04 16:58:05.838 DBG] Quartz.Simpl.TaskSchedulingThreadPool - No executing jobs remaining, all threads stopped.
+[2024-12-04 16:58:05.838 DBG] Quartz.Simpl.TaskSchedulingThreadPool - Shutdown of threadpool complete.
+[2024-12-04 16:58:05.840 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED Shutdown complete.
+[2024-12-04 17:02:50.960 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:02:50.986 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:02:50.986 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:02:50.987 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:02:50.988 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:02:50.989 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:02:50.990 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:02:50.991 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:02:50.998 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:02:51.060 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:02:51.083 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:02:51.084 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:02:51.084 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:02:51.086 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:02:51.087 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:02:51.561 DBG] MudBlazor.PopoverService - Adding entry for "468aca4f-d3fa-43de-8f8d-fcf276495d8b"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:02:51.564 DBG] MudBlazor.PopoverService - Updating entry for "468aca4f-d3fa-43de-8f8d-fcf276495d8b"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:02:51.663 DBG] MudBlazor.PopoverService - Removed entry for "468aca4f-d3fa-43de-8f8d-fcf276495d8b". 0 total observers after remove.
+[2024-12-04 17:02:51.900 DBG] MudBlazor.PopoverService - Adding entry for "66e5310d-9607-48ce-8498-8ff77de99644"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:02:51.902 DBG] MudBlazor.PopoverService - Updating entry for "66e5310d-9607-48ce-8498-8ff77de99644"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:02:51.947 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:03:20.679 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:03:33.274 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:03:33.299 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:03:33.301 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:03:33.302 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:03:33.303 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:03:33.304 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:03:33.305 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:03:33.305 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:03:33.312 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:03:33.374 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:03:33.395 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:03:33.396 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:03:33.396 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:03:33.398 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:03:33.399 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:03:34.203 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:03:34.228 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:03:34.229 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:03:34.230 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:03:34.231 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:03:34.232 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:03:34.233 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:03:34.233 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:03:34.240 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:03:34.301 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:03:34.323 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:03:34.325 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:03:34.325 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:03:34.326 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:03:34.327 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:03:34.974 DBG] MudBlazor.PopoverService - Adding entry for "fbfc49f7-a2c5-442f-b1c7-b9f8bd6409da"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:03:34.977 DBG] MudBlazor.PopoverService - Updating entry for "fbfc49f7-a2c5-442f-b1c7-b9f8bd6409da"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:03:35.074 DBG] MudBlazor.PopoverService - Removed entry for "fbfc49f7-a2c5-442f-b1c7-b9f8bd6409da". 0 total observers after remove.
+[2024-12-04 17:03:35.308 DBG] MudBlazor.PopoverService - Adding entry for "f5817e36-90b3-4a85-8d72-b84494c65a15"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:03:35.313 DBG] MudBlazor.PopoverService - Updating entry for "f5817e36-90b3-4a85-8d72-b84494c65a15"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:03:35.368 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:03:59.215 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:04:17.312 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:04:17.338 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:04:17.339 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:04:17.340 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:04:17.341 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:04:17.342 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:04:17.343 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:04:17.344 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:04:17.350 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:04:17.412 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:04:17.433 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:04:17.436 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:04:17.437 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:04:17.437 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:04:17.439 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:04:17.831 DBG] MudBlazor.PopoverService - Adding entry for "3cba9fc0-f688-4294-aa55-c4419119911f"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:04:17.835 DBG] MudBlazor.PopoverService - Updating entry for "3cba9fc0-f688-4294-aa55-c4419119911f"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:04:17.931 DBG] MudBlazor.PopoverService - Removed entry for "3cba9fc0-f688-4294-aa55-c4419119911f". 0 total observers after remove.
+[2024-12-04 17:04:18.170 DBG] MudBlazor.PopoverService - Adding entry for "bd6a5095-f4e2-4805-ae42-9b6f9da9ecf0"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:04:18.172 DBG] MudBlazor.PopoverService - Updating entry for "bd6a5095-f4e2-4805-ae42-9b6f9da9ecf0"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:04:18.218 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:04:42.188 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:04:42.213 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:04:42.214 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:04:42.215 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:04:42.216 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:04:42.217 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:04:42.218 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:04:42.219 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:04:42.226 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:04:42.288 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:04:42.309 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:04:42.310 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:04:42.311 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:04:42.312 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:04:42.313 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:04:42.886 DBG] MudBlazor.PopoverService - Adding entry for "e017feed-484a-4710-beff-46c2191bb02a"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:04:42.889 DBG] MudBlazor.PopoverService - Updating entry for "e017feed-484a-4710-beff-46c2191bb02a"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:04:42.981 DBG] MudBlazor.PopoverService - Removed entry for "e017feed-484a-4710-beff-46c2191bb02a". 0 total observers after remove.
+[2024-12-04 17:04:43.218 DBG] MudBlazor.PopoverService - Adding entry for "2e016be6-f7a1-4dcd-a350-81e7ebacee22"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:04:43.219 DBG] MudBlazor.PopoverService - Updating entry for "2e016be6-f7a1-4dcd-a350-81e7ebacee22"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:04:43.265 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:05:10.415 DBG] MudBlazor.PopoverService - Removed entry for "2e016be6-f7a1-4dcd-a350-81e7ebacee22". 0 total observers after remove.
+[2024-12-04 17:05:10.425 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 17:05:11.946 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:05:14.459 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:05:14.484 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:05:14.486 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:05:14.486 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:05:14.487 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:05:14.488 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:05:14.489 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:05:14.490 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:05:14.496 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:05:14.558 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:05:14.579 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:05:14.581 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:05:14.582 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:05:14.582 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:05:14.583 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:05:15.104 DBG] MudBlazor.PopoverService - Adding entry for "ba53b824-9530-41fd-8628-a169a0158d36"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:05:15.107 DBG] MudBlazor.PopoverService - Updating entry for "ba53b824-9530-41fd-8628-a169a0158d36"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:05:15.208 DBG] MudBlazor.PopoverService - Removed entry for "ba53b824-9530-41fd-8628-a169a0158d36". 0 total observers after remove.
+[2024-12-04 17:05:15.512 DBG] MudBlazor.PopoverService - Adding entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:05:15.514 DBG] MudBlazor.PopoverService - Updating entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:05:15.561 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:05:39.937 DBG] MudBlazor.PopoverService - Updating entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:05:39.995 DBG] MudBlazor.PopoverService - Adding entry for "9a39d917-f29b-4e84-8b66-7b5a4be7e9a9"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:05:40.000 DBG] MudBlazor.PopoverService - Updating entry for "9a39d917-f29b-4e84-8b66-7b5a4be7e9a9"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:05:40.010 DBG] MudBlazor.PopoverService - Removed entry for "9a39d917-f29b-4e84-8b66-7b5a4be7e9a9". 0 total observers after remove.
+[2024-12-04 17:05:43.197 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:05:45.546 DBG] MudBlazor.PopoverService - Updating entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:05:45.562 DBG] MudBlazor.PopoverService - Adding entry for "78458ebb-4093-426e-8b4e-d1bb324d214f"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:05:45.564 DBG] MudBlazor.PopoverService - Updating entry for "78458ebb-4093-426e-8b4e-d1bb324d214f"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:05:45.570 DBG] MudBlazor.PopoverService - Removed entry for "78458ebb-4093-426e-8b4e-d1bb324d214f". 0 total observers after remove.
+[2024-12-04 17:06:10.146 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:06:37.511 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:06:52.002 DBG] MudBlazor.PopoverService - Updating entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:06:52.018 DBG] MudBlazor.PopoverService - Adding entry for "eecb423c-57be-45b1-a920-884af8ecf5a4"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:06:52.020 DBG] MudBlazor.PopoverService - Updating entry for "eecb423c-57be-45b1-a920-884af8ecf5a4"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:06:52.026 DBG] MudBlazor.PopoverService - Removed entry for "eecb423c-57be-45b1-a920-884af8ecf5a4". 0 total observers after remove.
+[2024-12-04 17:07:05.546 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:07:32.993 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:07:58.816 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:08:25.367 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:08:52.863 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:09:22.578 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:09:46.182 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:10:00.020 DBG] MudBlazor.KeyInterceptorService - Adding entry for select67r55zur/MudBlazor.KeyObserver. 1 total observers after add.
+[2024-12-04 17:10:00.022 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectsqkt2anu/MudBlazor.KeyObserver. 2 total observers after add.
+[2024-12-04 17:10:00.933 DBG] MudBlazor.KeyInterceptorService - Removed entry for select67r55zur. 1 total observers after remove.
+[2024-12-04 17:10:00.938 DBG] MudBlazor.KeyInterceptorService - Removed entry for selectsqkt2anu. 0 total observers after remove.
+[2024-12-04 17:10:04.489 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectue3zhpsr/MudBlazor.KeyObserver. 1 total observers after add.
+[2024-12-04 17:10:04.490 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectzdp0x78d/MudBlazor.KeyObserver. 2 total observers after add.
+[2024-12-04 17:10:14.086 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:10:43.746 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:11:09.704 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:11:33.409 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:11:57.996 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:12:26.333 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:12:51.745 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:13:15.008 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:13:40.617 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:14:04.945 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:14:32.154 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:14:59.046 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:15:25.465 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:15:53.549 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:16:16.987 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:16:45.609 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:17:15.184 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:17:38.198 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:18:03.799 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:18:28.085 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:18:52.126 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:19:15.878 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:19:41.410 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:20:06.570 DBG] MudBlazor.KeyInterceptorService - Removed entry for selectue3zhpsr. 1 total observers after remove.
+[2024-12-04 17:20:06.572 DBG] MudBlazor.KeyInterceptorService - Removed entry for selectzdp0x78d. 0 total observers after remove.
+[2024-12-04 17:20:07.794 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:20:10.001 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectif8kj0ai/MudBlazor.KeyObserver. 1 total observers after add.
+[2024-12-04 17:20:10.003 DBG] MudBlazor.KeyInterceptorService - Adding entry for selecttne7dj7i/MudBlazor.KeyObserver. 2 total observers after add.
+[2024-12-04 17:20:31.888 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:20:58.006 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:21:22.799 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:21:51.925 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:22:20.393 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:22:44.517 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:23:12.455 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:23:38.948 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:24:02.283 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:24:31.843 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:24:57.586 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:25:23.732 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:25:50.821 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:26:14.135 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:26:37.548 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:27:03.422 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:27:28.744 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:27:55.186 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:28:19.787 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:28:48.513 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:29:14.262 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:29:40.745 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:30:08.939 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:30:32.149 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:30:58.750 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:31:25.770 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:31:50.641 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:32:14.226 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:32:36.227 DBG] MudBlazor.PopoverService - Updating entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:32:36.248 DBG] MudBlazor.PopoverService - Adding entry for "508a5a2a-6a9b-4d47-8083-226ca13bc757"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:32:36.250 DBG] MudBlazor.PopoverService - Updating entry for "508a5a2a-6a9b-4d47-8083-226ca13bc757"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:32:36.767 DBG] MudBlazor.PopoverService - Removed entry for "508a5a2a-6a9b-4d47-8083-226ca13bc757". 0 total observers after remove.
+[2024-12-04 17:32:38.316 DBG] MudBlazor.PopoverService - Removed entry for "420dfa36-ccb0-49a9-a4cd-395b774bc984". 0 total observers after remove.
+[2024-12-04 17:32:38.321 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 17:32:38.323 DBG] MudBlazor.KeyInterceptorService - Removed entry for selecttne7dj7i. 1 total observers after remove.
+[2024-12-04 17:32:38.324 DBG] MudBlazor.KeyInterceptorService - Removed entry for selectif8kj0ai. 0 total observers after remove.
+[2024-12-04 17:32:41.361 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:32:43.712 DBG] MudBlazor.PopoverService - Adding entry for "ae9d26d1-8305-479a-92ec-59a57d5f923c"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:32:43.714 DBG] MudBlazor.PopoverService - Updating entry for "ae9d26d1-8305-479a-92ec-59a57d5f923c"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:32:44.234 DBG] MudBlazor.PopoverService - Removed entry for "ae9d26d1-8305-479a-92ec-59a57d5f923c". 0 total observers after remove.
+[2024-12-04 17:32:44.464 DBG] MudBlazor.PopoverService - Adding entry for "394cdaa5-f6a3-4144-ac25-e527022f7470"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:32:44.465 DBG] MudBlazor.PopoverService - Updating entry for "394cdaa5-f6a3-4144-ac25-e527022f7470"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:32:44.478 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:32:44.976 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectf3x0kvr2/MudBlazor.KeyObserver. 1 total observers after add.
+[2024-12-04 17:32:44.978 DBG] MudBlazor.KeyInterceptorService - Adding entry for selecttlrrsoak/MudBlazor.KeyObserver. 2 total observers after add.
+[2024-12-04 17:33:09.748 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:33:26.623 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:33:26.649 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:33:26.650 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:33:26.651 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:33:26.651 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:33:26.652 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:33:26.653 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:33:26.654 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:33:26.660 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:33:26.723 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:33:26.746 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:33:26.747 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:33:26.748 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:33:26.749 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:33:26.750 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:33:27.006 DBG] MudBlazor.PopoverService - Adding entry for "789bf063-9ba8-48ad-9a40-72bf09270663"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:33:27.009 DBG] MudBlazor.PopoverService - Updating entry for "789bf063-9ba8-48ad-9a40-72bf09270663"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:33:27.765 DBG] MudBlazor.PopoverService - Removed entry for "789bf063-9ba8-48ad-9a40-72bf09270663". 0 total observers after remove.
+[2024-12-04 17:33:28.020 DBG] MudBlazor.PopoverService - Adding entry for "33864f20-6c85-4e12-b366-23d5738a4661"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:33:28.022 DBG] MudBlazor.PopoverService - Updating entry for "33864f20-6c85-4e12-b366-23d5738a4661"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:33:28.067 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:33:28.553 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectv0rrdzdp/MudBlazor.KeyObserver. 1 total observers after add.
+[2024-12-04 17:33:28.556 DBG] MudBlazor.KeyInterceptorService - Adding entry for selectb2nmirv5/MudBlazor.KeyObserver. 2 total observers after add.
+[2024-12-04 17:33:29.477 DBG] MudBlazor.KeyInterceptorService - Removed entry for selectv0rrdzdp. 1 total observers after remove.
+[2024-12-04 17:33:29.482 DBG] MudBlazor.KeyInterceptorService - Removed entry for selectb2nmirv5. 0 total observers after remove.
+[2024-12-04 17:33:52.499 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:34:19.911 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:34:43.286 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:35:12.258 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:35:37.388 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:36:03.316 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:36:30.649 DBG] MudBlazor.PopoverService - Updating entry for "33864f20-6c85-4e12-b366-23d5738a4661"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:36:30.671 DBG] MudBlazor.PopoverService - Adding entry for "5def7c5c-a1db-4a3c-9e9d-086202115efc"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:36:30.678 DBG] MudBlazor.PopoverService - Updating entry for "5def7c5c-a1db-4a3c-9e9d-086202115efc"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:36:30.687 DBG] MudBlazor.PopoverService - Removed entry for "5def7c5c-a1db-4a3c-9e9d-086202115efc". 0 total observers after remove.
+[2024-12-04 17:36:31.866 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:36:57.500 DBG] MudBlazor.PopoverService - Updating entry for "33864f20-6c85-4e12-b366-23d5738a4661"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:36:57.519 DBG] MudBlazor.PopoverService - Adding entry for "e36bcbbf-936a-44c7-8e0d-fb637eb31e26"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:36:57.521 DBG] MudBlazor.PopoverService - Updating entry for "e36bcbbf-936a-44c7-8e0d-fb637eb31e26"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:36:57.527 DBG] MudBlazor.PopoverService - Removed entry for "e36bcbbf-936a-44c7-8e0d-fb637eb31e26". 0 total observers after remove.
+[2024-12-04 17:36:58.969 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:37:08.869 DBG] MudBlazor.PopoverService - Updating entry for "33864f20-6c85-4e12-b366-23d5738a4661"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:37:08.883 DBG] MudBlazor.PopoverService - Adding entry for "9a0e3bd8-e453-44c3-be4b-aff7e044f343"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:37:08.885 DBG] MudBlazor.PopoverService - Updating entry for "9a0e3bd8-e453-44c3-be4b-aff7e044f343"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:37:08.890 DBG] MudBlazor.PopoverService - Removed entry for "9a0e3bd8-e453-44c3-be4b-aff7e044f343". 0 total observers after remove.
+[2024-12-04 17:37:17.922 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:37:17.949 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:37:17.950 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:37:17.951 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:37:17.952 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:37:17.953 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:37:17.954 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:37:17.956 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:37:17.963 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:37:18.028 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:37:18.050 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:37:18.051 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:37:18.052 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:37:18.053 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:37:18.054 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:37:18.483 DBG] MudBlazor.PopoverService - Adding entry for "6243a575-6c4b-4a48-9ae9-818eeec75d9f"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:37:18.486 DBG] MudBlazor.PopoverService - Updating entry for "6243a575-6c4b-4a48-9ae9-818eeec75d9f"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:37:18.580 DBG] MudBlazor.PopoverService - Removed entry for "6243a575-6c4b-4a48-9ae9-818eeec75d9f". 0 total observers after remove.
+[2024-12-04 17:37:18.815 DBG] MudBlazor.PopoverService - Adding entry for "92f72bbd-7d79-466b-a57c-41b87b963f26"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:37:18.817 DBG] MudBlazor.PopoverService - Updating entry for "92f72bbd-7d79-466b-a57c-41b87b963f26"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:37:18.862 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:37:42.363 DBG] MudBlazor.PopoverService - Updating entry for "92f72bbd-7d79-466b-a57c-41b87b963f26"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:37:42.389 DBG] MudBlazor.PopoverService - Adding entry for "decda342-981a-4f6d-8438-dd887c030d12"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:37:42.391 DBG] MudBlazor.PopoverService - Updating entry for "decda342-981a-4f6d-8438-dd887c030d12"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:37:42.401 DBG] MudBlazor.PopoverService - Removed entry for "decda342-981a-4f6d-8438-dd887c030d12". 0 total observers after remove.
+[2024-12-04 17:37:44.183 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:38:11.010 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:38:37.657 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:39:05.672 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:39:26.379 DBG] MudBlazor.PopoverService - Updating entry for "92f72bbd-7d79-466b-a57c-41b87b963f26"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:39:26.400 DBG] MudBlazor.PopoverService - Adding entry for "36baa078-e6cb-45b6-9f07-41eced8a5f21"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:39:26.401 DBG] MudBlazor.PopoverService - Updating entry for "36baa078-e6cb-45b6-9f07-41eced8a5f21"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:39:26.407 DBG] MudBlazor.PopoverService - Removed entry for "36baa078-e6cb-45b6-9f07-41eced8a5f21". 0 total observers after remove.
+[2024-12-04 17:39:35.127 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:39:39.565 DBG] MudBlazor.PopoverService - Adding entry for "39e2c701-f003-4be2-9e3c-4bb10ec00b4a"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:39:39.567 DBG] MudBlazor.PopoverService - Updating entry for "39e2c701-f003-4be2-9e3c-4bb10ec00b4a"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:39:39.570 DBG] MudBlazor.PopoverService - Removed entry for "39e2c701-f003-4be2-9e3c-4bb10ec00b4a". 0 total observers after remove.
+[2024-12-04 17:39:39.594 DBG] MudBlazor.PopoverService - Removed entry for "92f72bbd-7d79-466b-a57c-41b87b963f26". 0 total observers after remove.
+[2024-12-04 17:39:39.598 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 17:39:39.864 DBG] MudBlazor.PopoverService - Adding entry for "25ffd6f6-4239-4140-8fd5-b5c53a9f36b8"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:39:39.865 DBG] MudBlazor.PopoverService - Updating entry for "25ffd6f6-4239-4140-8fd5-b5c53a9f36b8"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:39:39.878 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:39:47.187 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:39:47.213 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:39:47.214 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:39:47.215 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:39:47.216 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:39:47.217 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:39:47.218 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:39:47.219 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:39:47.226 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:39:47.292 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:39:47.313 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:39:47.314 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:39:47.316 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:39:47.316 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:39:47.317 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:39:47.758 DBG] MudBlazor.PopoverService - Adding entry for "533aad91-afc2-4510-a806-f9a6740f02ad"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:39:47.760 DBG] MudBlazor.PopoverService - Updating entry for "533aad91-afc2-4510-a806-f9a6740f02ad"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:39:47.864 DBG] MudBlazor.PopoverService - Removed entry for "533aad91-afc2-4510-a806-f9a6740f02ad". 0 total observers after remove.
+[2024-12-04 17:39:48.129 DBG] MudBlazor.PopoverService - Adding entry for "0ebce16b-1c54-4471-90e4-cf20d23c810c"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:39:48.131 DBG] MudBlazor.PopoverService - Updating entry for "0ebce16b-1c54-4471-90e4-cf20d23c810c"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:39:48.176 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:40:12.314 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:40:20.262 DBG] MudBlazor.PopoverService - Adding entry for "ac99712a-33e0-4e2a-8b9a-a16636711c2c"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:40:20.263 DBG] MudBlazor.PopoverService - Updating entry for "ac99712a-33e0-4e2a-8b9a-a16636711c2c"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:40:20.269 DBG] MudBlazor.PopoverService - Removed entry for "ac99712a-33e0-4e2a-8b9a-a16636711c2c". 0 total observers after remove.
+[2024-12-04 17:40:20.287 DBG] MudBlazor.PopoverService - Removed entry for "0ebce16b-1c54-4471-90e4-cf20d23c810c". 0 total observers after remove.
+[2024-12-04 17:40:20.293 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 17:40:20.561 DBG] MudBlazor.PopoverService - Adding entry for "113ffa70-abf8-412f-8c7c-363ffb68aeea"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:40:20.563 DBG] MudBlazor.PopoverService - Updating entry for "113ffa70-abf8-412f-8c7c-363ffb68aeea"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:40:20.577 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:40:40.592 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:41:09.400 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:41:34.414 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:41:59.299 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:42:11.378 DBG] MudBlazor.PopoverService - Adding entry for "cebd7925-b645-4f7c-87fd-eda75e33be4a"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:42:11.380 DBG] MudBlazor.PopoverService - Updating entry for "cebd7925-b645-4f7c-87fd-eda75e33be4a"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:42:11.384 DBG] MudBlazor.PopoverService - Removed entry for "cebd7925-b645-4f7c-87fd-eda75e33be4a". 0 total observers after remove.
+[2024-12-04 17:42:11.406 DBG] MudBlazor.PopoverService - Removed entry for "113ffa70-abf8-412f-8c7c-363ffb68aeea". 0 total observers after remove.
+[2024-12-04 17:42:11.408 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 17:42:11.696 DBG] MudBlazor.PopoverService - Adding entry for "085faaa7-2a1d-4030-abd8-1afff4c34a33"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:42:11.698 DBG] MudBlazor.PopoverService - Updating entry for "085faaa7-2a1d-4030-abd8-1afff4c34a33"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:42:11.713 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:42:15.911 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:42:15.936 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:42:15.937 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:42:15.938 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:42:15.939 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:42:15.940 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:42:15.941 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:42:15.942 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:42:15.948 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:42:16.014 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:42:16.036 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:42:16.037 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:42:16.037 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:42:16.039 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:42:16.040 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:42:16.366 DBG] MudBlazor.PopoverService - Adding entry for "10747c94-cbed-4e71-867c-8f699d1d5578"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:42:16.370 DBG] MudBlazor.PopoverService - Updating entry for "10747c94-cbed-4e71-867c-8f699d1d5578"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:42:16.467 DBG] MudBlazor.PopoverService - Removed entry for "10747c94-cbed-4e71-867c-8f699d1d5578". 0 total observers after remove.
+[2024-12-04 17:42:16.686 DBG] MudBlazor.PopoverService - Adding entry for "4da45759-a5b8-48c7-a81c-49e6f8582073"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:42:16.688 DBG] MudBlazor.PopoverService - Updating entry for "4da45759-a5b8-48c7-a81c-49e6f8582073"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:42:16.733 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:42:42.889 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:42:54.039 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:42:54.063 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:42:54.065 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:42:54.065 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:42:54.066 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:42:54.069 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:42:54.070 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:42:54.071 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:42:54.077 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:42:54.139 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:42:54.161 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:42:54.163 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:42:54.164 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:42:54.164 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:42:54.165 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:42:54.496 DBG] MudBlazor.PopoverService - Adding entry for "9d6dca53-f3e2-4dd4-ba31-e5ada2af23cb"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:42:54.499 DBG] MudBlazor.PopoverService - Updating entry for "9d6dca53-f3e2-4dd4-ba31-e5ada2af23cb"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:42:54.597 DBG] MudBlazor.PopoverService - Removed entry for "9d6dca53-f3e2-4dd4-ba31-e5ada2af23cb". 0 total observers after remove.
+[2024-12-04 17:42:54.908 DBG] MudBlazor.PopoverService - Adding entry for "641815ad-f57b-4033-9e4d-c963c55ddad7"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:42:54.909 DBG] MudBlazor.PopoverService - Updating entry for "641815ad-f57b-4033-9e4d-c963c55ddad7"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:42:54.954 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:43:22.037 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:43:45.586 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:43:45.611 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:43:45.612 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:43:45.613 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:43:45.614 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:43:45.615 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:43:45.615 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:43:45.616 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:43:45.622 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:43:45.686 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:43:45.709 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:43:45.710 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:43:45.711 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:43:45.712 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:43:45.713 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:43:46.023 DBG] MudBlazor.PopoverService - Adding entry for "2bc8ff29-605e-4c60-b797-46d662eb065b"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:43:46.026 DBG] MudBlazor.PopoverService - Updating entry for "2bc8ff29-605e-4c60-b797-46d662eb065b"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:43:46.127 DBG] MudBlazor.PopoverService - Removed entry for "2bc8ff29-605e-4c60-b797-46d662eb065b". 0 total observers after remove.
+[2024-12-04 17:43:46.389 DBG] MudBlazor.PopoverService - Adding entry for "7a2861a3-ea63-4d6e-8a32-4a52daaccfd6"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:43:46.391 DBG] MudBlazor.PopoverService - Updating entry for "7a2861a3-ea63-4d6e-8a32-4a52daaccfd6"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:43:46.437 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:44:09.117 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:44:09.141 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:44:09.143 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:44:09.143 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:44:09.145 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:44:09.146 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:44:09.146 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:44:09.147 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:44:09.154 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:44:09.217 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:44:09.238 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:44:09.240 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:44:09.241 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:44:09.241 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:44:09.242 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:44:09.725 DBG] MudBlazor.PopoverService - Adding entry for "50676f43-3299-4bd4-b487-46f838d53e2d"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:44:09.728 DBG] MudBlazor.PopoverService - Updating entry for "50676f43-3299-4bd4-b487-46f838d53e2d"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:44:09.824 DBG] MudBlazor.PopoverService - Removed entry for "50676f43-3299-4bd4-b487-46f838d53e2d". 0 total observers after remove.
+[2024-12-04 17:44:10.127 DBG] MudBlazor.PopoverService - Adding entry for "b3abdbbd-5247-41b7-8b66-f4d4c0585d9b"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:44:10.129 DBG] MudBlazor.PopoverService - Updating entry for "b3abdbbd-5247-41b7-8b66-f4d4c0585d9b"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:44:10.175 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:44:36.496 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:44:49.119 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:44:49.145 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:44:49.146 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:44:49.147 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:44:49.148 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:44:49.149 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:44:49.149 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:44:49.150 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:44:49.156 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:44:49.219 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:44:49.240 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:44:49.241 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:44:49.242 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:44:49.243 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:44:49.244 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:44:49.558 DBG] MudBlazor.PopoverService - Adding entry for "9a2b937b-a6c9-4903-bd8b-ac0d4d37aabf"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:44:49.562 DBG] MudBlazor.PopoverService - Updating entry for "9a2b937b-a6c9-4903-bd8b-ac0d4d37aabf"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:44:49.660 DBG] MudBlazor.PopoverService - Removed entry for "9a2b937b-a6c9-4903-bd8b-ac0d4d37aabf". 0 total observers after remove.
+[2024-12-04 17:44:49.954 DBG] MudBlazor.PopoverService - Adding entry for "c59ccb1c-cea2-46d6-b730-47b6f786d558"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:44:49.955 DBG] MudBlazor.PopoverService - Updating entry for "c59ccb1c-cea2-46d6-b730-47b6f786d558"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:44:50.000 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:45:14.353 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:45:20.690 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:45:20.715 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:45:20.716 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:45:20.717 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:45:20.718 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:45:20.719 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:45:20.720 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:45:20.720 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:45:20.728 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:45:20.789 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:45:20.812 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:45:20.813 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:45:20.813 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:45:20.815 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:45:20.816 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:45:21.186 DBG] MudBlazor.PopoverService - Adding entry for "ec9cc2d6-a842-4ca7-97d8-c78702fb1042"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:45:21.189 DBG] MudBlazor.PopoverService - Updating entry for "ec9cc2d6-a842-4ca7-97d8-c78702fb1042"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:45:21.294 DBG] MudBlazor.PopoverService - Removed entry for "ec9cc2d6-a842-4ca7-97d8-c78702fb1042". 0 total observers after remove.
+[2024-12-04 17:45:21.625 DBG] MudBlazor.PopoverService - Adding entry for "73a2c170-6a26-4a92-aa2f-0095a25af057"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:45:21.627 DBG] MudBlazor.PopoverService - Updating entry for "73a2c170-6a26-4a92-aa2f-0095a25af057"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:45:21.672 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:45:45.481 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:46:13.310 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:46:41.597 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:47:03.265 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 17:47:03.290 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 17:47:03.291 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 17:47:03.292 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 17:47:03.293 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 17:47:03.294 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 17:47:03.295 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 17:47:03.295 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 17:47:03.303 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 17:47:03.365 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 17:47:03.386 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 17:47:03.388 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 17:47:03.389 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 17:47:03.389 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 17:47:03.390 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:47:03.716 DBG] MudBlazor.PopoverService - Adding entry for "11f6a96b-7e34-4efe-aeab-4b3f867df607"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:47:03.720 DBG] MudBlazor.PopoverService - Updating entry for "11f6a96b-7e34-4efe-aeab-4b3f867df607"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:47:03.819 DBG] MudBlazor.PopoverService - Removed entry for "11f6a96b-7e34-4efe-aeab-4b3f867df607". 0 total observers after remove.
+[2024-12-04 17:47:04.095 DBG] MudBlazor.PopoverService - Adding entry for "7c680c66-00e8-48fc-b632-90ee840a0bf2"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 17:47:04.096 DBG] MudBlazor.PopoverService - Updating entry for "7c680c66-00e8-48fc-b632-90ee840a0bf2"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 17:47:04.144 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 17:47:32.020 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:48:01.414 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:48:27.786 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:48:54.087 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:49:20.976 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:49:50.423 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:50:13.452 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:50:37.683 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:51:03.852 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:51:32.299 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:52:01.494 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:52:29.140 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:52:54.364 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:53:23.596 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:53:49.562 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:54:19.201 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:54:47.604 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:55:11.702 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:55:39.219 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:56:07.702 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:56:31.434 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:57:00.763 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:57:30.097 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:57:58.734 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:58:25.796 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:58:53.079 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:59:17.610 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 17:59:41.471 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 18:00:09.163 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 18:00:16.830 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 18:00:16.856 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 18:00:16.857 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 18:00:16.858 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 18:00:16.859 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 18:00:16.861 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 18:00:16.862 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 18:00:16.862 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 18:00:16.869 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 18:00:16.931 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 18:00:16.952 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 18:00:16.954 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 18:00:16.955 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFreeMud.App
+[2024-12-04 18:00:16.956 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 18:00:16.957 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 18:00:17.128 DBG] MudBlazor.PopoverService - Adding entry for "508adfce-df0d-407a-aa98-7bf3cd6acc52"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 18:00:17.131 DBG] MudBlazor.PopoverService - Updating entry for "508adfce-df0d-407a-aa98-7bf3cd6acc52"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 18:00:17.259 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.2284ms
+[2024-12-04 18:00:17.401 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.0235ms
+[2024-12-04 18:00:17.439 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:SELECT `Id`,`Address`,`Name`,`Image`,`CreateTime`,`UpdateTime` FROM `product_info` ORDER BY `UpdateTime` DESC ,time:0.564ms
+[2024-12-04 18:00:17.519 DBG] MudBlazor.PopoverService - Removed entry for "508adfce-df0d-407a-aa98-7bf3cd6acc52". 0 total observers after remove.
+[2024-12-04 18:00:17.730 DBG] MudBlazor.PopoverService - Adding entry for "90318f7d-e55a-443a-979a-b36ab8762d9f"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 18:00:17.732 DBG] MudBlazor.PopoverService - Updating entry for "90318f7d-e55a-443a-979a-b36ab8762d9f"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 18:00:17.735 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.0286ms
+[2024-12-04 18:00:17.737 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.021ms
+[2024-12-04 18:00:17.739 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:SELECT `Id`,`Address`,`Name`,`Image`,`CreateTime`,`UpdateTime` FROM `product_info` ORDER BY `UpdateTime` DESC ,time:0.0791ms
+[2024-12-04 18:00:17.785 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 18:00:18.729 DBG] MudBlazor.PopoverService - Adding entry for "cb775759-cbaf-45bd-a839-ebc4ad63fe6f"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 18:00:18.731 DBG] MudBlazor.PopoverService - Updating entry for "cb775759-cbaf-45bd-a839-ebc4ad63fe6f"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 18:00:18.736 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.0292ms
+[2024-12-04 18:00:18.739 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.0247ms
+[2024-12-04 18:00:18.741 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:SELECT `Id`,`Address`,`Name`,`Image`,`CreateTime`,`UpdateTime` FROM `product_info` ORDER BY `UpdateTime` DESC ,time:0.0789ms
+[2024-12-04 18:00:18.746 DBG] MudBlazor.PopoverService - Removed entry for "cb775759-cbaf-45bd-a839-ebc4ad63fe6f". 0 total observers after remove.
+[2024-12-04 18:00:18.762 DBG] MudBlazor.PopoverService - Removed entry for "90318f7d-e55a-443a-979a-b36ab8762d9f". 0 total observers after remove.
+[2024-12-04 18:00:18.768 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 18:00:18.918 DBG] MudBlazor.PopoverService - Adding entry for "84a7c59d-73fc-4760-925f-33cc67df6e72"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 18:00:18.920 DBG] MudBlazor.PopoverService - Updating entry for "84a7c59d-73fc-4760-925f-33cc67df6e72"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 18:00:18.924 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.0353ms
+[2024-12-04 18:00:18.927 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:select Name from sqlite_master where type='table' and name<>'sqlite_sequence' order by name;,time:0.0259ms
+[2024-12-04 18:00:18.929 DBG] KixDutyFree.App.Repository.ProductInfoRepository - 执行sql语句:SELECT `Id`,`Address`,`Name`,`Image`,`CreateTime`,`UpdateTime` FROM `product_info` ORDER BY `UpdateTime` DESC ,time:0.1047ms
+[2024-12-04 18:00:18.946 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 18:00:31.276 DBG] MudBlazor.PopoverService - Removed entry for "84a7c59d-73fc-4760-925f-33cc67df6e72". 0 total observers after remove.
+[2024-12-04 18:00:31.278 DBG] MudBlazor.BrowserViewportService - Removed entry for MudBlazor.BrowserViewportSubscription. 0 total observers after remove.
+[2024-12-04 18:00:44.844 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 18:00:52.276 DBG] MudBlazor.PopoverService - Adding entry for "b3d8fc33-4137-4fe8-94ec-5f427e975623"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 18:00:52.280 DBG] MudBlazor.PopoverService - Updating entry for "b3d8fc33-4137-4fe8-94ec-5f427e975623"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 18:00:52.295 DBG] MudBlazor.PopoverService - Removed entry for "b3d8fc33-4137-4fe8-94ec-5f427e975623". 0 total observers after remove.
+[2024-12-04 18:00:52.493 DBG] MudBlazor.PopoverService - Adding entry for "7edcea32-27e7-444e-b1a2-ebdbd760624f"/MudBlazor.MudPopoverProvider. 1 total observers after add.
+[2024-12-04 18:00:52.497 DBG] MudBlazor.PopoverService - Updating entry for "7edcea32-27e7-444e-b1a2-ebdbd760624f"/MudBlazor.MudPopoverProvider. 1 total observers.
+[2024-12-04 18:00:52.513 DBG] MudBlazor.BrowserViewportService - Adding entry for MudBlazor.BrowserViewportSubscription/MudBlazor.MudDrawer. 1 total observers after add.
+[2024-12-04 18:01:10.775 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 18:01:36.550 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers

@@ -23,7 +23,7 @@ namespace KixDutyFree.App.Services
                 OpenBrowser(address);
             }
             //加载客户端
-            await manager.InitClientAsync();
+            //await manager.InitClientAsync();
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)

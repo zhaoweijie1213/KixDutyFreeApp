@@ -27,5 +27,14 @@ namespace KixDutyFree.App.Repository
         {
             return Db.Queryable<ProductInfoEntity>().FirstAsync(i => i.Id == id);
         }
+
+        /// <summary>
+        /// 查询商品
+        /// </summary>
+        /// <returns></returns>
+        public Task<List<ProductInfoEntity>> QueryAsync()
+        {
+            return Db.Queryable<ProductInfoEntity>().OrderByDescending(i => i.UpdateTime).ToListAsync();
+        }
     }
 }

@@ -377,7 +377,7 @@ namespace KixDutyFree.App.Manage
                         quantity = product.Availability?.MaxOrderQuantity ?? 1;
                     }
                     CartAddProductResponse? res = null;
-                    if (setup == OrderSetup.None) 
+                    if (setup == OrderSetup.None || setup == OrderSetup.Completed)
                     {
                         //添加到购物车
                         res = await CartAddProductAsync(product.Id, quantity, cancellationToken);

@@ -1,0 +1,30 @@
+[2024-12-04 15:49:03.043 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 15:49:03.081 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 15:49:03.086 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 15:49:03.087 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 15:49:03.088 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 15:49:03.089 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 15:49:03.090 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 15:49:03.092 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 15:49:03.100 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 15:49:03.283 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 15:49:03.310 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 15:49:03.311 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 15:49:03.312 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFree.App
+[2024-12-04 15:49:03.314 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 15:49:03.314 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers
+[2024-12-04 15:49:58.332 DBG] Quartz.Simpl.TaskSchedulingThreadPool - TaskSchedulingThreadPool configured with max concurrency of 10 and TaskScheduler ThreadPoolTaskScheduler.
+[2024-12-04 15:49:58.372 INF] Quartz.Core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+[2024-12-04 15:49:58.377 INF] Quartz.Core.QuartzScheduler - Quartz Scheduler created
+[2024-12-04 15:49:58.379 INF] Quartz.Core.QuartzScheduler - JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+[2024-12-04 15:49:58.380 INF] Quartz.Simpl.RAMJobStore - RAMJobStore initialized.
+[2024-12-04 15:49:58.382 INF] Quartz.Impl.StdSchedulerFactory - Quartz Scheduler 3.13.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+[2024-12-04 15:49:58.385 INF] Quartz.Impl.StdSchedulerFactory - Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+[2024-12-04 15:49:58.388 INF] Quartz.Impl.StdSchedulerFactory - Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+[2024-12-04 15:49:58.404 INF] Quartz.ContainerConfigurationProcessor - Adding 0 jobs, 0 triggers.
+[2024-12-04 15:49:58.622 INF] Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5128
+[2024-12-04 15:49:58.655 INF] Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+[2024-12-04 15:49:58.657 INF] Microsoft.Hosting.Lifetime - Hosting environment: Development
+[2024-12-04 15:49:58.658 INF] Microsoft.Hosting.Lifetime - Content root path: F:\Git\KixDutyFreeApp\KixDutyFree.App
+[2024-12-04 15:49:58.660 INF] Quartz.Core.QuartzScheduler - Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+[2024-12-04 15:49:58.664 DBG] Quartz.Core.QuartzSchedulerThread - Batch acquisition of 0 triggers

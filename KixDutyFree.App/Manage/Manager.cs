@@ -21,6 +21,7 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task InitClientAsync() 
         {
+            return;
             //将订单标记为已完成
             await productMonitorRepository.UpdateCompletedAsync();
             //账号

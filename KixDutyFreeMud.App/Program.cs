@@ -19,6 +19,8 @@ builder.Services.AddSerilog(configureLogger =>
 // Add MudBlazor services
 builder.Services.AddMudServices();
 
+// 如果应用作为 Windows 服务运行，则配置应用
+builder.Host.UseWindowsService();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

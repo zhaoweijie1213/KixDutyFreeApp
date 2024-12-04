@@ -1,3 +1,5 @@
 .vs
 bin
 obj
+logs
+/KixDutyFreeMud.App/kix_app_database.db

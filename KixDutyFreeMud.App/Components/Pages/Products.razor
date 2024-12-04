@@ -7,13 +7,13 @@
 
 <PageTitle>Products</PageTitle>
 
-<MudGrid Justify="Justify.Center">
+<MudGrid Justify="Justify.FlexStart">
 
     @foreach (var product in products)
     {
         <MudItem xs="3">
             <MudCard>
-                <MudCardMedia Image="@product.Image" Height="400" />
+                <MudCardMedia Image="@product.Image" />
                 <MudCardContent>
                     <MudText Typo="Typo.h5">@product.Name</MudText>
                     <MudText Typo="Typo.body2">ID: @product.Id</MudText>

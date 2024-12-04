@@ -1,6 +1,7 @@
 ﻿using KixDutyFree.App.Models;
 using KixDutyFree.App.Repository;
 using KixDutyFree.App.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.App.Manage
 {
-    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository) : ISingletonDependency
+    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository, IConfiguration configuration) : ISingletonDependency
     {
         /// <summary>
         /// 
@@ -23,8 +24,11 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task InitClientAsync() 
         {
-            //将订单标记为已完成
-            await productMonitorRepository.UpdateCompletedAsync();
+            if (configuration.GetSection("ReloadOnRestart").Get<bool>())
+            {
+                //将订单标记为已完成
+                await productMonitorRepository.UpdateCompletedAsync();
+            }
             //账号
             var accounts = await cacheManage.GetAccountAsync();
             if (accounts == null) return;

@@ -1,6 +1,7 @@
 ﻿
 using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace KixDutyFree.App.Services
                 OpenBrowser(address);
             }
             //加载客户端
-            //await manager.InitClientAsync();
+            await manager.InitClientAsync();
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)

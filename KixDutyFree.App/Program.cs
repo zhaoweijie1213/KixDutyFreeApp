@@ -7,11 +7,17 @@ using Quartz.AspNetCore;
 using KixDutyFree.App.Models.Config;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseElectron(args);
 
-builder.Logging.AddLog4Net();
+builder.Services.AddSerilog(configureLogger =>
+{
+    configureLogger.Enrich.WithMachineName()
+    .Enrich.FromLogContext()
+    .ReadFrom.Configuration(builder.Configuration);
+});
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

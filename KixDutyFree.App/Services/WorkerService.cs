@@ -3,11 +3,12 @@ using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using QYQ.Base.Common.Extension;
 using System.Diagnostics;
 
 namespace KixDutyFree.App.Services
 {
-    public class WorkerService(Manager manager,IServiceProvider services) : BackgroundService
+    public class WorkerService(ILogger<WorkerService> logger, Manager manager, IServiceProvider services) : BackgroundService
     {
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,7 +29,7 @@ namespace KixDutyFree.App.Services
             await manager.StopAsync();
         }
 
-        private static void OpenBrowser(string url)
+        private void OpenBrowser(string url)
         {
             try
             {
@@ -40,7 +41,7 @@ namespace KixDutyFree.App.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"无法打开浏览器：{ex.Message}");
+                logger.BaseErrorLog($"OpenBrowser", ex);
             }
         }
     }

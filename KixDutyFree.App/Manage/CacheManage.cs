@@ -19,7 +19,7 @@ namespace KixDutyFree.App.Manage
             string key = "AccountInfo";
             if (!memoryCache.TryGetValue(key, out List<AccountModel>? account))
             {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Account.xlsx");
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "账号.xlsx");
                 var importer = new ExcelImporter();
                 var result = await importer.Import<AccountModel>(path, null);
                 if(result.Data.Count > 0)
@@ -29,6 +29,28 @@ namespace KixDutyFree.App.Manage
                 }
             }
             return account;
+        }
+
+
+        /// <summary>
+        /// 获取商品信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<ProductModel>?> GetProductsAsync()
+        {
+            string key = "ProductsInfo";
+            if (!memoryCache.TryGetValue(key, out List<ProductModel>? products))
+            {
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "商品.xlsx");
+                var importer = new ExcelImporter();
+                var result = await importer.Import<ProductModel>(path, null);
+                if (result.Data.Count > 0)
+                {
+                    products = result.Data.ToList();
+                    memoryCache.Set(key, products, TimeSpan.FromMinutes(1));
+                }
+            }
+            return products;
         }
     }
 }

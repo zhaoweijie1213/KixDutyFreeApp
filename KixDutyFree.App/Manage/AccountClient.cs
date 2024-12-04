@@ -24,8 +24,9 @@ namespace KixDutyFree.App.Manage
     /// <summary>
     /// 账号客户端
     /// </summary>
-    public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IOptionsMonitor<Products> products, IConfiguration configuration, IHttpClientFactory httpClientFactory
-        , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository,IOptionsMonitor<FlightInfoModel> flightInfoModel) : ITransientDependency
+    public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory
+        , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository,IOptionsMonitor<FlightInfoModel> flightInfoModel
+        , ExcelProcess excelProcess, CacheManage cacheManage) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -204,10 +205,15 @@ namespace KixDutyFree.App.Manage
                 }
                 else
                 {
-                    foreach (var product in products.CurrentValue.Urls)
+                    var products = await cacheManage.GetProductsAsync();
+                    if (products != null && products.Count > 0)
                     {
-                        await CheckProductAvailabilityAsync(product, cancellationToken);
+                        foreach (var product in products)
+                        {
+                            await CheckProductAvailabilityAsync(product, cancellationToken);
+                        }
                     }
+                   
                 }
 
                 bool status = await seleniumService.IsLogin(driver);
@@ -238,7 +244,7 @@ namespace KixDutyFree.App.Manage
         /// <param name="productAddress"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task CheckProductAvailabilityAsync(string productAddress, CancellationToken cancellationToken)
+        private async Task CheckProductAvailabilityAsync(ProductModel productAddress, CancellationToken cancellationToken)
         {
             try
             {
@@ -249,10 +255,10 @@ namespace KixDutyFree.App.Manage
                 }
                 
                 // 导航到商品页面
-                driver.Navigate().GoToUrl(productAddress);
-                if (!memoryCache.TryGetValue(productAddress, out ProductInfoEntity? product))
+                driver.Navigate().GoToUrl(productAddress.Address);
+                if (!memoryCache.TryGetValue(productAddress.Address, out ProductInfoEntity? product))
                 {
-                    product = await productInfoRepository.FindByAddressAsync(productAddress);
+                    product = await productInfoRepository.FindByAddressAsync(productAddress.Address);
                     if (product == null)
                     {
                         try
@@ -266,7 +272,7 @@ namespace KixDutyFree.App.Manage
                                 product = new ProductInfoEntity()
                                 {
                                     Id = productId,
-                                    Address = productAddress,
+                                    Address = productAddress.Address,
                                     CreateTime = DateTime.Now,
                                     UpdateTime = DateTime.Now
                                 };
@@ -278,14 +284,14 @@ namespace KixDutyFree.App.Manage
                             logger.LogWarning("TaskStartAsync:{Message}", e.Message);
                         }
                     }
-                    memoryCache.Set(productAddress, product, TimeSpan.FromMinutes(5));
+                    memoryCache.Set(productAddress.Address, product, TimeSpan.FromMinutes(5));
                 }
 
                 if (IsLoginSuccess && !string.IsNullOrEmpty(product?.Id))
                 {
                     //查询最新订单,判断是否已经加入购物车
                     var prodicrMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
-                    if (prodicrMonitor != null && prodicrMonitor.Setup != OrderSetup.Completed)
+                    if (prodicrMonitor != null && prodicrMonitor.Setup != OrderSetup.Completed && prodicrMonitor.Setup != OrderSetup.None)
                     {
                         logger.LogInformation("{Account}\t{Name}已有订单,订单状态{Setup}", Account.Email, product.Name, prodicrMonitor.Setup.ToString());
                         return;
@@ -305,7 +311,7 @@ namespace KixDutyFree.App.Manage
                         {
                             logger.LogInformation("账号:{Account}\t商品:{Name}可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                             // 触发下单逻辑
-                            await PlaceOrderAsync(res!.Product!, cancellationToken);
+                            await PlaceOrderAsync(res!.Product!, productAddress.Quantity, cancellationToken);
                         }
                         else
                         {
@@ -347,7 +353,7 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        private async Task PlaceOrderAsync(Product product, CancellationToken cancellationToken)
+        private async Task PlaceOrderAsync(Product product,int quantity, CancellationToken cancellationToken)
         {
             try
             {
@@ -359,12 +365,12 @@ namespace KixDutyFree.App.Manage
 
                 if (!string.IsNullOrEmpty(product.Id))
                 {
-                    int quantity = 0;
-                    if (Account.Quantity >=0)
+                    //确认商品数量
+                    if (Account.Quantity > 0 && product.Availability?.MaxOrderQuantity > Account.Quantity)
                     {
                         quantity = Account.Quantity;
                     }
-                    else
+                    else if (quantity == 0 || quantity > product.Availability?.MaxOrderQuantity)
                     {
                         quantity = product.Availability?.MaxOrderQuantity ?? 1;
                     }
@@ -454,6 +460,18 @@ namespace KixDutyFree.App.Manage
                                             productMonitor.OrderToken = placeOrder.OrderToken;
                                             await productMonitorRepository.UpdateAsync(productMonitor);
                                             logger.LogInformation("PlaceOrderAsync.下单成功");
+                                            //信息导出到表格
+                                            await excelProcess.OrderExportAsync(new Models.Excel.OrderExcel()
+                                            {
+                                                OrderId = productMonitor.OrderId,
+                                                ProductId = productMonitor.ProductId,
+                                                ProductName = product.ProductName ?? "",
+                                                Account = Account.Email,
+                                                AirlineName = Account.AirlineName,
+                                                FlightDate = Account.Date,
+                                                FlightNo = Account.FlightNo,
+                                                CreateTime = productMonitor.UpdateTime
+                                            });
                                         }
                                         else
                                         {

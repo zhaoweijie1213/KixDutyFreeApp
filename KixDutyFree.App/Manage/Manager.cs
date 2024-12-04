@@ -1,4 +1,5 @@
 ﻿using KixDutyFree.App.Models;
+using KixDutyFree.App.Repository;
 using KixDutyFree.App.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -7,7 +8,7 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.App.Manage
 {
-    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage) : ISingletonDependency
+    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository) : ISingletonDependency
     {
         /// <summary>
         /// 
@@ -20,6 +21,9 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task InitClientAsync() 
         {
+            //将订单标记为已完成
+            await productMonitorRepository.UpdateCompletedAsync();
+            //账号
             var accounts = await cacheManage.GetAccountAsync();
             if (accounts == null) return;
             //初始化各个账号的实例

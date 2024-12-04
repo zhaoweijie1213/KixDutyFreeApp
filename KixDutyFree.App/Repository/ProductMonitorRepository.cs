@@ -16,5 +16,17 @@ namespace KixDutyFree.App.Repository
         {
             return Db.Queryable<ProductMonitorEntity>().OrderByDescending(i => i.UpdateTime).FirstAsync(i => i.Account == account && i.ProductId == productId);
         }
+
+        /// <summary>
+        /// 修改为已完成状态
+        /// </summary>
+        /// <returns></returns>
+        public Task<int> UpdateCompletedAsync()
+        {
+            return Db.Updateable<ProductMonitorEntity>().SetColumns(i => new ProductMonitorEntity()
+            {
+                Setup = OrderSetup.Completed
+            }).Where(i => i.Setup == OrderSetup.OrderPlaced).ExecuteCommandAsync();
+        }
     }
 }

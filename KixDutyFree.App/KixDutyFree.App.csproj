@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ElectronNET.API" Version="23.6.2" />
     <PackageReference Include="Magicodes.IE.Excel" Version="2.7.5.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />
@@ -18,7 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Account.xlsx">
+    <None Update="账号.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="商品.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

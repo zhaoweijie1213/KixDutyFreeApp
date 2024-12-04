@@ -5,7 +5,9 @@ VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFree.App", "KixDutyFree.App\KixDutyFree.App.csproj", "{9FD5FF0E-9099-48D8-822F-38AAF085608A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFree.MudBlazor.Shared", "KixDutyFree.MudBlazor.Shared\KixDutyFree.MudBlazor.Shared.csproj", "{8C2CF522-6513-47E2-B8C7-E307532D43C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFree.Shared", "KixDutyFree.MudBlazor.Shared\KixDutyFree.Shared.csproj", "{8C2CF522-6513-47E2-B8C7-E307532D43C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFreeMud.App", "KixDutyFreeMud.App\KixDutyFreeMud.App.csproj", "{987D26E0-6C90-48F1-A949-FF10CD77B1CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8C2CF522-6513-47E2-B8C7-E307532D43C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C2CF522-6513-47E2-B8C7-E307532D43C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C2CF522-6513-47E2-B8C7-E307532D43C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{987D26E0-6C90-48F1-A949-FF10CD77B1CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{987D26E0-6C90-48F1-A949-FF10CD77B1CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{987D26E0-6C90-48F1-A949-FF10CD77B1CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{987D26E0-6C90-48F1-A949-FF10CD77B1CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

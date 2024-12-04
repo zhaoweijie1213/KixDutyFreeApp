@@ -429,7 +429,8 @@ namespace KixDutyFree.App.Manage
                                 //string airlinesNo = flightInfo.First().Flightno1;
                                 //string flightNo= flightInfo.First().Flightno2;
                                 //保存航班信息
-                                var saveInfo = await FlightSaveInfoAsync(
+                                FlightSaveInfoResponse? saveInfo = null;
+                                saveInfo = await FlightSaveInfoAsync(
                                     csrfToken: csrfToken,
                                     calendarStartDate: DateTime.Now.ToString("yyyy/MM/dd"),
                                     departureDate: date.ToString("yyyy/MM/dd"),
@@ -446,7 +447,7 @@ namespace KixDutyFree.App.Manage
                                     productMonitor.UpdateTime = DateTime.Now;
                                     await productMonitorRepository.UpdateAsync(productMonitor);
                                     //调用下单逻辑,跳转结算界面
-                                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp" + saveInfo.RedirectUrl);
+                                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/checkout");
                                     // 等待页面加载完成
                                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
                                     wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));

@@ -1,4 +1,6 @@
 ﻿using KixDutyFree.App.Models.Entity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using QYQ.Base.Common.IOCExtensions;
 
 namespace KixDutyFree.App.Repository
@@ -24,6 +26,15 @@ namespace KixDutyFree.App.Repository
         public Task<ProductInfoEntity> FindAsync(string id)
         {
             return Db.Queryable<ProductInfoEntity>().FirstAsync(i => i.Id == id);
+        }
+
+        /// <summary>
+        /// 查询商品
+        /// </summary>
+        /// <returns></returns>
+        public Task<List<ProductInfoEntity>> QueryAsync()
+        {
+            return Db.Queryable<ProductInfoEntity>().OrderByDescending(i => i.UpdateTime).ToListAsync();
         }
     }
 }

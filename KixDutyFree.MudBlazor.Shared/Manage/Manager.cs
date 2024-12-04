@@ -1,6 +1,8 @@
 ﻿using KixDutyFree.App.Models;
 using KixDutyFree.App.Repository;
 using KixDutyFree.App.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QYQ.Base.Common.IOCExtensions;
@@ -21,7 +23,6 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task InitClientAsync() 
         {
-            return;
             //将订单标记为已完成
             await productMonitorRepository.UpdateCompletedAsync();
             //账号

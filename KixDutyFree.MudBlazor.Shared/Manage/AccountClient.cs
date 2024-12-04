@@ -5,6 +5,8 @@ using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Repository;
 using KixDutyFree.App.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OpenQA.Selenium;
@@ -290,10 +292,10 @@ namespace KixDutyFree.App.Manage
                 if (IsLoginSuccess && !string.IsNullOrEmpty(product?.Id))
                 {
                     //查询最新订单,判断是否已经加入购物车
-                    var prodicrMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
-                    if (prodicrMonitor != null && prodicrMonitor.Setup != OrderSetup.Completed && prodicrMonitor.Setup != OrderSetup.None)
+                    var productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
+                    if (productMonitor != null && productMonitor.Setup == OrderSetup.OrderPlaced)
                     {
-                        logger.LogInformation("{Account}\t{Name}已有订单,订单状态{Setup}", Account.Email, product.Name, prodicrMonitor.Setup.ToString());
+                        logger.LogInformation("{Account}\t{Name}已有订单,订单状态{Setup}", Account.Email, product.Name, productMonitor.Setup.ToString());
                         return;
                     }
                     else
@@ -311,12 +313,12 @@ namespace KixDutyFree.App.Manage
                         {
                             logger.LogInformation("账号:{Account}\t商品:{Name}可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                             // 触发下单逻辑
-                            await PlaceOrderAsync(res!.Product!, productAddress.Quantity, cancellationToken);
+                            await PlaceOrderAsync(res!.Product!, productAddress.Quantity, productMonitor?.Setup ?? OrderSetup.None, cancellationToken);
                         }
                         else
                         {
                             logger.LogInformation("账号:{Account}\t商品:{Name}不可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
-                            ProductMonitorEntity productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
+                            //ProductMonitorEntity prodicrMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
                             if (productMonitor != null)
                             {
                                 productMonitor.Setup = OrderSetup.None;
@@ -353,7 +355,7 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        private async Task PlaceOrderAsync(Product product,int quantity, CancellationToken cancellationToken)
+        private async Task PlaceOrderAsync(Product product,int quantity, OrderSetup setup, CancellationToken cancellationToken)
         {
             try
             {
@@ -374,10 +376,13 @@ namespace KixDutyFree.App.Manage
                     {
                         quantity = product.Availability?.MaxOrderQuantity ?? 1;
                     }
-                    //添加到购物车
-                    var res = await CartAddProductAsync(product.Id, quantity, cancellationToken);
-
-                    if (res?.Error == false)
+                    CartAddProductResponse? res = null;
+                    if (setup == OrderSetup.None) 
+                    {
+                        //添加到购物车
+                        res = await CartAddProductAsync(product.Id, quantity, cancellationToken);
+                    }
+                    if (res?.Error == false || setup == OrderSetup.AddedToCart)
                     {
                         logger.LogInformation("PlaceOrderAsync.商品 {BrandName} 加入购物车成功！", product.BrandName);
                         ProductMonitorEntity productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
@@ -401,7 +406,7 @@ namespace KixDutyFree.App.Manage
                         }
                         //跳转到购物车页面
                         await seleniumService.ToCartAsync(driver);
-                        var date = flightInfoModel.CurrentValue.Date;
+                        var date = Account.Date;
                         //获取航班信息
                         var flightInfo = await GetFlightDataAsync(Account.Date, cancellationToken);
                         if (flightInfo != null)
@@ -424,7 +429,8 @@ namespace KixDutyFree.App.Manage
                                 //string airlinesNo = flightInfo.First().Flightno1;
                                 //string flightNo= flightInfo.First().Flightno2;
                                 //保存航班信息
-                                var saveInfo = await FlightSaveInfoAsync(
+                                FlightSaveInfoResponse? saveInfo = null;
+                                saveInfo = await FlightSaveInfoAsync(
                                     csrfToken: csrfToken,
                                     calendarStartDate: DateTime.Now.ToString("yyyy/MM/dd"),
                                     departureDate: date.ToString("yyyy/MM/dd"),
@@ -441,7 +447,7 @@ namespace KixDutyFree.App.Manage
                                     productMonitor.UpdateTime = DateTime.Now;
                                     await productMonitorRepository.UpdateAsync(productMonitor);
                                     //调用下单逻辑,跳转结算界面
-                                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp" + saveInfo.RedirectUrl);
+                                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/checkout");
                                     // 等待页面加载完成
                                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
                                     wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));

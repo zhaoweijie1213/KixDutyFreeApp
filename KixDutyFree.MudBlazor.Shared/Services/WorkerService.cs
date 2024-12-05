@@ -16,8 +16,8 @@ namespace KixDutyFree.App.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
-            var address = serverAddresses?.Addresses.FirstOrDefault();
+            //var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
+            var address = "http://localhost:5128";
             if (address != null)
             {
                 // 打开浏览器

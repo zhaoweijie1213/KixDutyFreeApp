@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 using OpenQA.Selenium.Support.UI;
 using KixDutyFree.App.Models.Response;
+using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
 
 namespace KixDutyFree.App.Services
 {
@@ -45,6 +46,10 @@ namespace KixDutyFree.App.Services
             {
                 driver = new();
             }
+            // 设置页面加载超时时间为 120 秒
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
             driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/login/");
             //获取标题
             var title = driver.Title;

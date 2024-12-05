@@ -47,7 +47,7 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 错误次数
         /// </summary>
-        private int ErrorCount { get; set; } = 0;
+        private int ErrorCount{ get; set; }
 
         /// <summary>
         /// 浏览器实例
@@ -117,26 +117,35 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task<bool> InitAsync(AccountModel account)
         {
-            Account = account;
-            bool headless = configuration.GetSection("Headless").Get<bool>();
-            //_httpClient = httpClientFactory.CreateClient(account.Email);
-            var res = await seleniumService.CreateInstancesAsync(account, headless);
-            driver = res.Item1;
-            IsLoginSuccess = res.Item2;
-            if (IsLoginSuccess)
+            try
             {
-                logger.LogInformation("InitAsync.初始化完成");
-                //设置httpClient Cookie
-                _httpClient = httpClientFactory.CreateClient(account.Email);
-                _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-                //ConfigureHttpClientWithCookies();
+                Account = account;
+                bool headless = configuration.GetSection("Headless").Get<bool>();
+                //_httpClient = httpClientFactory.CreateClient(account.Email);
+                var res = await seleniumService.CreateInstancesAsync(account, headless);
+                driver = res.Item1;
+                IsLoginSuccess = res.Item2;
+                if (IsLoginSuccess)
+                {
+                    //设置httpClient Cookie
+                    _httpClient = httpClientFactory.CreateClient(account.Email);
+                    _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    //ConfigureHttpClientWithCookies();
+                    logger.LogInformation("InitAsync.初始化完成");
+                }
+                else
+                {
+                    logger.LogError("InitAsync:{account}登录失败", account.Email);
+                }
+                //开始监控商品
+                await StartMonitoringAsync();
+          
             }
-            else
+            catch (Exception e)
             {
-                logger.LogError("InitAsync:{account}登录失败", account.Email);
+                logger.BaseErrorLog("InitAsync", e);
             }
-            //开始监控商品
-            await StartMonitoringAsync();
+            ErrorCount = 0;
             return IsLoginSuccess;
         }
 
@@ -170,15 +179,32 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         public Task StartMonitoringAsync()
         {
-            //MonitorStatus = true;
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+            }
 
-            // 如果已有取消令牌源，先取消并释放
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
 
             // 创建新的取消令牌源
             _cancellationTokenSource = new CancellationTokenSource();
-            return Task.Run(() => MonitorProductsAsync(_cancellationTokenSource.Token));
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await MonitorProductsAsync(_cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    logger.LogInformation("监控任务已取消");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "监控任务发生异常");
+                }
+            });
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -198,34 +224,49 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task MonitorProductsAsync(CancellationToken cancellationToken)
         {
-            while (!_cancellationTokenSource.IsCancellationRequested)
+            try
             {
-                if (ErrorCount > 10 || driver == null)
+                int count = 0;
+                while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    await RelodAsync();
-                    break;
-                }
-                else
-                {
-                    var products = await cacheManage.GetProductsAsync();
-                    if (products != null && products.Count > 0)
+                    if (ErrorCount > 10 || driver == null)
                     {
-                        foreach (var product in products)
+                        await RelodAsync();
+                        break;
+                    }
+                    else
+                    {
+                        var products = await cacheManage.GetProductsAsync();
+                        if (products != null && products.Count > 0)
                         {
-                            await CheckProductAvailabilityAsync(product, cancellationToken);
+                            foreach (var product in products)
+                            {
+                                await CheckProductAvailabilityAsync(product, cancellationToken);
+                            }
+                        }
+
+                    }
+                    if (count == 30)
+                    {
+                        count = 0;
+                        bool status = await seleniumService.IsLogin(driver);
+                        if (!status)
+                        {
+                            await RelodAsync();
                         }
                     }
-                   
-                }
+               
+                    // 设置检查间隔
+                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
 
-                bool status = await seleniumService.IsLogin(driver);
-                if (!status) 
-                {
-                    await RelodAsync();
+                    count++;
                 }
-                // 设置检查间隔
-                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
+            catch (TaskCanceledException e)
+            {
+                logger.LogWarning("MonitorProductsAsync:{Message}{ e.StackTrace)}", e.Message, e.StackTrace);
+            }
+  
         }
 
         /// <summary>
@@ -255,9 +296,7 @@ namespace KixDutyFree.App.Manage
                 {
                     throw new Exception("driver不能为null");
                 }
-                
-                // 导航到商品页面
-                driver.Navigate().GoToUrl(productAddress.Address);
+               
                 if (!memoryCache.TryGetValue(productAddress.Address, out ProductInfoEntity? product))
                 {
                     product = await productInfoRepository.FindByAddressAsync(productAddress.Address);
@@ -265,6 +304,8 @@ namespace KixDutyFree.App.Manage
                     {
                         try
                         {
+                            // 导航到商品页面
+                            driver.Navigate().GoToUrl(productAddress.Address);
                             var productDetail = driver.FindElement(By.ClassName("product-detail"));
                             // 获取 data-pid 属性的值 得到商品id
                             string productId = productDetail.GetAttribute("data-pid");
@@ -343,8 +384,15 @@ namespace KixDutyFree.App.Manage
                 }
      
             }
+            catch (WebDriverTimeoutException ex)
+            {
+                logger.BaseErrorLog("CheckProductAvailabilityAsync.WebDriverTimeoutException", ex);
+                await RelodAsync();
+            }
             catch (Exception ex)
             {
+                ErrorCount++;
+                logger.LogError("CheckProductAvailabilityAsync.错误次数: {ErrorCount}", ErrorCount);
                 // 记录异常日志
                 logger.BaseErrorLog($"CheckProductAvailabilityAsync.检查商品时出错", ex);
             }
@@ -377,7 +425,7 @@ namespace KixDutyFree.App.Manage
                         quantity = product.Availability?.MaxOrderQuantity ?? 1;
                     }
                     CartAddProductResponse? res = null;
-                    if (setup == OrderSetup.None) 
+                    if (setup == OrderSetup.None || setup == OrderSetup.Completed)
                     {
                         //添加到购物车
                         res = await CartAddProductAsync(product.Id, quantity, cancellationToken);
@@ -518,9 +566,16 @@ namespace KixDutyFree.App.Manage
                     logger.LogWarning("PlaceOrderAsync.找不到商品Id");
                 }
             }
+            catch (WebDriverTimeoutException ex)
+            {
+                ErrorCount++;
+                logger.BaseErrorLog("PlaceOrderAsync.WebDriverTimeoutException", ex);
+                await RelodAsync();
+            }
             catch (Exception ex)
             {
                 ErrorCount++;
+                logger.LogError("PlaceOrderAsync.错误次数: {ErrorCount}", ErrorCount);
                 // 记录异常日志
                 logger.BaseErrorLog("PlaceOrderAsync", ex);
             }
@@ -555,7 +610,20 @@ namespace KixDutyFree.App.Manage
         {
             // 停止监控
             StopMonitoring();
-            driver?.Quit();
+            // 关闭并释放旧的 ChromeDriver 实例
+            if (driver != null)
+            {
+                try
+                {
+                    driver?.Quit();
+                    driver?.Dispose();
+                    logger.LogInformation("ReinitializeDriverAsync. 旧的 ChromeDriver 实例已关闭并释放。");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "ReinitializeDriverAsync. 关闭旧的 ChromeDriver 实例时出错。");
+                }
+            }
             logger.LogInformation("QuitAsync.停止实例:{email}", Account.Email);
             return Task.CompletedTask;
         }
@@ -578,7 +646,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("ProductVariationAsync.响应:{content}", content);
+            logger.LogDebug("ProductVariationAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<ProductVariationResponse>(content);
@@ -610,7 +678,7 @@ namespace KixDutyFree.App.Manage
             request.Content = new FormUrlEncodedContent(formData);
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<CartAddProductResponse>(content);
@@ -633,7 +701,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<CartUpdateQuantityResponse>(content);
@@ -659,7 +727,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<FlightGetInfoResponse>(content);
@@ -711,7 +779,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<FlightSaveInfoResponse>(content);
@@ -760,7 +828,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("SubmitPaymentAsync.响应:{content}", content);
+            logger.LogDebug("SubmitPaymentAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<SubmitPaymentResponse>(content);
@@ -784,7 +852,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", GetCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogInformation("PlaceOrderAsync.响应:{content}", content);
+            logger.LogDebug("PlaceOrderAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<PlaceOrderResponse>(content);

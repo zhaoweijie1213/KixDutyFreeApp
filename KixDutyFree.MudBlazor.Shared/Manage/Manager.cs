@@ -42,16 +42,7 @@ namespace KixDutyFree.App.Manage
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        try
-                        {
-                            await accountClient.InitAsync(account);
-                        }
-                        catch (Exception ex)
-                        {
-                            // 记录日志或处理异常
-                            logger.LogError(ex, "初始化账户 {Email} 时发生错误。", account.Email);
-                        }
-
+                        await accountClient.InitAsync(account);
                     }));
                 }
                 else

@@ -26,7 +26,7 @@ namespace KixDutyFree.App.Manage
                 if(result.Data.Count > 0)
                 {
                     account = result.Data.ToList();
-                    memoryCache.Set(key, account, TimeSpan.FromMinutes(1));
+                    memoryCache.Set(key, account);
                 }
             }
             return account;
@@ -48,7 +48,7 @@ namespace KixDutyFree.App.Manage
                 if (result.Data.Count > 0)
                 {
                     products = result.Data.ToList();
-                    memoryCache.Set(key, products, TimeSpan.FromMinutes(1));
+                    memoryCache.Set(key, products);
                 }
             }
             return products;

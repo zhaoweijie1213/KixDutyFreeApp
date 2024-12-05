@@ -117,26 +117,34 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task<bool> InitAsync(AccountModel account)
         {
-            Account = account;
-            bool headless = configuration.GetSection("Headless").Get<bool>();
-            //_httpClient = httpClientFactory.CreateClient(account.Email);
-            var res = await seleniumService.CreateInstancesAsync(account, headless);
-            driver = res.Item1;
-            IsLoginSuccess = res.Item2;
-            if (IsLoginSuccess)
+            try
             {
-                logger.LogInformation("InitAsync.初始化完成");
-                //设置httpClient Cookie
-                _httpClient = httpClientFactory.CreateClient(account.Email);
-                _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-                //ConfigureHttpClientWithCookies();
+                Account = account;
+                bool headless = configuration.GetSection("Headless").Get<bool>();
+                //_httpClient = httpClientFactory.CreateClient(account.Email);
+                var res = await seleniumService.CreateInstancesAsync(account, headless);
+                driver = res.Item1;
+                IsLoginSuccess = res.Item2;
+                if (IsLoginSuccess)
+                {
+                    logger.LogInformation("InitAsync.初始化完成");
+                    //设置httpClient Cookie
+                    _httpClient = httpClientFactory.CreateClient(account.Email);
+                    _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    //ConfigureHttpClientWithCookies();
+                }
+                else
+                {
+                    logger.LogError("InitAsync:{account}登录失败", account.Email);
+                }
+                //开始监控商品
+                await StartMonitoringAsync();
+          
             }
-            else
+            catch (Exception e)
             {
-                logger.LogError("InitAsync:{account}登录失败", account.Email);
+                logger.BaseErrorLog("InitAsync", e);
             }
-            //开始监控商品
-            await StartMonitoringAsync();
             return IsLoginSuccess;
         }
 

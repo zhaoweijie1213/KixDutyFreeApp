@@ -226,6 +226,7 @@ namespace KixDutyFree.App.Manage
         {
             try
             {
+                int count = 0;
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
                     if (ErrorCount > 10 || driver == null)
@@ -245,14 +246,20 @@ namespace KixDutyFree.App.Manage
                         }
 
                     }
-
-                    bool status = await seleniumService.IsLogin(driver);
-                    if (!status)
+                    if (count == 30)
                     {
-                        await RelodAsync();
+                        count = 0;
+                        bool status = await seleniumService.IsLogin(driver);
+                        if (!status)
+                        {
+                            await RelodAsync();
+                        }
                     }
+               
                     // 设置检查间隔
                     await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+
+                    count++;
                 }
             }
             catch (TaskCanceledException e)

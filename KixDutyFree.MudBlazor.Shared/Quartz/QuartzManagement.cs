@@ -1,6 +1,6 @@
 ﻿namespace KixDutyFree.App.Quartz
 {
-    public class Class
+    public class QuartzManagement
     {
     }
 }

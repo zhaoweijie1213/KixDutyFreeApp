@@ -4,8 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <_PublishTargetUrl>D:\Git\KixDutyFreeApp\KixDutyFreeMud.App\bin\Release\net8.0\publish\</_PublishTargetUrl>
-    <History>True|2024-12-04T12:14:09.0767295Z||;True|2024-12-04T20:13:41.4591781+08:00||;True|2024-12-04T20:12:51.6287345+08:00||;True|2024-12-04T20:00:29.9982786+08:00||;True|2024-12-04T19:10:09.4923485+08:00||;True|2024-12-04T18:27:40.6787316+08:00||;True|2024-12-04T18:24:11.7423611+08:00||;True|2024-12-04T18:23:34.8493133+08:00||;True|2024-12-04T16:48:50.3698105+08:00||;</History>
+    <_PublishTargetUrl>F:\Git\KixDutyFreeApp\KixDutyFreeMud.App\bin\Release\net8.0\publish\</_PublishTargetUrl>
+    <History>True|2024-12-05T03:30:15.6081733Z||;True|2024-12-04T20:14:09.0767295+08:00||;True|2024-12-04T20:13:41.4591781+08:00||;True|2024-12-04T20:12:51.6287345+08:00||;True|2024-12-04T20:00:29.9982786+08:00||;True|2024-12-04T19:10:09.4923485+08:00||;True|2024-12-04T18:27:40.6787316+08:00||;True|2024-12-04T18:24:11.7423611+08:00||;True|2024-12-04T18:23:34.8493133+08:00||;True|2024-12-04T16:48:50.3698105+08:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

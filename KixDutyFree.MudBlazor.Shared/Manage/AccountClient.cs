@@ -206,34 +206,42 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task MonitorProductsAsync(CancellationToken cancellationToken)
         {
-            while (!_cancellationTokenSource.IsCancellationRequested)
+            try
             {
-                if (ErrorCount > 10 || driver == null)
+                while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    await RelodAsync();
-                    break;
-                }
-                else
-                {
-                    var products = await cacheManage.GetProductsAsync();
-                    if (products != null && products.Count > 0)
+                    if (ErrorCount > 10 || driver == null)
                     {
-                        foreach (var product in products)
-                        {
-                            await CheckProductAvailabilityAsync(product, cancellationToken);
-                        }
+                        await RelodAsync();
+                        break;
                     }
-                   
-                }
+                    else
+                    {
+                        var products = await cacheManage.GetProductsAsync();
+                        if (products != null && products.Count > 0)
+                        {
+                            foreach (var product in products)
+                            {
+                                await CheckProductAvailabilityAsync(product, cancellationToken);
+                            }
+                        }
 
-                bool status = await seleniumService.IsLogin(driver);
-                if (!status) 
-                {
-                    await RelodAsync();
+                    }
+
+                    bool status = await seleniumService.IsLogin(driver);
+                    if (!status)
+                    {
+                        await RelodAsync();
+                    }
+                    // 设置检查间隔
+                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
-                // 设置检查间隔
-                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
+            catch (TaskCanceledException e)
+            {
+                logger.LogWarning("MonitorProductsAsync:{Message}{ e.StackTrace)}", e.Message, e.StackTrace);
+            }
+  
         }
 
         /// <summary>

@@ -127,24 +127,25 @@ namespace KixDutyFree.App.Manage
                 IsLoginSuccess = res.Item2;
                 if (IsLoginSuccess)
                 {
-                    logger.LogInformation("InitAsync.初始化完成");
                     //设置httpClient Cookie
                     _httpClient = httpClientFactory.CreateClient(account.Email);
                     _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     //ConfigureHttpClientWithCookies();
+                    logger.LogInformation("InitAsync.初始化完成");
                 }
                 else
                 {
                     logger.LogError("InitAsync:{account}登录失败", account.Email);
                 }
                 //开始监控商品
-                StartMonitoringAsync();
+                await StartMonitoringAsync();
           
             }
             catch (Exception e)
             {
                 logger.BaseErrorLog("InitAsync", e);
             }
+            ErrorCount = 0;
             return IsLoginSuccess;
         }
 
@@ -176,17 +177,34 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 开始监控
         /// </summary>
-        public void StartMonitoringAsync()
+        public Task StartMonitoringAsync()
         {
-            //MonitorStatus = true;
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+            }
 
-            // 如果已有取消令牌源，先取消并释放
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
 
             // 创建新的取消令牌源
             _cancellationTokenSource = new CancellationTokenSource();
-            Task.Run(() => MonitorProductsAsync(_cancellationTokenSource.Token));
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await MonitorProductsAsync(_cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    logger.LogInformation("监控任务已取消");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "监控任务发生异常");
+                }
+            });
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -271,9 +289,7 @@ namespace KixDutyFree.App.Manage
                 {
                     throw new Exception("driver不能为null");
                 }
-                
-                // 导航到商品页面
-                driver.Navigate().GoToUrl(productAddress.Address);
+               
                 if (!memoryCache.TryGetValue(productAddress.Address, out ProductInfoEntity? product))
                 {
                     product = await productInfoRepository.FindByAddressAsync(productAddress.Address);
@@ -281,6 +297,8 @@ namespace KixDutyFree.App.Manage
                     {
                         try
                         {
+                            // 导航到商品页面
+                            driver.Navigate().GoToUrl(productAddress.Address);
                             var productDetail = driver.FindElement(By.ClassName("product-detail"));
                             // 获取 data-pid 属性的值 得到商品id
                             string productId = productDetail.GetAttribute("data-pid");
@@ -358,6 +376,11 @@ namespace KixDutyFree.App.Manage
          
                 }
      
+            }
+            catch (WebDriverTimeoutException ex)
+            {
+                logger.BaseErrorLog("CheckProductAvailabilityAsync.WebDriverTimeoutException", ex);
+                await RelodAsync();
             }
             catch (Exception ex)
             {
@@ -536,6 +559,12 @@ namespace KixDutyFree.App.Manage
                     logger.LogWarning("PlaceOrderAsync.找不到商品Id");
                 }
             }
+            catch (WebDriverTimeoutException ex)
+            {
+                ErrorCount++;
+                logger.BaseErrorLog("PlaceOrderAsync.WebDriverTimeoutException", ex);
+                await RelodAsync();
+            }
             catch (Exception ex)
             {
                 ErrorCount++;
@@ -574,7 +603,20 @@ namespace KixDutyFree.App.Manage
         {
             // 停止监控
             StopMonitoring();
-            driver?.Quit();
+            // 关闭并释放旧的 ChromeDriver 实例
+            if (driver != null)
+            {
+                try
+                {
+                    driver?.Quit();
+                    driver?.Dispose();
+                    logger.LogInformation("ReinitializeDriverAsync. 旧的 ChromeDriver 实例已关闭并释放。");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "ReinitializeDriverAsync. 关闭旧的 ChromeDriver 实例时出错。");
+                }
+            }
             logger.LogInformation("QuitAsync.停止实例:{email}", Account.Email);
             return Task.CompletedTask;
         }

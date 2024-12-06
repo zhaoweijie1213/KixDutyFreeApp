@@ -1,6 +1,7 @@
 ﻿
 using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models;
+using KixDutyFree.App.Quartz;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,8 +12,14 @@ using System.Diagnostics;
 
 namespace KixDutyFree.App.Services
 {
-    public class WorkerService(ILogger<WorkerService> logger, Manager manager, IServiceProvider services) : BackgroundService
+    public class WorkerService(ILogger<WorkerService> logger, Manager manager, QuartzManagement quartzManagement) : BackgroundService
     {
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await quartzManagement.StartMonitorAsync();
+            await base.StartAsync(cancellationToken);
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

@@ -1,4 +1,8 @@
-﻿using Quartz;
+﻿using KixDutyFree.App.Manage;
+using KixDutyFree.Shared.Manage;
+using Microsoft.Extensions.Logging;
+using Quartz;
+using QYQ.Base.Common.Extension;
 using QYQ.Base.Common.IOCExtensions;
 using System;
 using System.Collections.Generic;
@@ -12,11 +16,39 @@ namespace KixDutyFree.Shared.Quartz.Jobs
     /// 商品监控任务
     /// </summary>
     [DisallowConcurrentExecution]
-    public class MonitorProducts : IJob
+    public class MonitorProducts(ILogger<MonitorProducts> logger, AccountClientFactory accountClientFactory, CacheManage cacheManage) : IJob, ITransientDependency
     {
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            throw new NotImplementedException();
+            string guid = Guid.NewGuid().ToString();
+            logger.LogInformation("Execute.标识符:{Guid}", guid);
+            try
+            {
+                var id = context.JobDetail.JobDataMap.Get("id")?.ToString();
+                if (id == null)
+                {
+                    return;
+                }
+                var defaultClient = await accountClientFactory.GetDefaultClientAsync();
+                var product = await cacheManage.GetProductInfoAsync(id);
+                if (product == null) return;
+                bool isAvailable=  await defaultClient.CheckProductAvailabilityAsync(product, context.CancellationToken);
+                if (isAvailable)
+                {
+                    List<Task> tasks = new List<Task>();
+                    //下单
+                    foreach (var client in accountClientFactory.Clients) 
+                    {
+                        tasks.Add(client.Value.FullCheckProductAvailabilityAsync(product, context.CancellationToken));
+                    }
+                    await Task.WhenAll(tasks);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.BaseErrorLog("Execute", e);
+            }
+
         }
     }
 }

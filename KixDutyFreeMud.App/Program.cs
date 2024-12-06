@@ -38,6 +38,17 @@ builder.Services.AddQuartz().AddQuartzServer(options =>
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 
+builder.Services.AddQuartz(q =>
+{
+    q.UseDefaultThreadPool(x => x.MaxConcurrency = 50);
+    //q.UseInMemoryStore();
+});
+builder.Services.AddQuartzHostedService(options =>
+{
+    // when shutting down we want jobs to complete gracefully
+    options.WaitForJobsToComplete = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,5 +1,8 @@
 ﻿using KixDutyFree.App.Models;
+using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Models.Excel;
+using KixDutyFree.App.Repository;
+using KixDutyFree.Shared.Manage;
 using Magicodes.ExporterAndImporter.Core;
 using Magicodes.ExporterAndImporter.Excel;
 using Microsoft.Extensions.Caching.Memory;
@@ -8,7 +11,7 @@ using QYQ.Base.Common.IOCExtensions;
 
 namespace KixDutyFree.App.Manage
 {
-    public class CacheManage(ILogger<CacheManage> logger, IMemoryCache memoryCache) : ITransientDependency
+    public class CacheManage(ILogger<CacheManage> logger, IMemoryCache memoryCache,ProductInfoRepository productInfoRepository) : ITransientDependency
     {
 
         /// <summary>
@@ -52,6 +55,52 @@ namespace KixDutyFree.App.Manage
                 }
             }
             return products;
+        }
+
+        /// <summary>
+        /// 获取商品信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProductInfoEntity?> GetProductInfoAsync(string id)
+        {
+            string key = CustomCacheKeys.ProductInfo(id);
+            if (!memoryCache.TryGetValue(key, out ProductInfoEntity? productInfo))
+            {
+                productInfo = await productInfoRepository.FindAsync(id);
+                if (productInfo != null)
+                {
+                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(30));
+                }
+            }
+            return productInfo;
+        }
+
+        /// <summary>
+        /// 获取商品信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProductInfoEntity?> GetProductInfoByAddressAsync(string address)
+        {
+            string key = CustomCacheKeys.ProductInfoByAddress(address);
+            if (!memoryCache.TryGetValue(key, out ProductInfoEntity? productInfo))
+            {
+                productInfo = await productInfoRepository.FindByAddressAsync(address);
+                if (productInfo != null)
+                {
+                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(30));
+                }
+            }
+            return productInfo;
+        }
+
+        /// <summary>
+        /// 设置商品信息
+        /// </summary>
+        /// <returns></returns>
+        public void SetProductInfoByAddress(string address, ProductInfoEntity product)
+        {
+            string key = CustomCacheKeys.ProductInfoByAddress(address);
+            memoryCache.Set(key, product, TimeSpan.FromMinutes(30));
         }
     }
 }

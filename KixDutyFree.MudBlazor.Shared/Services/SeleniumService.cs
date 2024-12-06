@@ -1,34 +1,31 @@
-﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
-using QYQ.Base.Common.IOCExtensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models;
-using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
+using KixDutyFree.App.Models.Entity;
+using KixDutyFree.App.Repository;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using KixDutyFree.App.Models.Response;
-using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
+using QYQ.Base.Common.IOCExtensions;
+using System.Text.RegularExpressions;
 
 namespace KixDutyFree.App.Services
 {
 
-    public class SeleniumService(ILogger<SeleniumService> logger) : ITransientDependency
+    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository,CacheManage cacheManage) : ITransientDependency
     {
-        ///// <summary>
-        ///// driver实例
-        ///// </summary>
-        //public readonly List<ChromeDriver> drivers = [];
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //private readonly ChromeDriver monitorDriver = new ChromeDriver();
+        public const string Home = "https://www.kixdutyfree.jp/cn";
+
+        public const string LoginUrl = "https://www.kixdutyfree.jp/cn/login";
+
+        public const string AccountUrl = "https://www.kixdutyfree.jp/cn/account";
 
         /// <summary>
         /// 创建实例
         /// </summary>
-        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountModel account, bool headless = false)
+        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountModel? account, bool headless = false)
         {
             ChromeDriver driver;
             bool isLogin = false;
@@ -50,15 +47,31 @@ namespace KixDutyFree.App.Services
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
-            driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/login/");
+            driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn");
             //获取标题
             var title = driver.Title;
             logger.LogInformation("Title:{title}", title);
 
             await Confirm(driver);
+            //登录
+            if (account != null)
+            {
+                isLogin = await Login(account, driver);
+            }
+            return new(driver, isLogin);
+        }
+
+        /// <summary>
+        /// 登录
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Login(AccountModel account, ChromeDriver driver)
+        {
+            bool isLogin = false;
             //检测登录按钮
             try
             {
+                driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/login/");
                 //输入账号密码
                 var email = driver.FindElement(By.Id("login-form-email"));
                 email.SendKeys(account.Email);
@@ -74,9 +87,7 @@ namespace KixDutyFree.App.Services
             {
                 logger.LogWarning("TaskStartAsync:{Message}", e.Message);
             }
-            ////保存实例到集合
-            //drivers.Add(driver);
-            return new(driver, isLogin);
+            return isLogin;
         }
 
         /// <summary>
@@ -90,8 +101,15 @@ namespace KixDutyFree.App.Services
 
             try
             {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
-
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
+                if (driver.Url.Contains(AccountUrl))
+                {
+                    driver.Navigate().GoToUrl(Home);
+                }
+                else
+                {
+                    driver.Navigate().GoToUrl(AccountUrl);
+                }
                 // 尝试查找表示已登录状态的元素
                 var accountInfo = wait.Until(driver =>
                 {
@@ -121,6 +139,48 @@ namespace KixDutyFree.App.Services
             }
 
             return Task.FromResult(isLogin);
+        }
+
+        /// <summary>
+        /// 获取商品信息
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="driver"></param>
+        /// <returns></returns>
+        public async Task<ProductInfoEntity?> GetProductIdAsync(string address, ChromeDriver driver)
+        {
+            var product = await cacheManage.GetProductInfoByAddressAsync(address);
+            if (product == null)
+            {
+                try
+                {
+                    // 导航到商品页面
+                    driver.Navigate().GoToUrl(address);
+                    var productDetail = driver.FindElement(By.ClassName("product-detail"));
+                    // 获取 data-pid 属性的值 得到商品id
+                    string productId = productDetail.GetAttribute("data-pid");
+                    if (productId != null)
+                    {
+
+                        product = new ProductInfoEntity()
+                        {
+                            Id = productId,
+                            Address = address,
+                            CreateTime = DateTime.Now,
+                            UpdateTime = DateTime.Now
+                        };
+                        product = await productInfoRepository.InsertAsync(product);
+                        //设置缓存
+                        cacheManage.SetProductInfoByAddress(address, product);
+                    }
+                }
+                catch (NoSuchElementException e)
+                {
+                    logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                }
+            }
+
+            return product;
         }
 
 
@@ -305,30 +365,6 @@ namespace KixDutyFree.App.Services
             #endregion
 
         }
-
-        ///// <summary>
-        ///// 多页面监控
-        ///// </summary>
-        ///// <param name="urls"></param>
-        ///// <param name="credentials"></param>
-        ///// <returns></returns>
-        //public async Task MonitorPagesWithMultipleAccounts(List<string> urls)
-        //{
-        //    var tasks = new List<Task>();
-        //    foreach (var item in drivers)
-        //    {
-
-        //    }
-        //    for (int i = 0; i < urls.Count; i++)
-        //    {
-        //        string url = urls[i];
-        //        var credential = credentials[i];
-
-        //        tasks.Add(TaskStartAsync(accounts));
-        //    }
-
-        //    await Task.WhenAll(tasks);
-        //}
 
         /// <summary>
         /// 信息确认

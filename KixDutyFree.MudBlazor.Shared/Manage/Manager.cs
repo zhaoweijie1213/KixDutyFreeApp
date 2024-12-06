@@ -1,6 +1,8 @@
 ﻿using KixDutyFree.App.Models;
+using KixDutyFree.App.Quartz;
 using KixDutyFree.App.Repository;
 using KixDutyFree.App.Services;
+using KixDutyFree.Shared.Manage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,13 +13,9 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.App.Manage
 {
-    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository, IConfiguration configuration) : ISingletonDependency
+    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
+        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement) : ISingletonDependency
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public ConcurrentDictionary<string, AccountClient> Clients { get; set; } = new();
-
         /// <summary>
         /// 初始化客户端
         /// </summary>
@@ -38,12 +36,9 @@ namespace KixDutyFree.App.Manage
             {
                 var accountClient = serviceProvider.GetService<AccountClient>()!;
                 //tasks.Add(accountClient.InitAsync(account));
-                if (Clients.TryAdd(account.Email, accountClient))
+                if (accountClientFactory.Clients.TryAdd(account.Email, accountClient))
                 {
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        await accountClient.InitAsync(account);
-                    }));
+                    tasks.Add(accountClient.InitAsync(account));
                 }
                 else
                 {
@@ -52,6 +47,8 @@ namespace KixDutyFree.App.Manage
                 }
             }
             await Task.WhenAll(tasks);
+            //检查登录状态任务
+            await quartzManagement.StartLoginCheckAsync();
         }
 
 
@@ -61,10 +58,12 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task StopAsync()
         {
-            foreach (var client in Clients.Values)
+            List<Task> tasks = [];
+            foreach (var client in accountClientFactory.Clients.Values)
             {
-                await client.QuitAsync();
+                tasks.Add(client.QuitAsync());
             }
+            await Task.WhenAll(tasks);
         }
     }
 }

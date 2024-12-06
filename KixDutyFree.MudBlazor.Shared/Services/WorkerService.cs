@@ -15,14 +15,17 @@ namespace KixDutyFree.App.Services
     public class WorkerService(ILogger<WorkerService> logger, Manager manager, QuartzManagement quartzManagement) : BackgroundService
     {
 
-        public override async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await quartzManagement.StartMonitorAsync();
-            await base.StartAsync(cancellationToken);
-        }
+        //public override async Task StartAsync(CancellationToken cancellationToken)
+        //{
+        //    await base.StartAsync(cancellationToken);
+        //}
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //商品监控
+            await quartzManagement.StartMonitorAsync();
+            //错误检查
+            await quartzManagement.StartErrorCheckAsync();
             //var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
             var address = "http://localhost:5128";
             if (address != null)

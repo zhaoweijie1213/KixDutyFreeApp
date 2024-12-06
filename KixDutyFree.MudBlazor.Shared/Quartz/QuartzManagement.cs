@@ -89,5 +89,30 @@ namespace KixDutyFree.App.Quartz
             }
         }
 
+        /// <summary>
+        /// 检查登录状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartErrorCheckAsync()
+        {
+
+            var scheduler = await schedulerFactory.GetScheduler();
+            var job = JobBuilder.Create<CheckErrorJob>()
+                .WithIdentity($"error_check_job", "error_check")
+                .Build();
+
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity($"erroe_check_trigger", "error_check")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                .WithIntervalInMinutes(10)
+                .RepeatForever())
+                .Build();
+            await scheduler.ScheduleJob(job, trigger);
+            logger.LogInformation("StartMonitorAsync.添加错误检测任务");
+
+
+        }
+
     }
 }

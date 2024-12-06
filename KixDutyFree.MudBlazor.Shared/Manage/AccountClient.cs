@@ -46,7 +46,7 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 错误次数
         /// </summary>
-        private int ErrorCount { get; set; }
+        public int ErrorCount { get; set; }
 
         private readonly SemaphoreSlim _driverSemaphore = new(1, 1);
 
@@ -393,7 +393,7 @@ namespace KixDutyFree.App.Manage
                         quantity = product.Availability?.MaxOrderQuantity ?? 1;
                     }
                     CartAddProductResponse? res = null;
-                    var productMonitor = await productMonitorRepository.QueryAsync(Account.Email, product.Id);
+                    var productMonitor = await cacheManage.GetProductMonitorAsync(Account.Email, product.Id);
                     if (productMonitor == null)
                     {
                         productMonitor = new ProductMonitorEntity()
@@ -453,7 +453,7 @@ namespace KixDutyFree.App.Manage
                                 {
                                     //保存航班信息
                                     FlightSaveInfoResponse? saveInfo = null;
-                                    if (productMonitor.Setup == OrderSetup.FlightInfoSaved)
+                                    if (productMonitor.Setup == OrderSetup.AddedToCart)
                                     {
                                         // 查找csrf_token
                                         var csrfTokenElement = driver.FindElement(By.Name("csrf_token"));
@@ -788,6 +788,10 @@ namespace KixDutyFree.App.Manage
             {
                 data = JsonConvert.DeserializeObject<FlightSaveInfoResponse>(content);
             }
+            else
+            {
+                ErrorCount++;
+            }
             return data;
         }
 
@@ -837,6 +841,10 @@ namespace KixDutyFree.App.Manage
             {
                 data = JsonConvert.DeserializeObject<SubmitPaymentResponse>(content);
             }
+            else
+            {
+                ErrorCount++;
+            }
             return data;
         }
 
@@ -860,6 +868,10 @@ namespace KixDutyFree.App.Manage
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<PlaceOrderResponse>(content);
+            }
+            else
+            {
+                ErrorCount++;
             }
             return data;
         }

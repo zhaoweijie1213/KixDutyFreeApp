@@ -11,7 +11,7 @@ using QYQ.Base.Common.IOCExtensions;
 
 namespace KixDutyFree.App.Manage
 {
-    public class CacheManage(ILogger<CacheManage> logger, IMemoryCache memoryCache,ProductInfoRepository productInfoRepository) : ITransientDependency
+    public class CacheManage(ILogger<CacheManage> logger, IMemoryCache memoryCache,ProductInfoRepository productInfoRepository,ProductMonitorRepository productMonitorRepository) : ITransientDependency
     {
 
         /// <summary>
@@ -101,6 +101,26 @@ namespace KixDutyFree.App.Manage
         {
             string key = CustomCacheKeys.ProductInfoByAddress(address);
             memoryCache.Set(key, product, TimeSpan.FromMinutes(30));
+        }
+
+        /// <summary>
+        /// 获取监控信息
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="productid"></param>
+        /// <returns></returns>
+        public async Task<ProductMonitorEntity?> GetProductMonitorAsync(string email,string productId)
+        {
+            string key = CustomCacheKeys.ProductMonitor(email, productId);
+            if (!memoryCache.TryGetValue(key, out ProductMonitorEntity? productInfo))
+            {
+                productInfo = await productMonitorRepository.QueryAsync(email, productId);
+                if (productInfo != null)
+                {
+                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(30));
+                }
+            }
+            return productInfo;
         }
     }
 }

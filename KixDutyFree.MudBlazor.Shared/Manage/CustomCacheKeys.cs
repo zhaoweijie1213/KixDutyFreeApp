@@ -28,6 +28,17 @@ namespace KixDutyFree.Shared.Manage
         {
             return $"ProductInfo_Address_{address}";
         }
+        
+        /// <summary>
+        /// 商品监控
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public static string ProductMonitor(string email,string productId) 
+        {
+            return $"ProductMonitor_{email}_{productId}";
+        }
 
     }
 }

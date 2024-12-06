@@ -1,12 +1,9 @@
-using KixDutyFree.App.Services;
-using KixDutyFree.App.Components;
-using QYQ.Base.Common.IOCExtensions;
 using KixDutyFree.App.Models;
+using KixDutyFree.App.Models.Config;
+using KixDutyFree.App.Services;
 using Quartz;
 using Quartz.AspNetCore;
-using KixDutyFree.App.Models.Config;
-using ElectronNET.API;
-using ElectronNET.API.Entities;
+using QYQ.Base.Common.IOCExtensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

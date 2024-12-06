@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="ElectronNET.API" Version="23.6.2" />
 	<PackageReference Include="Magicodes.IE.Excel" Version="2.7.5.2" />
 	<PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
 	<PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />

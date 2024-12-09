@@ -8,9 +8,10 @@
     <RootNamespace>KixDutyFree.App</RootNamespace>
 	<InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsNamespaces>
 	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-	<UseWindowsForms>False</UseWindowsForms>
+	<UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="HandyControl" Version="3.5.1" />
     <PackageReference Include="Masa.Blazor" Version="1.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="9.0.12" />
   </ItemGroup>

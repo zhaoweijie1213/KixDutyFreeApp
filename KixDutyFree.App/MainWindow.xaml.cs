@@ -30,27 +30,63 @@ namespace KixDutyFree.App
 
         public MainWindow()
         {
-         
-
-
             InitializeComponent();
-
-            //var serviceCollection = new ServiceCollection();
-            //serviceCollection.AddWpfBlazorWebView();
-            //serviceCollection.AddMasaBlazor();
-
-            //#if DEBUG
-            //    		serviceCollection.AddBlazorWebViewDeveloperTools();
-            //#endif
-            //Resources.Add("services", serviceCollection.BuildServiceProvider());
-
-            //Resources.Add("services", _host.Services);
             Resources.Add("services", GobalObject.serviceProvider);
 
-            //Task.Run(async () =>
-            //{
-            //    await _host.StartAsync();
-            //});
+            AppNotifyIcon.MouseDoubleClick += NotifyIcon_MouseDoubleClick;
+            // 创建上下文菜单
+            var contextMenu = new ContextMenu();
+
+            var showItem = new MenuItem();
+            showItem.Header = "打开";
+            showItem.Click += ShowItem_Click;
+            var exitItem = new MenuItem();
+            exitItem.Header = "退出";
+            exitItem.Click += ExitItem_Click;
+            contextMenu.Items.Add(showItem);
+            contextMenu.Items.Add(exitItem);
+            //AppNotifyIcon.ContextContent = contextMenu;
+            AppNotifyIcon.ContextMenu = contextMenu;
+        }
+
+        private void NotifyIcon_MouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        private void ShowMainWindow()
+        {
+            this.Show();
+            this.WindowState = WindowState.Normal;
+            this.Activate();
+        }
+
+        private void ShowItem_Click(object? sender, RoutedEventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        private void ExitItem_Click(object? sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (this.WindowState == WindowState.Minimized)
+            {
+                this.Hide();
+            }
+            base.OnStateChanged(e);
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            // 阻止窗口真正关闭，隐藏到托盘
+            e.Cancel = true;
+            this.Hide();
+            // 可选：在此处记录日志或执行其他操作
+            base.OnClosing(e);
         }
     }
 }

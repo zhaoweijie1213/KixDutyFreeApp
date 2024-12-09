@@ -10,26 +10,28 @@
     <MRow>
         @foreach (var product in products)
         {
-            <MCard>
-                <ProgressContent>
-                    <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
-                </ProgressContent>
-                <ChildContent>
+              <MCol Md="4">
+                <MCard>
+                    <ProgressContent>
+                        <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
+                    </ProgressContent>
+                    <ChildContent>
 
-                    <MImage Alt="@product.Id" Height="250" Src="@product.Image" />
+                        <MImage Alt="@product.Id" Height="250" Src="@product.Image" />
 
-                    <MCardTitle>@product.Name</MCardTitle>
+                        <MCardTitle>@product.Name</MCardTitle>
 
-                    <MCardText>
-                        <div class="my-4 text-subtitle-1">ID: @product.Id</div>
-                        <div>创建日期: @product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
-                    </MCardText>
+                        <MCardText>
+                            <div class="my-4 text-subtitle-1">ID: @product.Id</div>
+                            <div>创建日期: @product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                        </MCardText>
 
-                    <MCardActions>
-                        <MButton Color="deep-purple lighten-2" Text @onclick="@(() => OpenProductPage(product.Address))">商品页面</MButton>
-                    </MCardActions>
-                </ChildContent>
-            </MCard>
+                        <MCardActions>
+                            <MButton Color="deep-purple lighten-2" Text @onclick="@(() => OpenProductPage(product.Address))">商品页面</MButton>
+                        </MCardActions>
+                    </ChildContent>
+                </MCard>
+              </MCol>
         }
     </MRow>
 </MContainer>

@@ -9,6 +9,7 @@
 	<InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsNamespaces>
 	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 	<UseWindowsForms>True</UseWindowsForms>
+	<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.5.1" />

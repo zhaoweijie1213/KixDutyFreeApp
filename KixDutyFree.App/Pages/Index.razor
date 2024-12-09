@@ -1,0 +1,49 @@
+﻿@page "/"
+@using KixDutyFree.App.Models.Entity
+@using KixDutyFree.Shared.Services
+@inject ProductService productService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>商品列表</PageTitle>
+
+<MContainer>
+    <MRow>
+        @foreach (var product in products)
+        {
+            <MCard>
+                <ProgressContent>
+                    <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
+                </ProgressContent>
+                <ChildContent>
+
+                    <MImage Alt="@product.Id" Height="250" Src="@product.Image" />
+
+                    <MCardTitle>@product.Name</MCardTitle>
+
+                    <MCardText>
+                        <div class="my-4 text-subtitle-1">ID: @product.Id</div>
+                        <div>创建日期: @product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                    </MCardText>
+
+                    <MCardActions>
+                        <MButton Color="deep-purple lighten-2" Text @onclick="@(() => OpenProductPage(product.Address))">商品页面</MButton>
+                    </MCardActions>
+                </ChildContent>
+            </MCard>
+        }
+    </MRow>
+</MContainer>
+
+@code {
+    public List<ProductInfoEntity> products { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productService.GetProductsAsync();
+    }
+
+    private async Task OpenProductPage(string address)
+    {
+        await JSRuntime.InvokeVoidAsync("open", address, "_blank");
+    }
+}

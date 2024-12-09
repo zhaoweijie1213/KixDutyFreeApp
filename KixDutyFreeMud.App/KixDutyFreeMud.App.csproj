@@ -18,7 +18,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\KixDutyFree.MudBlazor.Shared\KixDutyFree.Shared.csproj" />
     <ProjectReference Include="..\KixDutyFree.Shared\KixDutyFree.Shared.csproj" />
   </ItemGroup>
 </Project>

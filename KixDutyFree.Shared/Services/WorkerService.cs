@@ -26,12 +26,12 @@ namespace KixDutyFree.Shared.Services
             //错误检查
             await quartzManagement.StartErrorCheckAsync();
             //var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
-            var address = "http://localhost:5128";
-            if (address != null)
-            {
-                // 打开浏览器
-                OpenBrowser(address);
-            }
+            //var address = "http://localhost:5128";
+            //if (address != null)
+            //{
+            //    // 打开浏览器
+            //    OpenBrowser(address);
+            //}
             //加载客户端
             await manager.InitClientAsync();
         }

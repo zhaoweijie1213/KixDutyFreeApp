@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFreeMud.App", "KixDu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFree.Shared", "KixDutyFree.Shared\KixDutyFree.Shared.csproj", "{193D1281-50F7-455A-931D-07F0E234BEB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KixDutyFree.App", "KixDutyFree.App\KixDutyFree.App.csproj", "{82D99DAA-6E5D-477F-909F-87F439B0350B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{193D1281-50F7-455A-931D-07F0E234BEB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{193D1281-50F7-455A-931D-07F0E234BEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{193D1281-50F7-455A-931D-07F0E234BEB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82D99DAA-6E5D-477F-909F-87F439B0350B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82D99DAA-6E5D-477F-909F-87F439B0350B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82D99DAA-6E5D-477F-909F-87F439B0350B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82D99DAA-6E5D-477F-909F-87F439B0350B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

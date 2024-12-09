@@ -31,13 +31,19 @@ namespace KixDutyFree.Shared.Services
             bool isLogin = false;
             if (headless)
             {
+                // 创建 ChromeDriverService 实例
+                ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+                // 隐藏命令行窗口
+                service.HideCommandPromptWindow = true;
+                // 可选：抑制初始诊断信息
+                service.SuppressInitialDiagnosticInformation = true;
                 // 创建 ChromeOptions 实例并设置无头模式
                 var options = new ChromeOptions();
                 options.AddArgument("--headless"); // 启用无头模式
                 options.AddArgument("--disable-gpu"); // 如果您使用的是 Windows 系统，建议添加此行
                 options.AddArgument("--no-sandbox"); // 解决 DevToolsActivePort 文件不存在的报错
                 options.AddArgument("--disable-dev-shm-usage"); // 解决资源不足的问题
-                driver = new ChromeDriver(options);
+                driver = new ChromeDriver(service, options);
             }
             else
             {

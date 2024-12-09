@@ -1,0 +1,36 @@
+﻿@page "/account"
+@using KixDutyFree.Shared.Models.Entity
+@using KixDutyFree.Shared.Services
+@inject AccountService accountService;
+
+<PageTitle>账号列表</PageTitle>
+<MContainer Fluid>
+    <MDataTable Stripe Headers="_headers"
+                Loading="@Loading"
+                Items="Accounts"
+                ItemsPerPage="20"
+                Class="elevation-1"></MDataTable>
+</MContainer>
+
+
+@code {
+    private List<DataTableHeader<AccountEntity>> _headers = new List<DataTableHeader<AccountEntity>>
+        {
+          new (){ Text= "邮箱",Align= DataTableHeaderAlign.Center, Value= nameof(AccountEntity.Email)},
+          new (){ Text= "航空公司", Align= DataTableHeaderAlign.Center, Value= nameof(AccountEntity.AirlineName)},
+          new (){ Text= "航班号",Align= DataTableHeaderAlign.Center, Value= nameof(AccountEntity.FlightNo)},
+          new (){ Text= "航班时间",Align= DataTableHeaderAlign.Center,Value= nameof(AccountEntity.Date)},
+          new (){ Text= "默认下单数量",Align= DataTableHeaderAlign.Center,Value= nameof(AccountEntity.Quantity) }
+        };
+
+    private List<AccountEntity> Accounts { get; set; } = new();
+
+    private bool Loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Accounts = await accountService.GetAccountAsync();
+
+        Loading = false;
+    }
+}

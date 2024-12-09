@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Quartz.AspNetCore;
 using Serilog;
+using System.Diagnostics;
 
 namespace KixDutyFree.App
 {
@@ -47,7 +48,13 @@ namespace KixDutyFree.App
                 Header = "退出"
             };
             exitItem.Click += ExitItem_Click;
+            var openFolder = new MenuItem()
+            {
+                Header = "文件夹目录"
+            };
+            openFolder.Click += OpenFolder_Click;
             contextMenu.Items.Add(showItem);
+            contextMenu.Items.Add(openFolder);
             contextMenu.Items.Add(exitItem);
             //AppNotifyIcon.ContextContent = contextMenu;
             AppNotifyIcon.ContextMenu = contextMenu;
@@ -58,6 +65,9 @@ namespace KixDutyFree.App
             ShowMainWindow();
         }
 
+        /// <summary>
+        /// 显示窗口
+        /// </summary>
         private void ShowMainWindow()
         {
             this.Show();
@@ -68,6 +78,24 @@ namespace KixDutyFree.App
         private void ShowItem_Click(object? sender, RoutedEventArgs e)
         {
             ShowMainWindow();
+        }  
+        
+        private void OpenFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = appDirectory,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"无法打开程序目录：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExitItem_Click(object? sender, RoutedEventArgs e)

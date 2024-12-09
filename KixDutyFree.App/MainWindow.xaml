@@ -7,7 +7,7 @@
         xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
         xmlns:hc="https://handyorg.github.io/handycontrol" x:Class="KixDutyFree.App.MainWindow"
         mc:Ignorable="d"
-        Title="KixDutyFree App" Height="450" Width="800">
+        Title="KixDutyFree App" Height="600" Width="1000">
     <Grid>
         <blazor:BlazorWebView HostPage="wwwroot\index.html" Services="{DynamicResource services}">
             <blazor:BlazorWebView.RootComponents>

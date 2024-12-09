@@ -37,11 +37,15 @@ namespace KixDutyFree.App
             // 创建上下文菜单
             var contextMenu = new ContextMenu();
 
-            var showItem = new MenuItem();
-            showItem.Header = "打开";
+            var showItem = new MenuItem
+            {
+                Header = "打开"
+            };
             showItem.Click += ShowItem_Click;
-            var exitItem = new MenuItem();
-            exitItem.Header = "退出";
+            var exitItem = new MenuItem
+            {
+                Header = "退出"
+            };
             exitItem.Click += ExitItem_Click;
             contextMenu.Items.Add(showItem);
             contextMenu.Items.Add(exitItem);

@@ -90,7 +90,7 @@ namespace KixDutyFree.App.Quartz
         }
 
         /// <summary>
-        /// 检查登录状态
+        /// 检查错误次数
         /// </summary>
         /// <returns></returns>
         public async Task StartErrorCheckAsync()
@@ -105,7 +105,7 @@ namespace KixDutyFree.App.Quartz
                 .WithIdentity($"erroe_check_trigger", "error_check")
                 .StartNow()
                 .WithSimpleSchedule(x => x
-                .WithIntervalInMinutes(10)
+                .WithIntervalInSeconds(5)
                 .RepeatForever())
                 .Build();
             await scheduler.ScheduleJob(job, trigger);

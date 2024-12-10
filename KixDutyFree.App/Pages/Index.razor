@@ -33,6 +33,10 @@
                         <MCardText>
                             <div class="my-4 text-subtitle-1">ID: @product.Id</div>
                             <div>创建日期: @product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                            <div>监控状态:<MIcon Color="success">mdi-circle</MIcon>@product.MonitorStatus</div>
+                            <div>可用状态:<MIcon Color="success">mdi-circle</MIcon>@product.IsAvailable</div>
+                            <div>购买数量:@product.Quantity</div>
+                            <div>最大购买数量:@product.MaxQuantity</div>
                         </MCardText>
 
                         <MCardActions>

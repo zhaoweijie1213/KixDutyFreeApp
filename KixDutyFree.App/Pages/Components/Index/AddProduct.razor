@@ -1,0 +1,82 @@
+﻿@using KixDutyFree.Shared.Models.Input
+@using KixDutyFree.Shared.Services
+@inject ProductService productService
+
+<PModal @bind-Value="Show"
+FormModel="input"
+Persistent
+Title="Title"
+Width="500"
+OnSave="HandleOnSave"
+OnCancel="HandleOnCancel">
+    <MRow>
+        <MCol Cols="12">
+            <MTextField @bind-Value="input.Address"
+            Label="地址"
+            Dense
+            Outlined
+            HideDetails="@("auto")" />
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="input.Quantity"
+            Label="数量"
+            Dense
+            Outlined
+            HideDetails="@("auto")" />
+        </MCol>
+        @if (exception != null)
+        {
+            <MCol Cols="12">
+                @exception.Message
+            </MCol>
+        }
+    </MRow>
+</PModal>
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    AddProductInput input = new();
+    private bool throwException;
+    private Exception? exception;
+
+    private void OnInputChange(ChangeEventArgs e)
+    {
+        // 当子组件内的输入有变化时，通过回调通知父组件更新值
+        ShowChanged.InvokeAsync((bool)e.Value!);
+    }
+
+    protected override void OnParametersSet()
+    {
+        input = new();
+    }
+
+    /// <summary>
+    /// 保存按钮
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    private async Task HandleOnSave(ModalActionEventArgs args)
+    {
+        try
+        {
+            await productService.AddProduct(input);
+        }
+        catch (Exception e)
+        {
+            args.Cancel();
+            exception = e;
+        }
+    }
+
+    private void HandleOnCancel()
+    {
+        Show = false;
+        exception = null;
+    }
+}

@@ -1,0 +1,30 @@
+﻿@using KixDutyFree.App.Service
+@inject LoadingService loadingService
+
+
+<MOverlay Contained @bind-Value="isLoading">
+    <MProgressCircular indeterminate Size="64"></MProgressCircular>
+</MOverlay>
+
+
+@code {
+    private bool isLoading;
+
+    protected override void OnInitialized()
+    {
+        loadingService.OnChange += StateHasChanged;
+        isLoading = loadingService.IsLoading;
+        loadingService.Show();
+    }
+
+    private void HandleLoadingChange()
+    {
+        isLoading = loadingService.IsLoading;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        loadingService.OnChange -= HandleLoadingChange;
+    }
+}

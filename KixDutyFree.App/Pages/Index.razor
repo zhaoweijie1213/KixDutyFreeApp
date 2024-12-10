@@ -1,16 +1,25 @@
 ﻿@page "/"
 @using KixDutyFree.App.Models.Entity
+@using KixDutyFree.App.Service
+@using KixDutyFree.Shared.Models.Input
 @using KixDutyFree.Shared.Services
+@using KixDutyFree.App.Pages.Components.Index
 @inject ProductService productService
 @inject IJSRuntime JSRuntime
+@inject LoadingService loadingService
 
 <PageTitle>商品列表</PageTitle>
 
 <MContainer Fluid>
+    <MRow Cols="12">
+        <MCol>
+            <MButton IconName="mdi-plus" Color="blue-grey" OnClick="ShowAddModal">新增商品</MButton>
+        </MCol>
+    </MRow>
     <MRow>
         @foreach (var product in products)
         {
-              <MCol Md="4" Lg="3" Xl="2">
+            <MCol Md="4" Lg="3" Xl="2">
                 <MCard>
                     <ProgressContent>
                         <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
@@ -28,24 +37,53 @@
 
                         <MCardActions>
                             <MButton Color="deep-purple lighten-2" Text @onclick="@(() => OpenProductPage(product.Address))">商品页面</MButton>
+                            <MButton Color="red accent-3" Text @onclick="@(() => DelAsync(product.Id))">删除</MButton>
                         </MCardActions>
                     </ChildContent>
                 </MCard>
-              </MCol>
+            </MCol>
         }
     </MRow>
 </MContainer>
 
+<AddProduct @bind-Show="showAddDialog"></AddProduct>
 @code {
     public List<ProductInfoEntity> products { get; set; } = new();
+
+    /// <summary>
+    /// 显示模态框
+    /// </summary>
+    private bool showAddDialog{ get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         products = await productService.GetProductsAsync();
+        loadingService.Hide();
+    }
+
+    /// <summary>
+    /// 显示模态框
+    /// </summary>
+    private void ShowAddModal()
+    {
+        showAddDialog = true;
     }
 
     private async Task OpenProductPage(string address)
     {
         await JSRuntime.InvokeVoidAsync("open", address, "_blank");
+    }
+
+    private async Task DelAsync(string id)
+    {
+        var status = await productService.DelAsync(id);
+        if (status)
+        {
+            products = await productService.GetProductsAsync();
+        }
+        else
+        {
+
+        }
     }
 }

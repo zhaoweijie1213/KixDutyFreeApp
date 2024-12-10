@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace KixDutyFree.Shared.Models.Entity
 {
     [SugarTable("orders")]
-    public class OrderEntity
+    public class OrdersEntity
     {
         /// <summary>
         /// 订单Id

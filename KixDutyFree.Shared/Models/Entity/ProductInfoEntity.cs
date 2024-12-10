@@ -27,6 +27,11 @@ namespace KixDutyFree.App.Models.Entity
         public string Image { get; set; } = string.Empty;
 
         /// <summary>
+        /// 购买数量
+        /// </summary>
+        public int Quantity { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }

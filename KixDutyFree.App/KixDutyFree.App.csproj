@@ -23,5 +23,11 @@
     <Content Update="wwwroot\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+	<Content Update="**\*.razor.css">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pages\Components\Account\" />
   </ItemGroup>
 </Project>

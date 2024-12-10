@@ -2,6 +2,7 @@
 using KixDutyFree.App.Models;
 using KixDutyFree.App.Quartz;
 using KixDutyFree.App.Repository;
+using KixDutyFree.Shared.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,18 @@ using System.Collections.Concurrent;
 namespace KixDutyFree.Shared.Manage
 {
     public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
-        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement) : ISingletonDependency
+        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService, ProductService productService) : ISingletonDependency
     {
+        /// <summary>
+        /// 加载数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task InitDataAsync()
+        {
+            //同步账号数据
+            await accountService.SyncAccountAsync();
+        }
+
         /// <summary>
         /// 初始化客户端
         /// </summary>

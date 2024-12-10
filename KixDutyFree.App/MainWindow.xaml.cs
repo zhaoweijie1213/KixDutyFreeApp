@@ -58,6 +58,14 @@ namespace KixDutyFree.App
             contextMenu.Items.Add(exitItem);
             //AppNotifyIcon.ContextContent = contextMenu;
             AppNotifyIcon.ContextMenu = contextMenu;
+
+            // 使用 SystemParameters 获取主屏幕尺寸
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+
+            // 设置窗口大小为屏幕尺寸的80%
+            this.Width = screenWidth * 0.8;
+            this.Height = screenHeight * 0.8;
         }
 
         private void NotifyIcon_MouseDoubleClick(object sender, RoutedEventArgs e)

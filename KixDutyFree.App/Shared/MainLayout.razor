@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using KixDutyFree.App.Pages.Components
+@inherits LayoutComponentBase
 
 <MApp>
     <MAppBar App>
@@ -12,7 +13,7 @@
         <MList Nav Routable>
             <MListItem Href="/" ActiveClass="primary--text">
                 <MListItemIcon>
-                    <MIcon>mdi-home</MIcon>
+                    <MIcon>mdi-cart-variant</MIcon>
                 </MListItemIcon>
                 <MListItemContent>
                     <MListItemTitle>商品列表</MListItemTitle>
@@ -20,7 +21,7 @@
             </MListItem>
             <MListItem Href="/account" ActiveClass="primary--text">
                 <MListItemIcon>
-                    <MIcon>mdi-plus</MIcon>
+                    <MIcon>mdi-account-edit</MIcon>
                 </MListItemIcon>
                 <MListItemContent>
                     <MListItemTitle>账号列表</MListItemTitle>
@@ -28,7 +29,7 @@
             </MListItem>
             <MListItem Href="/orders" ActiveClass="primary--text">
                 <MListItemIcon>
-                    <MIcon>mdi-list-box</MIcon>
+                    <MIcon>mdi-order-bool-ascending</MIcon>
                 </MListItemIcon>
                 <MListItemContent>
                     <MListItemTitle>订单列表</MListItemTitle>
@@ -37,8 +38,9 @@
         </MList>
     </MNavigationDrawer>
 
-    <MMain>
+    <MMain Class="grey lighten-4">
         <MContainer Fluid>
+            <Loading />
             <MErrorHandler>
                 @Body
             </MErrorHandler>
@@ -47,7 +49,10 @@
 </MApp>
 
 @code {
+    private bool? _drawer;
 
-    private bool? _drawer = true;
-
+    protected override void OnInitialized()
+    {
+        _drawer = true;
+    }
 }

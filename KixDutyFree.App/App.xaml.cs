@@ -11,6 +11,9 @@ using System.Data;
 using System.Windows;
 using Quartz.AspNetCore;
 using System;
+using Masa.Blazor;
+using KixDutyFree.App.Service;
+using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
 
 namespace KixDutyFree.App
 {
@@ -26,12 +29,16 @@ namespace KixDutyFree.App
         {
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddWpfBlazorWebView();
-            builder.Services.AddMasaBlazor();
+            builder.Services.AddMasaBlazor(options => {
+                // new Locale(current, fallback);
+                options.Locale = new Locale("zh-CN", "en-US");
+            });
             builder.Services.AddSerilog(configureLogger =>
             {
                 configureLogger.Enrich.WithMachineName()
                 .Enrich.FromLogContext()
-                .ReadFrom.Configuration(builder.Configuration);
+                .ReadFrom.Configuration(builder.Configuration).WriteTo.Sink<LogStore>();
+
             });
             builder.Services.AddMultipleService("^KixDutyFree");
             builder.Services.AddHostedService<WorkerService>();

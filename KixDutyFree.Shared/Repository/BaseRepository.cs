@@ -1,6 +1,7 @@
 ﻿using KixDutyFree.App.Models.Config;
 using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Repository.Interface;
+using KixDutyFree.Shared.Models.Entity;
 using Microsoft.Extensions.Logging;
 using SqlSugar;
 
@@ -85,6 +86,8 @@ namespace KixDutyFree.App.Repository
             // 自动创建表，如果表不存在
             db.CodeFirst.InitTables<ProductInfoEntity>();
             db.CodeFirst.InitTables<ProductMonitorEntity>();
+            db.CodeFirst.InitTables<AccountEntity>();
+            db.CodeFirst.InitTables<OrdersEntity>();
             return db;
         }
 

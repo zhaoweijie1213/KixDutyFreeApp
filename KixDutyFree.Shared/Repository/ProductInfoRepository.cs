@@ -36,5 +36,15 @@ namespace KixDutyFree.App.Repository
         {
             return Db.Queryable<ProductInfoEntity>().OrderByDescending(i => i.UpdateTime).ToListAsync();
         }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Task<int> DeleteAsync(string id)
+        {
+            return Db.Deleteable<ProductInfoEntity>().Where(i=>i.Id == id).ExecuteCommandAsync();
+        }
     }
 }

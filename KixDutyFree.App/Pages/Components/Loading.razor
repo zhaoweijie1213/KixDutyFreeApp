@@ -1,5 +1,6 @@
-﻿@using KixDutyFree.App.Service
+﻿@using KixDutyFree.Shared.Services
 @inject LoadingService loadingService
+@implements IDisposable
 
 
 <MOverlay Contained @bind-Value="isLoading">
@@ -12,9 +13,8 @@
 
     protected override void OnInitialized()
     {
-        loadingService.OnChange += StateHasChanged;
+        loadingService.OnChange += HandleLoadingChange;
         isLoading = loadingService.IsLoading;
-        loadingService.Show();
     }
 
     private void HandleLoadingChange()

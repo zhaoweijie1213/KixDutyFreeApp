@@ -68,7 +68,7 @@ namespace KixDutyFree.Shared.Manage
                 productInfo = await productInfoRepository.FindAsync(id);
                 if (productInfo != null)
                 {
-                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(30));
+                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(5));
                 }
             }
             return productInfo;
@@ -86,7 +86,7 @@ namespace KixDutyFree.Shared.Manage
                 productInfo = await productInfoRepository.FindByAddressAsync(address);
                 if (productInfo != null)
                 {
-                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(30));
+                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(5));
                 }
             }
             return productInfo;
@@ -99,7 +99,7 @@ namespace KixDutyFree.Shared.Manage
         public void SetProductInfoByAddress(string address, ProductInfoEntity product)
         {
             string key = CustomCacheKeys.ProductInfoByAddress(address);
-            memoryCache.Set(key, product, TimeSpan.FromMinutes(30));
+            memoryCache.Set(key, product, TimeSpan.FromMinutes(5));
         }
 
         /// <summary>

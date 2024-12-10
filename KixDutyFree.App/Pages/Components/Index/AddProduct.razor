@@ -5,7 +5,7 @@
 <PModal @bind-Value="Show"
 FormModel="input"
 Persistent
-Title="Title"
+Title="新增商品"
 Width="500"
 OnSave="HandleOnSave"
 OnCancel="HandleOnCancel">
@@ -33,9 +33,22 @@ OnCancel="HandleOnCancel">
     </MRow>
 </PModal>
 
+<MSnackbar @bind-Value="_snackbar"
+Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
+    @Message
+</MSnackbar>
+
 @code {
     [Parameter]
     public bool Show { get; set; }
+
+
+    public bool _snackbar { get; set; }
+
+    public string Message { get; set; } = string.Empty;
+
+
+    public string SnackbarColor { get; set; } = "success";
 
 
     [Parameter]
@@ -65,7 +78,23 @@ OnCancel="HandleOnCancel">
     {
         try
         {
-            await productService.AddProduct(input);
+            //查询商品是否已存在
+            var product = await productService.GetProductAsync(input.Address);
+            if (product == null)
+            {
+                await productService.AddProduct(input);
+                Message = "操作成功";
+                SnackbarColor = "success";
+                _snackbar = true;
+                Show = false;
+            }
+            else
+            {
+                Message = "已存在该商品";
+                SnackbarColor = "warning";
+                _snackbar = true;
+            }
+
         }
         catch (Exception e)
         {

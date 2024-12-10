@@ -1,4 +1,5 @@
-﻿using KixDutyFree.Shared.Manage;
+﻿using KixDutyFree.App.Repository;
+using KixDutyFree.Shared.Manage;
 using KixDutyFree.Shared.Models.Input;
 using KixDutyFree.Shared.Quartz.Jobs;
 using KixDutyFree.Shared.Services;
@@ -11,8 +12,8 @@ using static Quartz.Logging.OperationName;
 
 namespace KixDutyFree.App.Quartz
 {
-    public class QuartzManagement(ILogger<QuartzManagement> logger, ISchedulerFactory schedulerFactory, CacheManage cacheManage, SeleniumService seleniumService, IConfiguration configuration
-        , AccountClientFactory accountClientFactory) : ISingletonDependency
+    public class QuartzManagement(ILogger<QuartzManagement> logger, ISchedulerFactory schedulerFactory, SeleniumService seleniumService, IConfiguration configuration
+        , AccountClientFactory accountClientFactory, ProductInfoRepository productInfoRepository) : ISingletonDependency
     {
         /// <summary>
         /// 开始监控
@@ -21,7 +22,7 @@ namespace KixDutyFree.App.Quartz
         public async Task StartMonitorAsync()
         {
 
-            var products = await cacheManage.GetProductsAsync();
+            var products = await productInfoRepository.QueryAsync();
 
             if (products != null && products.Count > 0)
             {
@@ -103,10 +104,11 @@ namespace KixDutyFree.App.Quartz
         /// 取消监控
         /// </summary>
         /// <returns></returns>
-        public async Task CancelMonitorAsync(string productId)
+        public async Task<bool> CancelMonitorAsync(string productId)
         {
             var scheduler = await schedulerFactory.GetScheduler();
-            await scheduler.UnscheduleJob(new TriggerKey("$monitor_trigger_{productId}", "monitor"));
+            //await scheduler.DeleteJob(new JobKey($"monitor_job_{productId}", "monitor"));
+            return await scheduler.UnscheduleJob(new TriggerKey($"monitor_trigger_{productId}", "monitor"));
         }
 
         /// <summary>

@@ -24,6 +24,7 @@ namespace KixDutyFree.Shared.Services
             await manager.InitDataAsync();
             //商品监控
             await quartzManagement.StartMonitorAsync();
+
             //错误检查
             await quartzManagement.StartErrorCheckAsync();
             //var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
@@ -35,6 +36,7 @@ namespace KixDutyFree.Shared.Services
             //}
             //加载客户端
             await manager.InitClientAsync();
+
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)

@@ -28,7 +28,7 @@ namespace KixDutyFree.Shared.Manage
         /// </summary>
         public AccountClient? DefaultClient { get; set; }
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         /// <summary>
         /// 获取客户端

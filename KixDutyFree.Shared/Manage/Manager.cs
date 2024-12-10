@@ -14,7 +14,7 @@ using System.Collections.Concurrent;
 namespace KixDutyFree.Shared.Manage
 {
     public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
-        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService, ProductService productService) : ISingletonDependency
+        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService) : ISingletonDependency
     {
         /// <summary>
         /// 加载数据
@@ -72,6 +72,10 @@ namespace KixDutyFree.Shared.Manage
             foreach (var client in accountClientFactory.Clients.Values)
             {
                 tasks.Add(client.QuitAsync());
+            }
+            if (accountClientFactory.DefaultClient != null)
+            {
+                await accountClientFactory.DefaultClient.QuitAsync();
             }
             await Task.WhenAll(tasks);
         }

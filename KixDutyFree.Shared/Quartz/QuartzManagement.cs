@@ -12,8 +12,8 @@ using static Quartz.Logging.OperationName;
 
 namespace KixDutyFree.App.Quartz
 {
-    public class QuartzManagement(ILogger<QuartzManagement> logger, ISchedulerFactory schedulerFactory, SeleniumService seleniumService, IConfiguration configuration
-        , AccountClientFactory accountClientFactory, ProductInfoRepository productInfoRepository) : ISingletonDependency
+    public class QuartzManagement(ILogger<QuartzManagement> logger, ISchedulerFactory schedulerFactory, AccountClientFactory accountClientFactory
+        , ProductInfoRepository productInfoRepository, ProductService productService) : ISingletonDependency
     {
         /// <summary>
         /// 开始监控
@@ -28,87 +28,13 @@ namespace KixDutyFree.App.Quartz
             {
                 foreach (var product in products)
                 {
-                    bool headless = configuration.GetSection("Headless").Get<bool>();
-                    //创建浏览器实例
-                    var res = await seleniumService.CreateInstancesAsync(null, headless);
-
-                    var info = await seleniumService.GetProductIdAsync(product.Address, res.Item1);
-
-                    if (info != null)
+                    await productService.StartMonitorAsync(new AddProductInput()
                     {
-                        var scheduler = await schedulerFactory.GetScheduler();
-                        var job = JobBuilder.Create<MonitorProducts>()
-                            .UsingJobData("id", info.Id)
-                            .WithIdentity($"monitor_job_{info.Id}", "monitor")
-                            .Build();
-
-                        var trigger = TriggerBuilder.Create()
-                            .WithIdentity($"monitor_trigger_{info.Id}", "monitor")
-                            .StartNow()
-                            .WithSimpleSchedule(x => x
-                            .WithIntervalInSeconds(10)
-                            .RepeatForever())
-                            .Build();
-                        await scheduler.ScheduleJob(job, trigger);
-                        logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", product.Address);
-                    }
-                    else
-                    {
-                        logger.LogWarning("StartMonitorAsync.未获取到商品信息:{address}", product.Address);
-                    }
-                    res.Item1.Quit();
-                    res.Item1.Dispose();
+                        Address = product.Address,
+                        Quantity = product.Quantity
+                    });
                 }
             }
-        }
-
-        /// <summary>
-        /// 开始监控
-        /// </summary>
-        /// <returns></returns>
-        public async Task StartMonitorAsync(AddProductInput product)
-        {
-            bool headless = configuration.GetSection("Headless").Get<bool>();
-            //创建浏览器实例
-            var res = await seleniumService.CreateInstancesAsync(null, headless);
-
-            var info = await seleniumService.GetProductIdAsync(product.Address, res.Item1);
-
-            if (info != null)
-            {
-                var scheduler = await schedulerFactory.GetScheduler();
-                var job = JobBuilder.Create<MonitorProducts>()
-                    .UsingJobData("id", info.Id)
-                    .WithIdentity($"monitor_job_{info.Id}", "monitor")
-                    .Build();
-
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity($"monitor_trigger_{info.Id}", "monitor")
-                    .StartNow()
-                    .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(10)
-                    .RepeatForever())
-                    .Build();
-                await scheduler.ScheduleJob(job, trigger);
-                logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", product.Address);
-            }
-            else
-            {
-                logger.LogWarning("StartMonitorAsync.未获取到商品信息:{address}", product.Address);
-            }
-            res.Item1.Quit();
-            res.Item1.Dispose();
-        }
-
-        /// <summary>
-        /// 取消监控
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> CancelMonitorAsync(string productId)
-        {
-            var scheduler = await schedulerFactory.GetScheduler();
-            //await scheduler.DeleteJob(new JobKey($"monitor_job_{productId}", "monitor"));
-            return await scheduler.UnscheduleJob(new TriggerKey($"monitor_trigger_{productId}", "monitor"));
         }
 
         /// <summary>

@@ -7,6 +7,7 @@
 @inject ProductService productService
 @inject IJSRuntime JSRuntime
 @inject LoadingService loadingService
+@implements IDisposable
 
 <PageTitle>商品列表</PageTitle>
 
@@ -29,15 +30,15 @@
                         <MCardTitle>@product.Name</MCardTitle>
                         <MCardText>
                             <div class="my-4 text-subtitle-1">ID: @product.Id</div>
-                            <div>创建日期: @product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
-                            <div>监控状态:<MIcon Color="success">mdi-circle</MIcon>@product.MonitorStatus</div>
-                            <div>可用状态:<MIcon Color="success">mdi-circle</MIcon>@product.IsAvailable</div>
-                            <div>购买数量:@product.Quantity</div>
-                            <div>最大购买数量:@product.MaxQuantity</div>
+                            <div>创建日期：@product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                            <div>监控状态：<MIcon Color="@GetIconColor(product.MonitorStatus)">mdi-circle</MIcon>@product.MonitorStatus</div>
+                            <div>可用状态：<MIcon Color="@GetIconColor(product.IsAvailable)">mdi-circle</MIcon>@product.IsAvailable</div>
+                            <div>设置购买数量：@product.Quantity</div>
+                            <div>最大购买数量：@product.MaxQuantity</div>
                         </MCardText>
                         <MCardActions>
                             <MButton Color="deep-purple lighten-2" Text @onclick="@(() => OpenProductPage(product.Address))">商品页面</MButton>
-                            <MButton Color="red accent-3" Text @onclick="@(() => DelAsync(product.Id))">删除</MButton>
+                            <MButton Color="red accent-3" Text @onclick="@(() => ShowDialog(product.Id))">删除</MButton>
                         </MCardActions>
                     </ChildContent>
                 </MCard>
@@ -45,10 +46,46 @@
         }
     </MRow>
 </MContainer>
-
+<MSnackbar @bind-Value="_snackbar"
+Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
+    @Message
+</MSnackbar>
 <AddProduct @bind-Show="showAddDialog"></AddProduct>
+<MDialog @bind-Value="dialog" MAxWidth="500">
+    <ChildContent>
+        <MCard>
+            <MCardTitle>
+                确认
+            </MCardTitle>
+            <MCardText>确认要删除该商品吗?</MCardText>
+            <MCardActions>
+                <MSpacer></MSpacer>
+                <MButton Color="green darken-1"
+                Text
+                OnClick="DelAsync">
+                    确认
+                </MButton>
+                <MButton Color="green darken-1"
+                Text
+                OnClick="() => dialog = false">
+                    取消
+                </MButton>
+            </MCardActions>
+        </MCard>
+    </ChildContent>
+</MDialog>
 @code {
     public List<ProductMonitorInfo> products { get; set; } = new();
+
+    public bool _snackbar { get; set; }
+
+    public bool dialog { get; set; }
+
+    public string Message { get; set; } = string.Empty;
+
+    public string Id { get; set; } = string.Empty;
+
+    public string SnackbarColor { get; set; } = "success";
 
     /// <summary>
     /// 显示模态框
@@ -58,8 +95,16 @@
     protected override async Task OnInitializedAsync()
     {
         await loadingService.ShowAsync();
-        products = await productService.GetProductsAsync();
+        await productService.GetProductsAsync();
+        products = productService.Products;
         await loadingService.HideAsync();
+        productService.OnChange += HandleLoadingChange;
+    }
+
+    private void HandleLoadingChange()
+    {
+        products = productService.Products;
+        InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -70,21 +115,66 @@
         showAddDialog = true;
     }
 
+    private void ShowDialog(string id){
+        dialog = true;
+        Id = id;
+    }
+
     private async Task OpenProductPage(string address)
     {
         await JSRuntime.InvokeVoidAsync("open", address, "_blank");
     }
 
-    private async Task DelAsync(string id)
+    private async Task DelAsync()
     {
-        var status = await productService.DelAsync(id);
+        if (string.IsNullOrEmpty(Id))
+        {
+            Message = "请先选择要删除的商品";
+            SnackbarColor = "warning";
+            _snackbar = true;
+            return;
+        }
+        await loadingService.ShowAsync();
+        var status = await productService.DelAsync(Id);
+        await loadingService.HideAsync();
+
         if (status)
         {
-            products = await productService.GetProductsAsync();
+            Message = "操作成功";
+            SnackbarColor = "success";
+            _snackbar = true;
+            // products = await productService.GetProductsAsync();
         }
         else
         {
-
+            Message = "删除失败";
+            SnackbarColor = "error";
+            _snackbar = true;
         }
+        dialog = false;
+        Id = string.Empty;
+    }
+
+    /// <summary>
+    /// 获取图标颜色
+    /// </summary>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public string GetIconColor(bool status)
+    {
+        if (status)
+        {
+            return "success";
+        }
+        else
+        {
+            return "error";
+        }
+    }
+
+    public void Dispose()
+    {
+        // 取消订阅，防止内存泄漏
+        productService.OnChange -= HandleLoadingChange;
     }
 }

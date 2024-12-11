@@ -30,7 +30,7 @@ namespace KixDutyFree.App.Manage
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory
         , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository, IOptionsMonitor<FlightInfoModel> flightInfoModel
-        , ExcelProcess excelProcess, CacheManage cacheManage) : ITransientDependency
+        , ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -259,7 +259,8 @@ namespace KixDutyFree.App.Manage
                 {
                     product.Name = res.Product?.ProductName ?? "";
                     product.Image = res.Product?.Images?.Large?.FirstOrDefault()?.AbsUrl ?? "";
-                    await productInfoRepository.UpdateAsync(product);
+                    product.UpdateTime = DateTime.Now;
+                    await productService.ProductAddOrUpdateAync(product);
                 }
                 if (isAvailable)
                 {
@@ -269,6 +270,8 @@ namespace KixDutyFree.App.Manage
                 {
                     logger.LogInformation("商品:{Name}不可用,最大定购数{MaxOrderQuantity}", product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                 }
+
+                productService.UpdateStock(product.Id, isAvailable, res?.Product?.Availability?.MaxOrderQuantity ?? 0);
             }
             catch (Exception e)
             {

@@ -82,7 +82,7 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
             var product = await productService.GetProductAsync(input.Address);
             if (product == null)
             {
-                await productService.AddProduct(input);
+                await productService.StartMonitorAsync(input);
                 Message = "操作成功";
                 SnackbarColor = "success";
                 _snackbar = true;

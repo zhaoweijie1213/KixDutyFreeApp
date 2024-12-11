@@ -5,8 +5,13 @@ using KixDutyFree.App.Repository;
 using KixDutyFree.Shared.Manage;
 using KixDutyFree.Shared.Models;
 using KixDutyFree.Shared.Models.Input;
+using KixDutyFree.Shared.Quartz.Jobs;
+using log4net.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using OpenQA.Selenium.Support.UI;
+using Quartz;
 using QYQ.Base.Common.IOCExtensions;
 using System;
 using System.Collections.Concurrent;
@@ -17,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class ProductService(ProductInfoRepository productInfoRepository, CacheManage cacheManage, QuartzManagement quartzManagement) : ISingletonDependency
+    public class ProductService(ILogger<ProductService> logger,ProductInfoRepository productInfoRepository, ISchedulerFactory schedulerFactory, IConfiguration configuration, SeleniumService seleniumService) : ISingletonDependency
     {
         private List<ProductMonitorInfo> _productStocks = [];
 
@@ -79,14 +84,46 @@ namespace KixDutyFree.Shared.Services
         }
 
         /// <summary>
-        /// 新增商品任务
+        /// 新增商品监控任务
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public async Task AddProduct(AddProductInput input)
+        public async Task StartMonitorAsync(AddProductInput input)
         {
             //开始商品监控任务
-            await quartzManagement.StartMonitorAsync(input);
+            bool headless = configuration.GetSection("Headless").Get<bool>();
+            //创建浏览器实例
+            var res = await seleniumService.CreateInstancesAsync(null, headless);
+
+            var info = await seleniumService.GetProductIdAsync(input.Address, res.Item1);
+
+            if (info != null)
+            {
+                var scheduler = await schedulerFactory.GetScheduler();
+                var job = JobBuilder.Create<MonitorProducts>()
+                    .UsingJobData("id", info.Id)
+                    .WithIdentity($"monitor_job_{info.Id}", "monitor")
+                    .Build();
+
+                var trigger = TriggerBuilder.Create()
+                    .WithIdentity($"monitor_trigger_{info.Id}", "monitor")
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                    .WithIntervalInSeconds(10)
+                    .RepeatForever())
+                    .Build();
+                await scheduler.ScheduleJob(job, trigger);
+                logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", input.Address);
+
+                UpdateMonitorStatus(info.Id, true);
+            }
+            else
+            {
+                logger.LogWarning("StartMonitorAsync.未获取到商品信息:{address}", input.Address);
+            }
+            res.Item1.Quit();
+            res.Item1.Dispose();
+            
         }
 
         /// <summary>
@@ -149,7 +186,8 @@ namespace KixDutyFree.Shared.Services
             if (count > 0)
             {
                 //取消商品监控任务
-                status = await quartzManagement.CancelMonitorAsync(id);
+                var scheduler = await schedulerFactory.GetScheduler();
+                status = await scheduler.UnscheduleJob(new TriggerKey($"monitor_trigger_{id}", "monitor"));
                 var product = _productStocks.FirstOrDefault(i => i.Id == id);
                 if (product != null)
                 {
@@ -170,8 +208,13 @@ namespace KixDutyFree.Shared.Services
            return await productInfoRepository.FindByAddressAsync(address);
         }
 
-        // 更新某个商品的库存
-        public void UpdateStock(string productId, int maxQuantity)
+        /// <summary>
+        /// 更新某个商品的库存
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="isAvailable"></param>
+        /// <param name="maxQuantity"></param>
+        public void UpdateStock(string productId, bool isAvailable, int maxQuantity)
         {
             var product = _productStocks.FirstOrDefault(i => i.Id == productId);
             if (product != null)
@@ -180,7 +223,23 @@ namespace KixDutyFree.Shared.Services
                 product.IsAvailable = true;
                 NotifyStateChanged();
             }
-            
+
+        }
+
+        /// <summary>
+        /// 更新监控状态
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="monitorStatus"></param>
+        public void UpdateMonitorStatus(string productId, bool monitorStatus)
+        {
+            var product = _productStocks.FirstOrDefault(i => i.Id == productId);
+            if (product != null)
+            {
+                product.MonitorStatus = monitorStatus;
+                NotifyStateChanged();
+            }
+
         }
     }
 }

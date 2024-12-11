@@ -33,5 +33,15 @@ namespace KixDutyFree.Shared.Repository
         {
             return Db.Insertable(list).ExecuteCommandAsync();
         }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public Task<int> DelAsync(string email)
+        {
+            return Db.Deleteable<AccountEntity>().Where(i=>i.Email == email).ExecuteCommandAsync();
+        }
     }
 }

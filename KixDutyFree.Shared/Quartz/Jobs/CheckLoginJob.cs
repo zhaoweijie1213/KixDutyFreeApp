@@ -1,4 +1,6 @@
-﻿using KixDutyFree.Shared.Manage;
+﻿using KixDutyFree.Shared.EventHandler;
+using KixDutyFree.Shared.Manage;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using QYQ.Base.Common.Extension;
@@ -15,7 +17,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
     /// 检查登录状态任务
     /// </summary>
     [DisallowConcurrentExecution]
-    public class CheckLoginJob(ILogger<CheckLoginJob> logger, AccountClientFactory accountClientFactory) : IJob, ITransientDependency
+    public class CheckLoginJob(ILogger<CheckLoginJob> logger, AccountClientFactory accountClientFactory, IMediator mediator) : IJob, ITransientDependency
     {
         public async Task Execute(IJobExecutionContext context)
         {
@@ -31,6 +33,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
                     {
                         await client.RelodAsync();
                     }
+                    await mediator.Publish(new UserLoginStatusChangedNotification(email, status));
                 }
             }
             catch (Exception e)

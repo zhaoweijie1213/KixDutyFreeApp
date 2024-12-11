@@ -1,7 +1,11 @@
 ﻿@page "/account"
+@using KixDutyFree.App.Models
+@using KixDutyFree.Shared.Models
 @using KixDutyFree.Shared.Models.Entity
 @using KixDutyFree.Shared.Services
+@using Mapster
 @inject AccountService accountService;
+@implements IDisposable
 
 <PageTitle>账号列表</PageTitle>
 <MContainer Fluid>
@@ -23,6 +27,63 @@
                 OnClick="()=>_dialog=true">
                     新增账号
                 </MButton>
+                <MDialog @bind-Value="_dialog"
+                MaxWidth="700">
+                    <MCard>
+                        <MCardTitle>
+                            <span class="text-h5">@FormTitle</span>
+                        </MCardTitle>
+
+                        <MCardText>
+                            <MContainer>
+                                <MRow>
+                                    <MCol Cols="12" Sm="6" Md="4">
+                                        <MTextField @bind-Value="_editedItem.Email" Label="邮箱"></MTextField>
+                                    </MCol>
+                                    <MCol Cols="12" Sm="6" Md="4">
+                                        <MTextField @bind-Value="_editedItem.Password" Label="密码"></MTextField>
+                                    </MCol>
+                                    <MCol Cols="12" Sm="6" Md="4">
+                                        <MTextField @bind-Value="_editedItem.Date" Hint="例如: 2024/12/11 10:30" Label="航班时间"></MTextField>
+                                    </MCol>
+                                    <MCol Cols="12" Sm="6" Md="4">
+                                        <MTextField @bind-Value="_editedItem.AirlineName" Label="航空公司名称"></MTextField>
+                                    </MCol>
+                                    <MCol Cols="12" Sm="6" Md="4"> 
+                                        <MTextField @bind-Value="_editedItem.FlightNo" Label="航班号"></MTextField>
+                                    </MCol>
+                                    <MCol Cols="12" Sm="6" Md="4">
+                                        <MTextField @bind-Value="_editedItem.Quantity" Label="默认下单数量"></MTextField>
+                                    </MCol>
+                                </MRow>
+                            </MContainer>
+                        </MCardText>
+
+                        <MCardActions>
+                            <MSpacer></MSpacer>
+                            <MButton Color="blue darken-1"
+                            Text
+                            OnClick="Save">
+                                保存
+                            </MButton>
+                            <MButton Color="blue darken-1"
+                            Text
+                            OnClick="Close">
+                                取消
+                            </MButton>
+                        </MCardActions>
+                    </MCard>
+                </MDialog>
+                <MDialog @bind-Value="_dialogDelete" MaxWidth="600">
+                    <MCard>
+                        <MCardTitle>提示</MCardTitle>
+                        <MCardText>确认删除该账号吗?</MCardText>
+                        <MCardActions>
+                            <MButton Color="blue darken-1" Text OnClick="DeleteItemConfirm">确认</MButton>
+                            <MButton Color="blue darken-1" Text OnClick="CloseDelete">取消</MButton>
+                        </MCardActions>
+                    </MCard>
+                </MDialog>
             </MToolbar>
         </TopContent>
         <ItemColContent>
@@ -34,6 +95,17 @@
                 <MIcon Small
                 OnClick="()=>DeleteItem(context.Item.Email)">mdi-delete</MIcon>
             }
+            else if (context.Header.Value == nameof(AccountInfo.IsLogin))
+            {
+                if (context.Item.IsLogin)
+                {
+                    <div text-center><MIcon Color="success">mdi-check-circle</MIcon>已登录</div>
+                }
+                else
+                {
+                    <div text-center><MIcon Color="warning">mdi-close-circle</MIcon>未登录</div>
+                }
+            }
             else
             {
                 @context.Value
@@ -44,17 +116,18 @@
 
 
 @code {
-    private List<DataTableHeader<AccountEntity>> _headers = new List<DataTableHeader<AccountEntity>>
+    private List<DataTableHeader<AccountInfo>> _headers = new List<DataTableHeader<AccountInfo>>
         {
-          new (){ Text= "邮箱",Align= DataTableHeaderAlign.Center, Value= nameof(AccountEntity.Email)},
-          new (){ Text= "航空公司", Align= DataTableHeaderAlign.Center, Value= nameof(AccountEntity.AirlineName)},
-          new (){ Text= "航班号",Align= DataTableHeaderAlign.Center, Value= nameof(AccountEntity.FlightNo)},
-          new (){ Text= "航班时间",Align= DataTableHeaderAlign.Center,Value= nameof(AccountEntity.Date)},
-          new (){ Text= "默认下单数量",Align= DataTableHeaderAlign.Center,Value= nameof(AccountEntity.Quantity) },
+          new (){ Text= "邮箱",Align= DataTableHeaderAlign.Center, Value= nameof(AccountInfo.Email)},
+          new (){ Text= "航空公司", Align= DataTableHeaderAlign.Center, Value= nameof(AccountInfo.AirlineName)},
+          new (){ Text= "航班号",Align= DataTableHeaderAlign.Center, Value= nameof(AccountInfo.FlightNo)},
+          new (){ Text= "航班时间",Align= DataTableHeaderAlign.Center,Value= nameof(AccountInfo.Date)},
+          new (){ Text= "是否登录",Align= DataTableHeaderAlign.Center,Value= nameof(AccountInfo.IsLogin)},
+          new (){ Text= "默认下单数量",Align= DataTableHeaderAlign.Center,Value= nameof(AccountInfo.Quantity) },
           new (){ Text= "操作", Value= "actions",Sortable=false }
         };
 
-    private List<AccountEntity> Accounts { get; set; } = new();
+    private List<AccountInfo> Accounts { get; set; } = new();
 
     private bool Loading = true;
 
@@ -62,20 +135,88 @@
 
     private bool _dialogDelete;
 
+
+    private AccountEntity _editedItem { get; set; } = new();
+
+    private string Email = string.Empty;
+
+    public string FormTitle
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Email))
+            {
+                return "编辑";
+            }
+            else
+            {
+                return "新增";
+            }
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        Accounts = await accountService.GetAccountAsync();
-
+        Accounts = await accountService.GetAccountInfoAsync();
+        accountService.OnChange += HandleLoadingChange;
         Loading = false;
     }
 
-    public void EditItem(AccountEntity item)
+    private void HandleLoadingChange()
     {
+        Accounts = accountService.Accounts;
+        InvokeAsync(StateHasChanged);
+    }
 
+    public void Close()
+    {
+        _dialog = false;
+        _editedItem = new AccountEntity();
+        Email = string.Empty;
+    }
+
+    public async void Save()
+    {
+        if (!string.IsNullOrEmpty(Email))
+        {
+            await accountService.UpdateAccountAsync(_editedItem);
+        }
+        else
+        {
+            await accountService.AddAccountAsync(_editedItem);
+        }
+        Close();
+    }
+
+    public void EditItem(AccountInfo item)
+    {
+        Email = item.Email;
+        _editedItem = item.Adapt<AccountEntity>();
+        _dialog = true;
     }
 
     public void DeleteItem(string email)
     {
-   
+        Email = email;
+        _dialogDelete = true;
+    }
+
+    public async Task DeleteItemConfirm()
+    {
+        await accountService.DelAccountAsync(Email);
+        CloseDelete();
+    }
+
+    public void CloseDelete()
+    {
+        _dialogDelete = false;
+        _editedItem = new();
+        Email = string.Empty;
+    }
+
+    public void Dispose()
+    {
+        // 取消订阅，防止内存泄漏
+        accountService.OnChange -= HandleLoadingChange;
     }
 }

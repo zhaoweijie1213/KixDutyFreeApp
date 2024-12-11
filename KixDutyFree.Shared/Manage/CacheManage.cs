@@ -12,19 +12,18 @@ namespace KixDutyFree.Shared.Manage
 {
     public class CacheManage(ILogger<CacheManage> logger, IMemoryCache memoryCache, ProductInfoRepository productInfoRepository, ProductMonitorRepository productMonitorRepository) : ITransientDependency
     {
-
         /// <summary>
-        /// 获取账号信息
+        /// 获取表格账号信息
         /// </summary>
         /// <returns></returns>
-        public async Task<List<AccountModel>?> GetAccountAsync()
+        public async Task<List<AccountInfo>?> GetExcelAccountAsync()
         {
             string key = "AccountInfo";
-            if (!memoryCache.TryGetValue(key, out List<AccountModel>? account))
+            if (!memoryCache.TryGetValue(key, out List<AccountInfo>? account))
             {
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "账号.xlsx");
                 var importer = new ExcelImporter();
-                var result = await importer.Import<AccountModel>(path, null);
+                var result = await importer.Import<AccountInfo>(path, null);
                 if (result.Data.Count > 0)
                 {
                     account = result.Data.ToList();
@@ -33,7 +32,6 @@ namespace KixDutyFree.Shared.Manage
             }
             return account;
         }
-
 
         /// <summary>
         /// 获取商品信息

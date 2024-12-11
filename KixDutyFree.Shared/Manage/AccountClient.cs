@@ -3,8 +3,10 @@ using KixDutyFree.App.Models.Config;
 using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Repository;
+using KixDutyFree.Shared.EventHandler;
 using KixDutyFree.Shared.Manage;
 using KixDutyFree.Shared.Services;
+using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -30,7 +32,7 @@ namespace KixDutyFree.App.Manage
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory
         , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository, IOptionsMonitor<FlightInfoModel> flightInfoModel
-        , ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService) : ITransientDependency
+        , ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService, IMediator  mediator) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -54,12 +56,12 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 账号信息
         /// </summary>
-        private AccountModel Account { get; set; } = new AccountModel();
+        private AccountInfo Account { get; set; } = new AccountInfo();
 
         /// <summary>
         /// 是否成功登录
         /// </summary>
-        private bool IsLoginSuccess { get; set; } = false;
+        public bool IsLoginSuccess { get; set; } = false;
 
         /// <summary>
         /// 正在加载
@@ -153,7 +155,7 @@ namespace KixDutyFree.App.Manage
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        public async Task<bool> InitAsync(AccountModel? account)
+        public async Task<bool> InitAsync(AccountInfo? account)
         {
             try
             {
@@ -170,6 +172,8 @@ namespace KixDutyFree.App.Manage
                 if (IsLoginSuccess && account != null)
                 {
                     Account = account;
+                    //发送登录成功事件
+                    await mediator.Publish(new UserLoginStatusChangedNotification(account.Email,IsLoginSuccess));
                 }
                 ////开始监控商品
                 //await StartMonitoringAsync();
@@ -321,10 +325,10 @@ namespace KixDutyFree.App.Manage
                         isAvailable = res?.Product?.Availability?.Available ?? false;
                         if (isAvailable)
                         {
-                            var productConfig = await cacheManage.GetProductsAsync();
+                            //var productConfig = await cacheManage.GetProductsAsync();
                             logger.LogInformation("账号:{Account}\t商品:{Name}可用,最大定购数{MaxOrderQuantity}", Account.Email, product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                             // 触发下单逻辑
-                            await PlaceOrderAsync(res!.Product!, productConfig!.First(i => i.Address == product.Address).Quantity, cancellationToken);
+                            await PlaceOrderAsync(res!.Product!, product.Quantity, cancellationToken);
                         }
                         else
                         {
@@ -462,7 +466,7 @@ namespace KixDutyFree.App.Manage
                                         // 查找csrf_token
                                         var csrfTokenElement = driver.FindElement(By.Name("csrf_token"));
                                         // 获取元素的 value 属性值
-                                        string csrfToken = csrfTokenElement.GetAttribute("value");
+                                        string csrfToken = csrfTokenElement.GetDomAttribute("value");
 
                                         var flight = flightInfo.FirstOrDefault(i => i.AirlineName.Contains(Account.AirlineName) && i.Flightno2 == Account.FlightNo);
                                         string otherflightno = "";
@@ -504,7 +508,7 @@ namespace KixDutyFree.App.Manage
                                         // 查找csrf_token
                                         var billingCsrfTokenElement = dwfrm_billing.FindElement(By.Name("csrf_token"));
                                         // 获取元素的 value 属性值
-                                        string billingCsrfToken = billingCsrfTokenElement.GetAttribute("value");
+                                        string billingCsrfToken = billingCsrfTokenElement.GetDomAttribute("value");
                                         var submitPayment = await SubmitPaymentAsync(Account.Email, billingCsrfToken, cancellationToken);
                                         if (submitPayment?.Error == false || productMonitor.Setup == OrderSetup.PaymentSubmitted)
                                         {
@@ -607,7 +611,7 @@ namespace KixDutyFree.App.Manage
         /// 退出
         /// </summary>
         /// <returns></returns>
-        public async Task QuitAsync()
+        public Task QuitAsync()
         {
             // 关闭并释放旧的 ChromeDriver 实例
             if (_driver != null)
@@ -615,14 +619,9 @@ namespace KixDutyFree.App.Manage
                 try
                 {
                     IsLoading = true;
-                    await ExecuteDriverActionAsync((driver) =>
-                    {
-                        driver?.Quit();
-                        driver?.Dispose();
-                        logger.LogInformation("ReinitializeDriverAsync. 旧的 ChromeDriver 实例已关闭并释放。");
-                        return Task.CompletedTask;
-                    });
 
+                    _driver?.Quit();
+                    logger.LogInformation("ReinitializeDriverAsync. 旧的 ChromeDriver 实例已关闭并释放。");
                 }
                 catch (Exception ex)
                 {
@@ -634,6 +633,7 @@ namespace KixDutyFree.App.Manage
                 }
             }
             logger.LogInformation("QuitAsync.停止实例:{email}", Account.Email);
+            return Task.CompletedTask;
         }
 
         #region API请求

@@ -13,7 +13,7 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.Shared.Manage
 {
-    public class Manager(ILogger<Manager> logger, IServiceProvider serviceProvider, CacheManage cacheManage, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
+    public class Manager(ILogger<Manager> logger, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
         , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService) : ISingletonDependency
     {
         /// <summary>
@@ -38,23 +38,13 @@ namespace KixDutyFree.Shared.Manage
                 await productMonitorRepository.UpdateCompletedAsync();
             }
             //账号
-            var accounts = await cacheManage.GetAccountAsync();
+            var accounts = await accountService.GetAccountInfoAsync();
             if (accounts == null) return;
             //初始化各个账号的实例
             List<Task> tasks = [];
             foreach (var account in accounts)
             {
-                var accountClient = serviceProvider.GetService<AccountClient>()!;
-                //tasks.Add(accountClient.InitAsync(account));
-                if (accountClientFactory.Clients.TryAdd(account.Email, accountClient))
-                {
-                    tasks.Add(accountClient.InitAsync(account));
-                }
-                else
-                {
-                    // 处理添加失败的情况
-                    logger.LogWarning("账户 {Email} 已存在于客户端集合中。", account.Email);
-                }
+                tasks.Add(accountService.CreateClientAsync(account));
             }
             await Task.WhenAll(tasks);
             //检查登录状态任务

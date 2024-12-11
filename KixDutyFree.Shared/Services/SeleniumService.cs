@@ -26,7 +26,7 @@ namespace KixDutyFree.Shared.Services
         /// <summary>
         /// 创建实例
         /// </summary>
-        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountModel? account, bool headless = false)
+        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountInfo? account, bool headless = false)
         {
             ChromeDriver? driver = null;
             bool isLogin = false;
@@ -92,7 +92,7 @@ namespace KixDutyFree.Shared.Services
         /// 登录
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> Login(AccountModel account, ChromeDriver driver)
+        public async Task<bool> Login(AccountInfo account, ChromeDriver driver)
         {
             bool isLogin = false;
             //检测登录按钮
@@ -185,7 +185,7 @@ namespace KixDutyFree.Shared.Services
                     driver.Navigate().GoToUrl(address);
                     var productDetail = driver.FindElement(By.ClassName("product-detail"));
                     // 获取 data-pid 属性的值 得到商品id
-                    string productId = productDetail.GetAttribute("data-pid");
+                    string productId = productDetail.GetDomAttribute("data-pid");
                     if (productId != null)
                     {
 

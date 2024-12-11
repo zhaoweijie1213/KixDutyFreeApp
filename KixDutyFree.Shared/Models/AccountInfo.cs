@@ -7,7 +7,7 @@ namespace KixDutyFree.App.Models
     /// 账号信息
     /// </summary>
     [ExcelImporter(IsLabelingError = true)]
-    public class AccountModel
+    public class AccountInfo
     {
         /// <summary>
         /// 邮箱
@@ -44,5 +44,11 @@ namespace KixDutyFree.App.Models
         /// </summary>
         [ImporterHeader(Name = "下单数量")]
         public int Quantity { get; set; }
+
+        /// <summary>
+        /// 是否已登录
+        /// </summary>
+        [ImporterHeader(IsIgnore = true)]
+        public bool IsLogin { get; set; }
     }
 }

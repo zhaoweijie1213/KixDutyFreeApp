@@ -232,7 +232,7 @@ namespace KixDutyFree.Shared.Services
             if (product != null)
             {
                 product.MaxQuantity = maxQuantity;
-                product.IsAvailable = true;
+                product.IsAvailable = isAvailable;
                 NotifyStateChanged();
             }
 

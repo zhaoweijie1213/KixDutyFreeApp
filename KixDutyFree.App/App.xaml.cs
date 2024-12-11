@@ -14,6 +14,7 @@ using System;
 using Masa.Blazor;
 using KixDutyFree.App.Service;
 using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
+using System.Reflection;
 
 namespace KixDutyFree.App
 {
@@ -40,9 +41,16 @@ namespace KixDutyFree.App
                 .ReadFrom.Configuration(builder.Configuration).WriteTo.Sink<LogStore>();
 
             });
+            // 注册 MediatR，并扫描当前程序集中的处理器
+            builder.Services.AddMediatR(cfg =>
+            {
+                // 加载程序集
+                var sharedAssembly = Assembly.Load("KixDutyFree.Shared");
+                cfg.RegisterServicesFromAssembly(sharedAssembly);
+            });
             builder.Services.AddMultipleService("^KixDutyFree");
             builder.Services.AddHostedService<WorkerService>();
-            builder.Services.Configure<List<AccountModel>>(builder.Configuration.GetSection("Accounts"));
+            builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
             builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
             builder.Services.Configure<FlightInfoModel>(builder.Configuration.GetSection("FlightInfo"));
             builder.Services.AddQuartz().AddQuartzServer(options =>

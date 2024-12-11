@@ -25,7 +25,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMultipleService("^KixDutyFree");
 builder.Services.AddHostedService<WorkerService>();
-builder.Services.Configure<List<AccountModel>>(builder.Configuration.GetSection("Accounts"));
+builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
 builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
 builder.Services.Configure<FlightInfoModel>(builder.Configuration.GetSection("FlightInfo"));
 builder.Services.AddQuartz().AddQuartzServer(options =>

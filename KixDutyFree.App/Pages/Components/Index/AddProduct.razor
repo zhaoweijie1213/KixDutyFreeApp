@@ -40,7 +40,7 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
 
 @code {
     [Parameter]
-    public bool Show { get; set; }
+    public bool Show { get; set; } = false;
 
 
     public bool _snackbar { get; set; }

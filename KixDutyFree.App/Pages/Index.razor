@@ -47,7 +47,7 @@
     </MRow>
 </MContainer>
 <MSnackbar @bind-Value="_snackbar"
-Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
+Color="@SnackbarColor" Timeout="2000" Centered Action="Close">
     @Message
 </MSnackbar>
 <AddProduct @bind-Show="showAddDialog"></AddProduct>
@@ -79,7 +79,7 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
 
     public bool _snackbar { get; set; }
 
-    public bool dialog { get; set; }
+    public bool dialog { get; set; } = false;
 
     public string Message { get; set; } = string.Empty;
 

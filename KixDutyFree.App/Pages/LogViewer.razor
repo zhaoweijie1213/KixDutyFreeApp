@@ -1,0 +1,72 @@
+﻿@page "/logs"
+@using KixDutyFree.App.Service
+@using Serilog.Events
+@inject LogStore LogStore
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<PageTitle>日志</PageTitle>
+
+<MCard>
+    <MCardTitle>日志查看器</MCardTitle>
+    <MCardText>
+        <MDataTable Items="logEvents" HideDefaultFooter Headers="_headers" ItemsPerPage="5000">
+        </MDataTable>
+    </MCardText>
+</MCard>
+@code {
+    private List<LogEvent> logEvents = new();
+
+    private ElementReference scrollContainer;
+
+    private System.Threading.Timer? _timer;
+
+    private readonly TimeSpan _refreshInterval = TimeSpan.FromSeconds(2); // 设置刷新间隔
+
+    private List<DataTableHeader<LogEvent>> _headers = new List<DataTableHeader<LogEvent>>
+        {
+          new (){ Text= "时间",Align= DataTableHeaderAlign.Center, Value= "Timestamp",Width = 120, CellRender = dessert => dessert.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")},
+          new (){ Text= "级别", Align= DataTableHeaderAlign.Center, Value= "Level"},
+          new (){ Text= "消息",Align= DataTableHeaderAlign.Center, Value= "Message",CellRender =  dessert => dessert.RenderMessage()},
+          new (){
+              Text= "异常",
+              Align= DataTableHeaderAlign.Center,
+              Value= "Exception",
+              CellRender = dessert => dessert.Exception?.ToString() ?? "-"}
+        };
+
+    protected override void OnInitialized()
+    {
+        // 初始加载日志
+        LoadLogEvents();
+
+        // // 设置定时器
+        // _timer = new System.Threading.Timer(async _ =>
+        // {
+        //     await InvokeAsync(async () =>
+        //     {
+        //         LoadLogEvents();
+        //         StateHasChanged();
+        //         await ScrollToBottom();
+        //     });
+        // }, null, TimeSpan.Zero, _refreshInterval);
+    }
+
+    private async Task ScrollToBottom()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollToBottom", scrollContainer);
+    }
+
+
+    private void LoadLogEvents()
+    {
+        // 获取并排序日志事件
+        logEvents = LogStore.GetLogEvents().ToList();
+    }
+
+    public void Dispose()
+    {
+        // 停止并释放定时器
+        _timer?.Dispose();
+    }
+}

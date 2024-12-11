@@ -34,11 +34,14 @@ namespace KixDutyFree.App
                 // new Locale(current, fallback);
                 options.Locale = new Locale("zh-CN", "en-US");
             });
+            var sink = new LogStore();
+            builder.Services.AddSingleton(sink);
             builder.Services.AddSerilog(configureLogger =>
             {
+
                 configureLogger.Enrich.WithMachineName()
                 .Enrich.FromLogContext()
-                .ReadFrom.Configuration(builder.Configuration).WriteTo.Sink<LogStore>();
+                .ReadFrom.Configuration(builder.Configuration).WriteTo.Sink(sink);
 
             });
             // 注册 MediatR，并扫描当前程序集中的处理器

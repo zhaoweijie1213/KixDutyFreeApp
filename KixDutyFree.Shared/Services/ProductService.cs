@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using OpenQA.Selenium.Support.UI;
 using Quartz;
+using QYQ.Base.Common.Extension;
 using QYQ.Base.Common.IOCExtensions;
 using System;
 using System.Collections.Concurrent;
@@ -88,42 +89,53 @@ namespace KixDutyFree.Shared.Services
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public async Task StartMonitorAsync(AddProductInput input)
+        public async Task<bool> StartMonitorAsync(AddProductInput input)
         {
-            //开始商品监控任务
-            bool headless = configuration.GetSection("Headless").Get<bool>();
-            //创建浏览器实例
-            var res = await seleniumService.CreateInstancesAsync(null, headless);
-
-            var info = await seleniumService.GetProductIdAsync(input.Address, res.Item1);
-
-            if (info != null)
+            bool status = false;
+            try
             {
-                var scheduler = await schedulerFactory.GetScheduler();
-                var job = JobBuilder.Create<MonitorProducts>()
-                    .UsingJobData("id", info.Id)
-                    .WithIdentity($"monitor_job_{info.Id}", "monitor")
-                    .Build();
+                //开始商品监控任务
+                bool headless = configuration.GetSection("Headless").Get<bool>();
+                //创建浏览器实例
+                var res = await seleniumService.CreateInstancesAsync(null, headless);
 
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity($"monitor_trigger_{info.Id}", "monitor")
-                    .StartNow()
-                    .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(10)
-                    .RepeatForever())
-                    .Build();
-                await scheduler.ScheduleJob(job, trigger);
-                logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", input.Address);
+                var info = await seleniumService.GetProductIdAsync(input.Address, res.Item1);
 
-                UpdateMonitorStatus(info.Id, true);
+                if (info != null)
+                {
+                    var scheduler = await schedulerFactory.GetScheduler();
+                    var job = JobBuilder.Create<MonitorProducts>()
+                        .UsingJobData("id", info.Id)
+                        .WithIdentity($"monitor_job_{info.Id}", "monitor")
+                        .Build();
+
+                    var trigger = TriggerBuilder.Create()
+                        .WithIdentity($"monitor_trigger_{info.Id}", "monitor")
+                        .StartNow()
+                        .WithSimpleSchedule(x => x
+                        .WithIntervalInSeconds(10)
+                        .RepeatForever())
+                        .Build();
+                    await scheduler.ScheduleJob(job, trigger);
+                    logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", input.Address);
+
+                    UpdateMonitorStatus(info.Id, true);
+
+                    status = true;
+                }
+                else
+                {
+                    status = false;
+                    logger.LogWarning("StartMonitorAsync.未获取到商品信息:{address}", input.Address);
+                }
+                res.Item1.Quit();
+                res.Item1.Dispose();
             }
-            else
+            catch (Exception e)
             {
-                logger.LogWarning("StartMonitorAsync.未获取到商品信息:{address}", input.Address);
+                logger.BaseErrorLog("StartMonitorAsync", e);
             }
-            res.Item1.Quit();
-            res.Item1.Dispose();
-            
+            return status;
         }
 
         /// <summary>

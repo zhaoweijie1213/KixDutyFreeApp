@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using QYQ.Base.Common.Extension;
 using QYQ.Base.Common.IOCExtensions;
 using System.Text.RegularExpressions;
 
@@ -27,44 +28,64 @@ namespace KixDutyFree.Shared.Services
         /// </summary>
         public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountModel? account, bool headless = false)
         {
-            ChromeDriver driver;
+            ChromeDriver? driver = null;
             bool isLogin = false;
-            if (headless)
+            bool status = false;
+            while (!status)
             {
-                // 创建 ChromeDriverService 实例
-                ChromeDriverService service = ChromeDriverService.CreateDefaultService();
-                // 隐藏命令行窗口
-                service.HideCommandPromptWindow = true;
-                // 可选：抑制初始诊断信息
-                service.SuppressInitialDiagnosticInformation = true;
-                // 创建 ChromeOptions 实例并设置无头模式
-                var options = new ChromeOptions();
-                options.AddArgument("--headless"); // 启用无头模式
-                options.AddArgument("--disable-gpu"); // 如果您使用的是 Windows 系统，建议添加此行
-                options.AddArgument("--no-sandbox"); // 解决 DevToolsActivePort 文件不存在的报错
-                options.AddArgument("--disable-dev-shm-usage"); // 解决资源不足的问题
-                driver = new ChromeDriver(service, options);
-            }
-            else
-            {
-                driver = new();
-            }
-            // 设置页面加载超时时间为 120 秒
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
-            driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn");
-            //获取标题
-            var title = driver.Title;
-            logger.LogInformation("Title:{title}", title);
+                try
+                {
+                    if (headless)
+                    {
+                        // 创建 ChromeDriverService 实例
+                        ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+                        // 隐藏命令行窗口
+                        service.HideCommandPromptWindow = true;
+                        // 可选：抑制初始诊断信息
+                        service.SuppressInitialDiagnosticInformation = true;
+                        service.InitializationTimeout = TimeSpan.FromMinutes(2);
+                        // 创建 ChromeOptions 实例并设置无头模式
+                        var options = new ChromeOptions();
+                        options.AddArgument("--headless"); // 启用无头模式
+                        options.AddArgument("--disable-gpu"); // 如果您使用的是 Windows 系统，建议添加此行
+                        options.AddArgument("--no-sandbox"); // 解决 DevToolsActivePort 文件不存在的报错
+                        options.AddArgument("--disable-dev-shm-usage"); // 解决资源不足的问题
+                        driver = new ChromeDriver(service, options);
+                    }
+                    else
+                    {
+                        driver = new();
+                    }
+                    // 设置页面加载超时时间为 120 秒
+                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
+                    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
+                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
+                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn");
+                    //获取标题
+                    var title = driver.Title;
+                    logger.LogInformation("Title:{title}", title);
 
-            await Confirm(driver);
-            //登录
-            if (account != null)
-            {
-                isLogin = await Login(account, driver);
+                    await Confirm(driver);
+                    //登录
+                    if (account != null)
+                    {
+                        isLogin = await Login(account, driver);
+                    }
+                    status = true;
+            
+                }
+                catch (Exception e)
+                {
+                    status = false;
+                    if (driver != null)
+                    {
+                        driver.Quit();
+                        driver.Dispose();
+                    }
+                    logger.BaseErrorLog("CreateInstancesAsync", e);
+                }
             }
-            return new(driver, isLogin);
+            return new(driver!, isLogin);
         }
 
         /// <summary>

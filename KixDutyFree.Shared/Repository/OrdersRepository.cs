@@ -16,7 +16,7 @@ namespace KixDutyFree.Shared.Repository
     {
         public Task<List<OrdersEntity>> QueryAsync()
         {
-            return Db.Queryable<OrdersEntity>().ToListAsync();
+            return Db.Queryable<OrdersEntity>().Includes(i => i.Product).OrderByDescending(i => i.CreateTime).ToListAsync();
         }
     }
     

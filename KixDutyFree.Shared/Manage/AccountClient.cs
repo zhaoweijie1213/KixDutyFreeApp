@@ -5,6 +5,7 @@ using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Repository;
 using KixDutyFree.Shared.EventHandler;
 using KixDutyFree.Shared.Manage;
+using KixDutyFree.Shared.Models.Entity;
 using KixDutyFree.Shared.Services;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
@@ -32,7 +33,7 @@ namespace KixDutyFree.App.Manage
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory
         , IMemoryCache memoryCache, ProductMonitorRepository productMonitorRepository, ProductInfoRepository productInfoRepository, IOptionsMonitor<FlightInfoModel> flightInfoModel
-        , ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService, IMediator  mediator) : ITransientDependency
+        , ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService, IMediator  mediator, OrderService orderService) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -56,7 +57,7 @@ namespace KixDutyFree.App.Manage
         /// <summary>
         /// 账号信息
         /// </summary>
-        private AccountInfo Account { get; set; } = new AccountInfo();
+        public AccountInfo Account { get; set; } = new AccountInfo();
 
         /// <summary>
         /// 是否成功登录
@@ -525,6 +526,18 @@ namespace KixDutyFree.App.Manage
                                                 productMonitor.OrderToken = placeOrder.OrderToken;
                                                 await productMonitorRepository.UpdateAsync(productMonitor);
                                                 logger.LogInformation("PlaceOrderAsync.下单成功");
+                                                //订单入库
+                                                var order = new OrdersEntity()
+                                                {
+                                                    OrderId = productMonitor.OrderId,
+                                                    ProductId = productMonitor.ProductId,
+                                                    Account = Account.Email,
+                                                    AirlineName = Account.AirlineName,
+                                                    FlightDate = Account.Date,
+                                                    FlightNo = Account.FlightNo,
+                                                    CreateTime = productMonitor.UpdateTime
+                                                };
+                                                await orderService.AddOrderAsync(order);
                                                 //信息导出到表格
                                                 await excelProcess.OrderExportAsync(new Models.Excel.OrderExcel()
                                                 {

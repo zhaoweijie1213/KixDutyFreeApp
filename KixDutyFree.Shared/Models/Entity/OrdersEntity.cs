@@ -1,4 +1,5 @@
-﻿using Magicodes.ExporterAndImporter.Core;
+﻿using KixDutyFree.App.Models.Entity;
+using Magicodes.ExporterAndImporter.Core;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -28,9 +29,10 @@ namespace KixDutyFree.Shared.Models.Entity
         public string ProductId { get; set; } = string.Empty;
 
         /// <summary>
-        /// 商品Id
+        /// 商品信息
         /// </summary>
-        public string ProductName { get; set; } = string.Empty;
+        [Navigate(NavigateType.OneToOne, nameof(ProductId))]
+        public ProductInfoEntity? Product { get; set; }
 
         /// <summary>
         /// 航班时间

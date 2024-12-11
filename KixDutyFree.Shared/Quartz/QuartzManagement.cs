@@ -13,7 +13,7 @@ using static Quartz.Logging.OperationName;
 namespace KixDutyFree.App.Quartz
 {
     public class QuartzManagement(ILogger<QuartzManagement> logger, ISchedulerFactory schedulerFactory, AccountClientFactory accountClientFactory
-        , ProductInfoRepository productInfoRepository, ProductService productService) : ISingletonDependency
+        , ProductInfoRepository productInfoRepository, ProductService productService, AccountService accountService) : ISingletonDependency
     {
         /// <summary>
         /// 开始监控
@@ -47,21 +47,7 @@ namespace KixDutyFree.App.Quartz
             {
                 if (client.Value != null)
                 {
-                    var scheduler = await schedulerFactory.GetScheduler();
-                    var job = JobBuilder.Create<CheckLoginJob>()
-                        .UsingJobData("email", client.Key)
-                        .WithIdentity($"login_check_job_{client.Key}", "login_check")
-                        .Build();
-
-                    var trigger = TriggerBuilder.Create()
-                        .WithIdentity($"login_check_trigger_{client.Key}", "login_check")
-                        .StartNow()
-                        .WithSimpleSchedule(x => x
-                        .WithIntervalInMinutes(10)
-                        .RepeatForever())
-                        .Build();
-                    await scheduler.ScheduleJob(job, trigger);
-                    logger.LogInformation("StartMonitorAsync.添加{email}登录检测任务", client.Key);
+                    await accountService.StartLoginCheckAsync(client.Key);
                 }
             }
         }
@@ -72,7 +58,6 @@ namespace KixDutyFree.App.Quartz
         /// <returns></returns>
         public async Task StartErrorCheckAsync()
         {
-
             var scheduler = await schedulerFactory.GetScheduler();
             var job = JobBuilder.Create<CheckErrorJob>()
                 .WithIdentity($"error_check_job", "error_check")

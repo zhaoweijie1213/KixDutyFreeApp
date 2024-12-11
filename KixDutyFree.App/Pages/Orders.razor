@@ -1,7 +1,39 @@
 ﻿@page "/orders"
+@using KixDutyFree.Shared.Models.Entity
+@using KixDutyFree.Shared.Services;
+@inject OrderService orderService;
 
 <PageTitle>订单列表</PageTitle>
-
+<MContainer Fluid>
+    <MDataTable Stripe Headers="_headers"
+    Loading="@Loading"
+    Items="_Orders"
+    ItemsPerPage="20"
+    Class="elevation-1">
+    </MDataTable>
+</MContainer>
 @code {
 
+    private List<DataTableHeader<OrdersEntity>> _headers = new List<DataTableHeader<OrdersEntity>>
+        {
+          new (){ Text= "订单Id",Align= DataTableHeaderAlign.Center, Value= nameof(OrdersEntity.OrderId)},
+          new (){ Text= "账号", Align= DataTableHeaderAlign.Center, Value= nameof(OrdersEntity.Account)},
+          new (){ Text= "商品Id",Align= DataTableHeaderAlign.Center, Value= nameof(OrdersEntity.ProductId)},
+          new (){ Text= "商品名称",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.Product.Name)},
+          new (){ Text= "航班时间",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.FlightDate)},
+          new (){ Text= "航空公司",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.AirlineName) },
+          new (){ Text= "航班号",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.FlightNo) },
+          new (){ Text= "创建时间",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.CreateTime) },
+
+        };
+
+    private List<OrdersEntity> _Orders { get; set; } = new();
+
+    private bool Loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _Orders = await orderService.GetOrdersAsync();
+        Loading = false;
+    }
 }

@@ -44,16 +44,16 @@
                                         <MTextField @bind-Value="_editedItem.Password" Label="密码"></MTextField>
                                     </MCol>
                                     <MCol Cols="12" Sm="6" Md="4">
-                                        <MTextField @bind-Value="_editedItem.Date" Hint="例如: 2024/12/11 10:30" Label="航班时间"></MTextField>
+                                        <MTextField @bind-Value="_editedItem.Date" Hint="例如: 2024/12/11 10:30" Label="航班时间">@_editedItem.Date.ToString("yyyy-MM-dd HH:mm")</MTextField>
                                     </MCol>
                                     <MCol Cols="12" Sm="6" Md="4">
-                                        <MTextField @bind-Value="_editedItem.AirlineName" Label="航空公司名称"></MTextField>
+                                        <MTextField @bind-Value="_editedItem.AirlineName" Label="航空公司名称" Hint="例如:四川航空"></MTextField>
                                     </MCol>
                                     <MCol Cols="12" Sm="6" Md="4"> 
                                         <MTextField @bind-Value="_editedItem.FlightNo" Label="航班号"></MTextField>
                                     </MCol>
                                     <MCol Cols="12" Sm="6" Md="4">
-                                        <MTextField @bind-Value="_editedItem.Quantity" Label="默认下单数量"></MTextField>
+                                        <MTextField @bind-Value="_editedItem.Quantity" Label="默认下单数量" Hint="设置后优先使用该值下单,不设置则使用商品设置的下单数量"></MTextField>
                                     </MCol>
                                 </MRow>
                             </MContainer>
@@ -79,6 +79,7 @@
                         <MCardTitle>提示</MCardTitle>
                         <MCardText>确认删除该账号吗?</MCardText>
                         <MCardActions>
+                            <MSpacer></MSpacer>
                             <MButton Color="blue darken-1" Text OnClick="DeleteItemConfirm">确认</MButton>
                             <MButton Color="blue darken-1" Text OnClick="CloseDelete">取消</MButton>
                         </MCardActions>

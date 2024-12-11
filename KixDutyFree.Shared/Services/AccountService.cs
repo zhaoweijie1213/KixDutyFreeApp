@@ -1,15 +1,20 @@
 ﻿using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models;
+using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Quartz;
 using KixDutyFree.Shared.Manage;
 using KixDutyFree.Shared.Models;
 using KixDutyFree.Shared.Models.Entity;
+using KixDutyFree.Shared.Quartz.Jobs;
 using KixDutyFree.Shared.Repository;
 using log4net.Core;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Numeric;
 using OpenQA.Selenium.BiDi.Modules.Log;
+using Quartz;
 using QYQ.Base.Common.IOCExtensions;
 using System;
 using System.Collections.Generic;
@@ -19,7 +24,8 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class AccountService(ILogger<AccountService> logger, CacheManage cacheManage, AccountRepository accountRepository, IServiceProvider serviceProvider, AccountClientFactory accountClientFactory) : ISingletonDependency
+    public class AccountService(ILogger<AccountService> logger, CacheManage cacheManage, AccountRepository accountRepository, IServiceProvider serviceProvider, AccountClientFactory accountClientFactory
+        , ISchedulerFactory schedulerFactory) : ISingletonDependency
     {
         private List<AccountInfo> _accounts = [];
 
@@ -122,6 +128,34 @@ namespace KixDutyFree.Shared.Services
             }
             //初始化账号client
             await CreateClientAsync(account);
+            await StartLoginCheckAsync(account.Email);
+        }
+
+
+        /// <summary>
+        /// 检查登录状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartLoginCheckAsync(string email)
+        {
+
+            var scheduler = await schedulerFactory.GetScheduler();
+            var job = JobBuilder.Create<CheckLoginJob>()
+                .UsingJobData("email", email)
+                .WithIdentity($"login_check_job_{email}", "login_check")
+                .Build();
+
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity($"login_check_trigger_{email}", "login_check")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                .WithIntervalInMinutes(10)
+                .RepeatForever())
+                .Build();
+            await scheduler.ScheduleJob(job, trigger);
+            logger.LogInformation("StartMonitorAsync.添加{email}登录检测任务", email);
+
+
         }
 
         /// <summary>
@@ -148,6 +182,11 @@ namespace KixDutyFree.Shared.Services
                     account.Date = entity.Date;
                     account.Quantity = entity.Quantity;
                 }
+                //修改客户端账号信息
+                if(accountClientFactory.Clients.TryGetValue(entity.Email, out AccountClient? accountClient))
+                {
+                    accountClient.Account = account;
+                }
                 NotifyStateChanged();
             }
         }
@@ -160,6 +199,25 @@ namespace KixDutyFree.Shared.Services
         public async Task DelAccountAsync(string email)
         {
             await accountRepository.DelAsync(email);
+            //取消任务
+            var scheduler = await schedulerFactory.GetScheduler();
+            await scheduler.UnscheduleJob(new TriggerKey($"login_check_trigger_{email}", "login_check"));
+            //移除客户端
+            if (accountClientFactory.Clients.TryGetValue(email, out AccountClient? accountClient))
+            {
+                if (accountClient != null)
+                {
+                    await accountClient.QuitAsync();
+                    accountClientFactory.Clients.TryRemove(email, out _);
+                }
+            }
+            var account = _accounts.FirstOrDefault(i => i.Email == email);
+            if (account != null)
+            {
+                _accounts.Remove(account);
+                NotifyStateChanged();
+            }
+
         }
 
         /// <summary>

@@ -100,9 +100,10 @@ namespace KixDutyFree.App
             base.OnStartup(e);
         }
 
-        protected override async void OnExit(ExitEventArgs e)
+        protected override void OnExit(ExitEventArgs e)
         {
-            await _host.StopAsync();
+            // 同步阻塞直到 _host.StopAsync() 执行完成
+            _host.StopAsync().GetAwaiter().GetResult();
             base.OnExit(e);
         }
     }

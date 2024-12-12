@@ -73,6 +73,18 @@ namespace KixDutyFree.Shared.Manage
         }
 
         /// <summary>
+        /// 设置商品信息
+        /// </summary>
+        /// <returns></returns>
+        public void SetProductInfoAsync(string id, ProductInfoEntity entity)
+        {
+            string key = CustomCacheKeys.ProductInfo(id);
+
+            memoryCache.Set(key, entity, TimeSpan.FromMinutes(5));
+             
+        }
+
+        /// <summary>
         /// 获取商品信息
         /// </summary>
         /// <returns></returns>

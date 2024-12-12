@@ -145,8 +145,6 @@ namespace KixDutyFree.Shared.Services
                         .Build();
                     await scheduler.ScheduleJob(job, trigger);
                     logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", input.Address);
-
-                    await UpdateMonitorStatusAndQuantityAsync(info.Id, input.Quantity);
                     UpdateMonitorStatus(info.Id, true);
 
                     status = true;
@@ -267,13 +265,19 @@ namespace KixDutyFree.Shared.Services
         }
 
         /// <summary>
-        /// 
+        /// 更新商品可用数量
         /// </summary>
         /// <param name="address"></param>
         /// <param name="quantity"></param>
         public async Task UpdateMonitorStatusAndQuantityAsync(string id, int quantity)
         {
             await productInfoRepository.UpdateQuantityAsync(id, quantity);
+            var product = _productStocks.FirstOrDefault(i => i.Id == id);
+            if (product != null)
+            {
+                product.Quantity = quantity;
+                NotifyStateChanged();
+            }
         }
 
         /// <summary>
@@ -289,7 +293,7 @@ namespace KixDutyFree.Shared.Services
                 product.MonitorStatus = monitorStatus;
                 NotifyStateChanged();
             }
-
+     
         }
     }
 }

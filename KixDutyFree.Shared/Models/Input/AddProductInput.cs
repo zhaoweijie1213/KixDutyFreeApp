@@ -8,6 +8,8 @@ namespace KixDutyFree.Shared.Models.Input
 {
     public class AddProductInput
     {
+        public string Id { get; set; }
+
         /// <summary>
         /// 地址
         /// </summary>

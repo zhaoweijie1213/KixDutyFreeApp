@@ -501,7 +501,7 @@ namespace KixDutyFree.App.Manage
                                     {
                                         await productMonitorRepository.UpdateAsync(productMonitor);
                                         //调用下单逻辑,跳转结算界面
-                                        driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/checkout");
+                                        await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn/checkout");
                                         // 等待页面加载完成
                                         WebDriverWait wait = new(driver, TimeSpan.FromMinutes(1));
                                         wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));

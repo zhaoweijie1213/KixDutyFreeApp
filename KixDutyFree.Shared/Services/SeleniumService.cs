@@ -60,7 +60,7 @@ namespace KixDutyFree.Shared.Services
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
                     driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
-                    driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn");
+                    await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn");
                     //获取标题
                     var title = driver.Title;
                     logger.LogInformation("Title:{title}", title);
@@ -98,7 +98,7 @@ namespace KixDutyFree.Shared.Services
             //检测登录按钮
             try
             {
-                driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/login/");
+                await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn/login/");
                 //输入账号密码
                 var email = driver.FindElement(By.Id("login-form-email"));
                 email.SendKeys(account.Email);
@@ -122,7 +122,7 @@ namespace KixDutyFree.Shared.Services
         /// </summary>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public Task<bool> IsLogin(ChromeDriver driver)
+        public async Task<bool> IsLogin(ChromeDriver driver)
         {
             bool isLogin = false;
 
@@ -131,11 +131,11 @@ namespace KixDutyFree.Shared.Services
                 WebDriverWait wait = new(driver, TimeSpan.FromSeconds(60));
                 if (driver.Url.Contains(AccountUrl))
                 {
-                    driver.Navigate().GoToUrl(Home);
+                    await driver.Navigate().GoToUrlAsync(Home);
                 }
                 else
                 {
-                    driver.Navigate().GoToUrl(AccountUrl);
+                    await driver.Navigate().GoToUrlAsync(AccountUrl);
                 }
                 // 尝试查找表示已登录状态的元素
                 var accountInfo = wait.Until(driver =>
@@ -165,7 +165,7 @@ namespace KixDutyFree.Shared.Services
                 logger.LogWarning("未检测到登录状态，超时未找到指定元素。");
             }
 
-            return Task.FromResult(isLogin);
+            return isLogin;
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace KixDutyFree.Shared.Services
                 try
                 {
                     // 导航到商品页面
-                    driver.Navigate().GoToUrl(address);
+                    await driver.Navigate().GoToUrlAsync(address);
                     var productDetail = driver.FindElement(By.ClassName("product-detail"));
                     // 获取 data-pid 属性的值 得到商品id
                     string productId = productDetail.GetDomAttribute("data-pid");
@@ -217,7 +217,7 @@ namespace KixDutyFree.Shared.Services
         /// <returns></returns>
         public async Task OrderAsync(ChromeDriver driver, string productAddress)
         {
-            driver.Navigate().GoToUrl(productAddress);
+            await driver.Navigate().GoToUrlAsync(productAddress);
             await Confirm(driver);
             // 显式等待，等待特定元素加载完成，最多等待 10 秒
             WebDriverWait wait = new(driver, TimeSpan.FromSeconds(30));
@@ -274,10 +274,10 @@ namespace KixDutyFree.Shared.Services
         /// </summary>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public Task ToCartAsync(ChromeDriver driver)
+        public async Task ToCartAsync(ChromeDriver driver)
         {
             //去购物车结算
-            driver.Navigate().GoToUrl("https://www.kixdutyfree.jp/cn/cart/");
+            await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn/cart/");
             try
             {
                 // 等待页面加载完成
@@ -296,7 +296,6 @@ namespace KixDutyFree.Shared.Services
                 logger.LogError("ToCartAsync:购物车页面加载超时");
                 throw;
             }
-            return Task.CompletedTask;
             #region 交互
 
             //DateTime datetime = DateTime.Now.AddDays(15);

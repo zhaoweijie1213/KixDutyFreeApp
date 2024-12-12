@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KixDutyFree App"
-#define MyAppVersion "1.0.3"
+#define MyAppVersion "1.0.4"
 #define MyAppPublisher "ZhaoWeiJie"
 #define MyAppExeName "KixDutyFree.App.exe"
 #define MyAppAssocName MyAppName + " File"
@@ -30,7 +30,7 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputBaseFilename=KixDutyFreeAppSetup
+OutputBaseFilename=KixDutyFreeAppSetup_{#MyAppVersion}
 SetupIconFile=F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\publish\win-x64\wwwroot\favicon.ico
 Compression=lzma
 SolidCompression=yes

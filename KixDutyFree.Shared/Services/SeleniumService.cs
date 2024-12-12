@@ -35,27 +35,26 @@ namespace KixDutyFree.Shared.Services
             {
                 try
                 {
-                    if (headless)
+                    // 在后台线程中实例化ChromeDriver
+                    driver = await Task.Run(() =>
                     {
-                        // 创建 ChromeDriverService 实例
                         ChromeDriverService service = ChromeDriverService.CreateDefaultService();
-                        // 隐藏命令行窗口
                         service.HideCommandPromptWindow = true;
-                        // 可选：抑制初始诊断信息
                         service.SuppressInitialDiagnosticInformation = true;
                         service.InitializationTimeout = TimeSpan.FromMinutes(2);
-                        // 创建 ChromeOptions 实例并设置无头模式
+
                         var options = new ChromeOptions();
-                        options.AddArgument("--headless"); // 启用无头模式
-                        options.AddArgument("--disable-gpu"); // 如果您使用的是 Windows 系统，建议添加此行
-                        options.AddArgument("--no-sandbox"); // 解决 DevToolsActivePort 文件不存在的报错
-                        options.AddArgument("--disable-dev-shm-usage"); // 解决资源不足的问题
-                        driver = new ChromeDriver(service, options);
-                    }
-                    else
-                    {
-                        driver = new();
-                    }
+                        if (headless)
+                        {
+                            options.AddArgument("--headless");
+                            options.AddArgument("--disable-gpu");
+                            options.AddArgument("--no-sandbox");
+                            options.AddArgument("--disable-dev-shm-usage");
+                        }
+
+                        return new ChromeDriver(service, options);
+                    });
+
                     // 设置页面加载超时时间为 120 秒
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
                     driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
@@ -173,10 +172,11 @@ namespace KixDutyFree.Shared.Services
         /// </summary>
         /// <param name="address"></param>
         /// <param name="driver"></param>
+        /// <param name="quantity"></param>
         /// <returns></returns>
-        public async Task<ProductInfoEntity?> GetProductIdAsync(string address, ChromeDriver driver)
+        public async Task<ProductInfoEntity?> GetProductIdAsync(string address, ChromeDriver driver, int quantity)
         {
-            var product = await cacheManage.GetProductInfoByAddressAsync(address);
+            var product = await productInfoRepository.FindByAddressAsync(address);
             if (product == null)
             {
                 try
@@ -193,6 +193,7 @@ namespace KixDutyFree.Shared.Services
                         {
                             Id = productId,
                             Address = address,
+                            Quantity = quantity,
                             CreateTime = DateTime.Now,
                             UpdateTime = DateTime.Now
                         };

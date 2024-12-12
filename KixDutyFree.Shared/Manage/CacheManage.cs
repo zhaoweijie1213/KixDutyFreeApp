@@ -113,6 +113,16 @@ namespace KixDutyFree.Shared.Manage
         }
 
         /// <summary>
+        /// 删除商品信息
+        /// </summary>
+        /// <returns></returns>
+        public void RemoveProductInfoByAddress(string address)
+        {
+            string key = CustomCacheKeys.ProductInfoByAddress(address);
+            memoryCache.Remove(key);
+        }
+
+        /// <summary>
         /// 获取监控信息
         /// </summary>
         /// <param name="email"></param>

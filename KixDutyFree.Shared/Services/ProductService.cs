@@ -126,7 +126,7 @@ namespace KixDutyFree.Shared.Services
                 //创建浏览器实例
                 var res = await seleniumService.CreateInstancesAsync(null, headless);
 
-                var info = await seleniumService.GetProductIdAsync(input.Address, res.Item1);
+                var info = await seleniumService.GetProductIdAsync(input.Address, res.Item1, input.Quantity);
 
                 if (info != null)
                 {
@@ -145,7 +145,6 @@ namespace KixDutyFree.Shared.Services
                         .Build();
                     await scheduler.ScheduleJob(job, trigger);
                     logger.LogInformation("StartMonitorAsync.添加监控任务:{address}", input.Address);
-                    UpdateMonitorStatus(info.Id, true);
 
                     status = true;
                 }
@@ -188,7 +187,8 @@ namespace KixDutyFree.Shared.Services
             else
             {
                 await productInfoRepository.UpdateAsync(entity);
-                var productInfo = _productStocks.FirstOrDefault(i => i.Id == entity.Id);
+                product = entity;
+                var productInfo = _productStocks.FirstOrDefault(i => i.Id == product.Id);
                 if (productInfo == null)
                 {
                     _productStocks.Add(new ProductMonitorInfo()

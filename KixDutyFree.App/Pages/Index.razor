@@ -48,10 +48,7 @@
         }
     </MRow>
 </MContainer>
-<MSnackbar @bind-Value="_snackbar"
-Color="@SnackbarColor" Timeout="2000" Centered Action="Close">
-    @Message
-</MSnackbar>
+<PEnqueuedSnackbars @ref="_enqueuedSnackbars" Position="SnackPosition.TopCenter"></PEnqueuedSnackbars>
 <MDialog @bind-Value="_dialogDelete" MAxWidth="500">
     <ChildContent>
         <MCard>
@@ -68,7 +65,7 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close">
                 </MButton>
                 <MButton Color="green darken-1"
                 Text
-                         OnClick="() => _dialogDelete = false">
+                OnClick="() => _dialogDelete = false">
                     取消
                 </MButton>
             </MCardActions>
@@ -113,8 +110,6 @@ MaxWidth="700">
 @code {
     public List<ProductMonitorInfo> products { get; set; } = new();
 
-    public bool _snackbar { get; set; }
-
     public bool dialog { get; set; } = false;
 
     private bool _dialogDelete;
@@ -143,6 +138,18 @@ MaxWidth="700">
                 return "新增";
             }
         }
+    }
+
+    private PEnqueuedSnackbars? _enqueuedSnackbars;
+
+    private void Enqueue(AlertTypes type, string content)
+    {
+        _enqueuedSnackbars?.EnqueueSnackbar(new SnackbarOptions()
+            {
+                Content = content,
+                Type = type,
+                Closeable = true
+            });
     }
 
     protected override async Task OnInitializedAsync()
@@ -178,9 +185,9 @@ MaxWidth="700">
         else
         {
             await productService.StartMonitorAsync(_editedItem);
-            await productService.UpdateMonitorStatusAndQuantityAsync(_editedItem.Id, _editedItem.Quantity);
         }
         EditBtnLoading = false;
+        Enqueue(AlertTypes.Success, "操作成功");
         Close();
     }
 
@@ -210,9 +217,7 @@ MaxWidth="700">
     {
         if (string.IsNullOrEmpty(Id))
         {
-            Message = "请先选择要删除的商品";
-            SnackbarColor = "warning";
-            _snackbar = true;
+            Enqueue(AlertTypes.Warning, "请先选择要删除的商品");
             return;
         }
         DelBtnLoading = true;
@@ -222,16 +227,11 @@ MaxWidth="700">
 
         if (status)
         {
-            Message = "操作成功";
-            SnackbarColor = "success";
-            _snackbar = true;
-            // products = await productService.GetProductsAsync();
+            Enqueue(AlertTypes.Success, "操作成功");
         }
         else
         {
-            Message = "删除失败";
-            SnackbarColor = "error";
-            _snackbar = true;
+            Enqueue(AlertTypes.Error, "删除失败");
         }
         DelBtnLoading = false;
         _dialogDelete = false;

@@ -53,7 +53,7 @@
         </AppendContent>
 
     </MNavigationDrawer>
-
+    <PEnqueuedSnackbars @ref="_enqueuedSnackbars" Position="SnackPosition.TopCenter"></PEnqueuedSnackbars>
     <MMain Class="grey lighten-4">
         <MContainer Fluid>
             <Loading />
@@ -68,6 +68,18 @@
     private bool? _drawer;
 
     private bool _open { get; set; } = true;
+
+    private PEnqueuedSnackbars? _enqueuedSnackbars;
+
+    private void Enqueue(AlertTypes type, string content)
+    {
+        _enqueuedSnackbars?.EnqueueSnackbar(new SnackbarOptions()
+            {
+                Content = content,
+                Type = type,
+                Closeable = true
+            });
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,5 +100,13 @@
     {
         // _open = !_open;
         await appConfigRepository.UpdateReOrderAsync(_open);
+        if (_open)
+        {
+            Enqueue(AlertTypes.Success, "已开启");
+        }
+        else
+        {
+            Enqueue(AlertTypes.Success, "已关闭");
+        }
     }
 }

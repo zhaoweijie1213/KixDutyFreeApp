@@ -37,7 +37,7 @@ namespace KixDutyFree.Shared.Manage
         /// 获取商品信息
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ProductModel>?> GetProductsAsync()
+        public async Task<List<ProductModel>?> GetExcelProductsAsync()
         {
             string key = "ProductsInfo";
             if (!memoryCache.TryGetValue(key, out List<ProductModel>? products))

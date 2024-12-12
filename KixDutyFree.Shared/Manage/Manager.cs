@@ -14,7 +14,7 @@ using System.Collections.Concurrent;
 namespace KixDutyFree.Shared.Manage
 {
     public class Manager(ILogger<Manager> logger, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
-        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService) : ISingletonDependency
+        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService,ProductService productService) : ISingletonDependency
     {
         /// <summary>
         /// 加载数据
@@ -22,6 +22,8 @@ namespace KixDutyFree.Shared.Manage
         /// <returns></returns>
         public async Task InitDataAsync()
         {
+            //同步商品数据
+            await productService.SyncProductAsync();
             //同步账号数据
             await accountService.SyncAccountAsync();
         }

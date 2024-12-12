@@ -21,6 +21,7 @@ OnCancel="HandleOnCancel">
             <MTextField @bind-Value="input.Quantity"
             Label="数量"
             Dense
+            Hint="填0时会以最大可以购买数量下单"
             Outlined
             HideDetails="@("auto")" />
         </MCol>
@@ -42,6 +43,9 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
     [Parameter]
     public bool Show { get; set; } = false;
 
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
 
     public bool _snackbar { get; set; }
 
@@ -49,10 +53,6 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
 
 
     public string SnackbarColor { get; set; } = "success";
-
-
-    [Parameter]
-    public EventCallback<bool> ShowChanged { get; set; }
 
     AddProductInput input = new();
     private bool throwException;
@@ -103,9 +103,13 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
         }
     }
 
-    private void HandleOnCancel()
+    private async void HandleOnCancel()
     {
         Show = false;
         exception = null;
+
+
+        // 通知父组件
+        await ShowChanged.InvokeAsync(false);
     }
 }

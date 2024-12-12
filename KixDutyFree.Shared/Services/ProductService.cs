@@ -4,8 +4,10 @@ using KixDutyFree.App.Quartz;
 using KixDutyFree.App.Repository;
 using KixDutyFree.Shared.Manage;
 using KixDutyFree.Shared.Models;
+using KixDutyFree.Shared.Models.Entity;
 using KixDutyFree.Shared.Models.Input;
 using KixDutyFree.Shared.Quartz.Jobs;
+using KixDutyFree.Shared.Repository;
 using log4net.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,7 +25,8 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class ProductService(ILogger<ProductService> logger,ProductInfoRepository productInfoRepository, ISchedulerFactory schedulerFactory, IConfiguration configuration, SeleniumService seleniumService) : ISingletonDependency
+    public class ProductService(ILogger<ProductService> logger,ProductInfoRepository productInfoRepository, ISchedulerFactory schedulerFactory, IConfiguration configuration, SeleniumService seleniumService
+        , CacheManage cacheManage) : ISingletonDependency
     {
         private List<ProductMonitorInfo> _productStocks = [];
 
@@ -44,6 +47,30 @@ namespace KixDutyFree.Shared.Services
 
         // 通知订阅者状态变化
         private void NotifyStateChanged() => OnChange?.Invoke();
+
+        /// <summary>
+        /// 同步账号
+        /// </summary>
+        /// <returns></returns>
+        public async Task SyncProductAsync()
+        {
+            var data = await cacheManage.GetExcelProductsAsync();
+            var accounts = await productInfoRepository.QueryAsync();
+            if (accounts.Count <= 0)
+            {
+                if (data != null)
+                {
+                    foreach (var config in data) 
+                    {
+                        await StartMonitorAsync(new AddProductInput()
+                        {
+                            Address = config.Address,
+                            Quantity = config.Quantity
+                        });
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 获取商品

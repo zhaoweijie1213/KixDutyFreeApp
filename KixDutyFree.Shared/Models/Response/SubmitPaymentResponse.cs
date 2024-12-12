@@ -317,7 +317,7 @@ namespace KixDutyFree.App.Models.Response
 
         public List<object>? DiscountLineItems { get; set; }
 
-        public bool IsAllowSameDayReservation { get; set; }
+        public bool? IsAllowSameDayReservation { get; set; }
 
         public bool IsAllowSameDayPickUp { get; set; }
 

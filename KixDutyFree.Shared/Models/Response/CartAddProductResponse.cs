@@ -19,7 +19,7 @@ namespace KixDutyFree.App.Models.Response
 
         public string? Message { get; set; }
 
-        public Cart? Cart { get; set; }
+        //public Cart? Cart { get; set; }
 
         //public NewBonusDiscountLineItem? NewBonusDiscountLineItem { get; set; }
 
@@ -209,7 +209,7 @@ namespace KixDutyFree.App.Models.Response
 
         public List<object>? DiscountLineItems { get; set; }
 
-        public bool IsAllowSameDayReservation { get; set; }
+        public bool? IsAllowSameDayReservation { get; set; }
 
         public bool IsAllowSameDayPickUp { get; set; }
 

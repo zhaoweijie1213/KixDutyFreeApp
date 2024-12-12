@@ -1,4 +1,6 @@
 ﻿@using KixDutyFree.App.Pages.Components
+@using KixDutyFree.Shared.Repository
+@inject AppConfigRepository appConfigRepository
 @inherits LayoutComponentBase
 
 <MApp>
@@ -10,40 +12,46 @@
     </MAppBar>
 
     <MNavigationDrawer App @bind-Value="_drawer">
-        <MList Nav Routable>
-            <MListItem Href="/" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-cart-variant</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>商品列表</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/account" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-account-edit</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>账号列表</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/orders" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-order-bool-ascending</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>订单列表</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/logs" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-math-log</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>日志</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-        </MList>
+        <ChildContent>
+            <MList Nav Routable>
+                <MListItem Href="/" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-cart-variant</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>商品列表</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/account" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-account-edit</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>账号列表</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/orders" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-order-bool-ascending</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>订单列表</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/logs" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-math-log</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>日志</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+            </MList>
+        </ChildContent>
+        <AppendContent>
+            <MSwitch @bind-Value="_open" LeftText="开" RightText="关" Color="black" Label="重启时重新下单" TrackColor="#E5E6EB" OnClick="@OnSwitchClick"></MSwitch>
+        </AppendContent>
+
     </MNavigationDrawer>
 
     <MMain Class="grey lighten-4">
@@ -59,8 +67,26 @@
 @code {
     private bool? _drawer;
 
-    protected override void OnInitialized()
+    private bool _open { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
     {
         _drawer = true;
+        var appConfig = await appConfigRepository.FindAsync();
+        if (appConfig != null)
+        {
+            _open = appConfig.ReOrderOnRestart;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newValue"></param>
+    /// <returns></returns>
+    private async Task OnSwitchClick()
+    {
+        // _open = !_open;
+        await appConfigRepository.UpdateReOrderAsync(_open);
     }
 }

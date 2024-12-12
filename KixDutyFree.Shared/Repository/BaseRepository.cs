@@ -88,6 +88,7 @@ namespace KixDutyFree.App.Repository
             db.CodeFirst.InitTables<ProductMonitorEntity>();
             db.CodeFirst.InitTables<AccountEntity>();
             db.CodeFirst.InitTables<OrdersEntity>();
+            db.CodeFirst.InitTables<AppConfigEntity>();
             return db;
         }
 

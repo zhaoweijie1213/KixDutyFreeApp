@@ -2,6 +2,7 @@
 using KixDutyFree.App.Models;
 using KixDutyFree.App.Quartz;
 using KixDutyFree.App.Repository;
+using KixDutyFree.Shared.Repository;
 using KixDutyFree.Shared.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,8 @@ using System.Collections.Concurrent;
 namespace KixDutyFree.Shared.Manage
 {
     public class Manager(ILogger<Manager> logger, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
-        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService,ProductService productService) : ISingletonDependency
+        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService,ProductService productService
+        , AppConfigRepository appConfigRepository) : ISingletonDependency
     {
         /// <summary>
         /// 加载数据
@@ -22,10 +24,20 @@ namespace KixDutyFree.Shared.Manage
         /// <returns></returns>
         public async Task InitDataAsync()
         {
-            //同步商品数据
-            await productService.SyncProductAsync();
-            //同步账号数据
-            await accountService.SyncAccountAsync();
+            logger.LogInformation("加载数据");
+            var appConfig = await appConfigRepository.FindAsync();
+            if (appConfig == null)
+            {
+                appConfig = new Models.Entity.AppConfigEntity
+                {
+                    ReOrderOnRestart = false
+                };
+                await appConfigRepository.InsertAsync(appConfig);
+            }
+            ////同步商品数据
+            //await productService.SyncProductAsync();
+            ////同步账号数据
+            //await accountService.SyncAccountAsync();
         }
 
         /// <summary>
@@ -34,7 +46,8 @@ namespace KixDutyFree.Shared.Manage
         /// <returns></returns>
         public async Task InitClientAsync()
         {
-            if (configuration.GetSection("ReloadOnRestart").Get<bool>())
+            var appConfig = await appConfigRepository.FindAsync();
+            if (appConfig?.ReOrderOnRestart == true)
             {
                 //将订单标记为已完成
                 await productMonitorRepository.UpdateCompletedAsync();

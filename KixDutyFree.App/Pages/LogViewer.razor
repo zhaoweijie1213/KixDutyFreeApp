@@ -7,52 +7,55 @@
 
 <PageTitle>日志</PageTitle>
 
-<MCard>
-    <MCardTitle>日志查看器</MCardTitle>
-    <MCardText>
-        <MDataTable Stripe Loading="@Loading" Items="logEvents" HideDefaultFooter Headers="_headers" ItemsPerPage="5000" Class="elevation-1">
-            <ItemColContent>
-                @if (context.Header.Value == "Level")
+<MContainer Fluid>
+    <MDataTable Id="logViewTable" Stripe Loading="@Loading" Items="logEvents" Headers="_headers" Page="@_page"
+    ItemsPerPage="@_itemsPerPage" 
+    OnOptionsUpdate="@HandleOnOptionsUpdate"
+    ServerItemsLength="@_total" Class="elevation-1">
+        <TopContent>
+            <MToolbar>
+                <MToolbarTitle>日志列表</MToolbarTitle>
+            </MToolbar>
+        </TopContent>
+        <ItemColContent>
+            @if (context.Header.Value == "Level")
+            {
+                switch (context.Item.Level)
                 {
-                    switch (context.Item.Level)
-                    {
-                        case LogEventLevel.Information:
-                            <MChip Class="ma-2"
-                            Color="success"
-                            Label>
-                                @context.Item.Level
-                            </MChip>
-                            break;
-                        case LogEventLevel.Warning:
-                            <MChip Class="ma-2"
-                                   Color="warning"
-                                   Label>
-                                @context.Item.Level
-                            </MChip>
-                            break;
-                        case LogEventLevel.Error:
-                            <MChip Class="ma-2"
-                                   Color="error"
-                                   Label>
-                                @context.Item.Level
-                            </MChip>
-                            break;
-                        default:
-                            <MChip Class="ma-2"
-                                   Label>
-                                @context.Item.Level
-                            </MChip>
-                            break;
-                    }
+                    case LogEventLevel.Information:
+                        <MChip Class="ma-2" Color="success" Label>
+                            @context.Item.Level
+                        </MChip>
+                        break;
+                    case LogEventLevel.Warning:
+                        <MChip Class="ma-2"
+                        Color="warning"
+                        Label>
+                            @context.Item.Level
+                        </MChip>
+                        break;
+                    case LogEventLevel.Error:
+                        <MChip Class="ma-2"
+                        Color="error"
+                        Label>
+                            @context.Item.Level
+                        </MChip>
+                        break;
+                    default:
+                        <MChip Class="ma-2"
+                        Label>
+                            @context.Item.Level
+                        </MChip>
+                        break;
                 }
-                else
-                {
-                    @context.Value
-                }
-            </ItemColContent>
-        </MDataTable>
-    </MCardText>
-</MCard>
+            }
+            else
+            {
+                @context.Value
+            }
+        </ItemColContent>
+    </MDataTable>
+</MContainer>
 @code {
     private List<LogEvent> logEvents = new();
 
@@ -60,7 +63,17 @@
 
     private System.Threading.Timer? _timer;
 
+    private int _total;
+
+    private int _itemsPerPage = 50;
+
+    private int _page = 1;
+
+    private DataOptions _options = new(1, 50);
+
     private bool Loading = false;
+
+    private string height = "100%";
 
     private readonly TimeSpan _refreshInterval = TimeSpan.FromSeconds(2); // 设置刷新间隔
 
@@ -78,27 +91,37 @@
 
     protected override void OnInitialized()
     {
-        // 初始加载日志
-        LoadLogEvents();
+        // // 初始加载日志
+        // LoadLogEvents();
         // 设置定时器
-        _timer = new System.Threading.Timer( _ =>
+        _timer = new System.Threading.Timer(_ =>
         {
-            LoadLogEvents();
+            LoadLogEvents(_page, _itemsPerPage);
 
         }, null, TimeSpan.Zero, _refreshInterval);
     }
 
+    private void HandleOnOptionsUpdate(DataOptions options)
+    {
+        _options = options;
+        _page = options.Page;
+        _itemsPerPage = _options.ItemsPerPage;
+        LoadLogEvents(_options.Page, _options.ItemsPerPage);
+    }
 
-    private void LoadLogEvents()
+
+    private void LoadLogEvents(int pageNum, int pageSize)
     {
         Loading = true;
         // 获取并排序日志事件
-        logEvents = LogStore.GetLogEvents().OrderByDescending(i => i.Timestamp).ToList();
+        var data = LogStore.GetLogEvents(pageNum, pageSize);
+        logEvents = data.List;
+        _total = data.Total;
         // 更新 UI 并滚动到最底部
-         InvokeAsync( () =>
-        {
-            StateHasChanged();
-        });
+        InvokeAsync(() =>
+       {
+           StateHasChanged();
+       });
         Loading = false;
     }
 

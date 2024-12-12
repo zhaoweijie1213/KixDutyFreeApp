@@ -1,4 +1,5 @@
-﻿using QYQ.Base.Common.IOCExtensions;
+﻿using QYQ.Base.Common.ApiResult;
+using QYQ.Base.Common.IOCExtensions;
 using Serilog.Core;
 using Serilog.Events;
 using System;
@@ -36,9 +37,11 @@ namespace KixDutyFree.App.Service
         }
 
         // 获取当前的日志事件列表
-        public IEnumerable<LogEvent> GetLogEvents()
+        public PageResult<LogEvent> GetLogEvents(int pageNum, int pageSize)
         {
-            return _logEvents.ToArray();
+            PageResult<LogEvent> result = new();
+            var data = _logEvents.OrderByDescending(i => i.Timestamp).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
+            return result.SetPageRsult(data, pageNum, pageSize, _logEvents.Count);
         }
     }
 }

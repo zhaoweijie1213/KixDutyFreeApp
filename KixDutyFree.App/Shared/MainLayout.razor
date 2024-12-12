@@ -102,7 +102,7 @@
         await appConfigRepository.UpdateReOrderAsync(_open);
         if (_open)
         {
-            Enqueue(AlertTypes.Success, "已开启");
+            Enqueue(AlertTypes.Success, "已开启,当程序重启时重新下单");
         }
         else
         {

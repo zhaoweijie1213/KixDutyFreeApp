@@ -14,7 +14,7 @@ namespace KixDutyFree.Shared.Services
     {
         private bool _isLoading;
         private DateTime _loadingStartTime;
-        private readonly int _minDisplayTimeMs = 2000;
+        private readonly int _minDisplayTimeMs = 200;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         public bool IsLoading

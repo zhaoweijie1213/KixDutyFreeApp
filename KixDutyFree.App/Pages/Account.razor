@@ -61,7 +61,7 @@
 
                         <MCardActions>
                             <MSpacer></MSpacer>
-                            <MButton Color="blue darken-1"
+                            <MButton Color="blue darken-1" Loading="@SaveLoading"
                             Text
                             OnClick="Save">
                                 保存
@@ -132,6 +132,8 @@
 
     private bool Loading = true;
 
+    private bool SaveLoading = false;
+
     private bool _dialog;
 
     private bool _dialogDelete;
@@ -176,8 +178,9 @@
         Email = string.Empty;
     }
 
-    public async void Save()
+    public async Task Save()
     {
+        SaveLoading = true;
         if (!string.IsNullOrEmpty(Email))
         {
             await accountService.UpdateAccountAsync(_editedItem);
@@ -186,6 +189,7 @@
         {
             await accountService.AddAccountAsync(_editedItem);
         }
+        SaveLoading = false;
         Close();
     }
 

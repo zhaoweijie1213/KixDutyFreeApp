@@ -168,7 +168,7 @@ MaxWidth="700">
         Id = string.Empty;
     }
 
-    public async void Save()
+    public async Task Save()
     {
         EditBtnLoading = true;
         if (!string.IsNullOrEmpty(Id))

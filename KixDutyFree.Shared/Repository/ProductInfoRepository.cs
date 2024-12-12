@@ -46,5 +46,19 @@ namespace KixDutyFree.App.Repository
         {
             return Db.Deleteable<ProductInfoEntity>().Where(i=>i.Id == id).ExecuteCommandAsync();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public Task<int> UpdateQuantityAsync(string id,int quantity)
+        {
+            return Db.Updateable<ProductInfoEntity>().SetColumns(i => new ProductInfoEntity()
+            {
+                Quantity = quantity
+            }).Where(i => i.Id == id).ExecuteCommandAsync();
+        }
     }
 }

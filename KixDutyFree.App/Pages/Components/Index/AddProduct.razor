@@ -83,10 +83,11 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
             if (product == null)
             {
                 await productService.StartMonitorAsync(input);
+                Show = false;
                 Message = "操作成功";
                 SnackbarColor = "success";
                 _snackbar = true;
-                Show = false;
+          
             }
             else
             {

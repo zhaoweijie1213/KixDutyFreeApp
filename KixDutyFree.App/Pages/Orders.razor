@@ -25,6 +25,16 @@
                             HideDetails="true"></MTextField>
                 </MToolbar>
         </TopContent>
+        <ItemColContent>
+            @if (context.Header.Value == "ProductName")
+            {
+                @context.Item.Product?.Name
+            }
+            else
+            {
+                @context.Value
+            }
+        </ItemColContent>
     </MDataTable>
 </MContainer>
 @code {
@@ -35,7 +45,7 @@
           new (){ Text= "订单Id",Align= DataTableHeaderAlign.Center, Value= nameof(OrdersEntity.OrderId)},
           new (){ Text= "账号", Align= DataTableHeaderAlign.Center, Value= nameof(OrdersEntity.Account)},
           new (){ Text= "商品Id",Align= DataTableHeaderAlign.Center, Value= nameof(OrdersEntity.ProductId)},
-          new (){ Text= "商品名称",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.Product.Name)},
+          new (){ Text= "商品名称",Align= DataTableHeaderAlign.Center,Value= "ProductName"},
           new (){ Text= "航班时间",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.FlightDate)},
           new (){ Text= "航空公司",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.AirlineName) },
           new (){ Text= "航班号",Align= DataTableHeaderAlign.Center,Value= nameof(OrdersEntity.FlightNo) },

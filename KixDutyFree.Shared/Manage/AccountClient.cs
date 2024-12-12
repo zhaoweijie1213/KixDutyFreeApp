@@ -670,7 +670,11 @@ namespace KixDutyFree.App.Manage
             logger.LogDebug("ProductVariationAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
-                data = JsonConvert.DeserializeObject<ProductVariationResponse>(content);
+                data = JsonConvert.DeserializeObject<ProductVariationResponse>(content, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore, // 忽略 null 值
+                    DefaultValueHandling = DefaultValueHandling.Populate // 使用默认值
+                });
             }
             return data;
         }
@@ -702,7 +706,11 @@ namespace KixDutyFree.App.Manage
             logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
-                data = JsonConvert.DeserializeObject<CartAddProductResponse>(content);
+                data = JsonConvert.DeserializeObject<CartAddProductResponse>(content, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore, // 忽略 null 值
+                    DefaultValueHandling = DefaultValueHandling.Populate // 使用默认值
+                });
             }
             return data;
         }
@@ -725,7 +733,11 @@ namespace KixDutyFree.App.Manage
             logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
-                data = JsonConvert.DeserializeObject<CartUpdateQuantityResponse>(content);
+                data = JsonConvert.DeserializeObject<CartUpdateQuantityResponse>(content, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore, // 忽略 null 值
+                    DefaultValueHandling = DefaultValueHandling.Populate // 使用默认值
+                });
             }
             return data;
         }
@@ -751,7 +763,11 @@ namespace KixDutyFree.App.Manage
             logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
-                data = JsonConvert.DeserializeObject<FlightGetInfoResponse>(content);
+                data = JsonConvert.DeserializeObject<FlightGetInfoResponse>(content, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore, // 忽略 null 值
+                    DefaultValueHandling = DefaultValueHandling.Populate // 使用默认值
+                });
             }
             return data;
         }
@@ -803,7 +819,11 @@ namespace KixDutyFree.App.Manage
             logger.LogDebug("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
-                data = JsonConvert.DeserializeObject<FlightSaveInfoResponse>(content);
+                data = JsonConvert.DeserializeObject<FlightSaveInfoResponse>(content, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore, // 忽略 null 值
+                    DefaultValueHandling = DefaultValueHandling.Populate // 使用默认值
+                });
             }
             else
             {
@@ -884,7 +904,11 @@ namespace KixDutyFree.App.Manage
             logger.LogDebug("PlaceOrderAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
-                data = JsonConvert.DeserializeObject<PlaceOrderResponse>(content);
+                data = JsonConvert.DeserializeObject<PlaceOrderResponse>(content, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore, // 忽略 null 值
+                    DefaultValueHandling = DefaultValueHandling.Populate // 使用默认值
+                });
             }
             else
             {

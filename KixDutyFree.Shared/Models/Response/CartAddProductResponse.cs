@@ -1,4 +1,5 @@
 ﻿using KixDutyFree.App.Manage;
+using KixDutyFree.App.Models.Response;
 
 namespace KixDutyFree.App.Models.Response
 {
@@ -23,7 +24,7 @@ namespace KixDutyFree.App.Models.Response
 
         //public NewBonusDiscountLineItem? NewBonusDiscountLineItem { get; set; }
 
-        public bool Error { get; set; }
+        public bool? Error { get; set; }
 
         public string? PliUUID { get; set; }
 
@@ -36,7 +37,7 @@ namespace KixDutyFree.App.Models.Response
 
     public class Cart
     {
-        public bool HasBonusProduct { get; set; }
+        public bool? HasBonusProduct { get; set; }
 
         public ActionUrls? ActionUrls { get; set; }
 
@@ -56,7 +57,7 @@ namespace KixDutyFree.App.Models.Response
 
         public CartAddProductResources? Resources { get; set; }
 
-        public bool LotteryExclusive { get; set; }
+        public bool? LotteryExclusive { get; set; }
     }
 
     public class ActionUrls
@@ -128,7 +129,7 @@ namespace KixDutyFree.App.Models.Response
 
     public class Valid
     {
-        public bool Error { get; set; }
+        public bool? Error { get; set; }
         public object? Message { get; set; }
     }
 
@@ -155,11 +156,11 @@ namespace KixDutyFree.App.Models.Response
 
         public CardAddProductAvailability? Availability { get; set; }
 
-        public bool Available { get; set; }
+        public bool? Available { get; set; }
 
-        public bool PlusButtonDisabled { get; set; }
+        public bool? PlusButtonDisabled { get; set; }
 
-        public bool MinusButtonDisabled { get; set; }
+        public bool? MinusButtonDisabled { get; set; }
 
         public List<Quantity>? Quantities { get; set; }
 
@@ -183,7 +184,7 @@ namespace KixDutyFree.App.Models.Response
 
         public int Quantity { get; set; }
 
-        public bool IsGift { get; set; }
+        public bool? IsGift { get; set; }
 
         public List<PromotionInfo>? ApplicablePromotions { get; set; }
 
@@ -191,11 +192,11 @@ namespace KixDutyFree.App.Models.Response
 
         public string? UUID { get; set; }
 
-        public bool IsOrderable { get; set; }
+        public bool? IsOrderable { get; set; }
 
         public string? ShipmentUUID { get; set; }
 
-        public bool IsBonusProductLineItem { get; set; }
+        public bool? IsBonusProductLineItem { get; set; }
 
         public PriceTotal? PriceTotal { get; set; }
 
@@ -211,16 +212,16 @@ namespace KixDutyFree.App.Models.Response
 
         public bool? IsAllowSameDayReservation { get; set; }
 
-        public bool IsAllowSameDayPickUp { get; set; }
+        public bool? IsAllowSameDayPickUp { get; set; }
 
-        public bool IsAgeVerificationRequired { get; set; }
+        public bool? IsAgeVerificationRequired { get; set; }
         public string? ProductUrl { get; set; }
 
         public object? IsLotteryExclusive { get; set; }
 
         public List<Category>? Categories { get; set; }
 
-        public bool IsSameDayPickup { get; set; }
+        public bool? IsSameDayPickup { get; set; }
 
         public List<PromotionInfo>? Promotions { get; set; }
 
@@ -229,23 +230,23 @@ namespace KixDutyFree.App.Models.Response
 
     public class CardAddProductAvailability
     {
-        public bool Available { get; set; }
+        public bool? Available { get; set; }
 
         public string? MaxOrderQuantity { get; set; }
 
-        public bool Quantity { get; set; }
+        public bool? Quantity { get; set; }
 
         public List<Message>? Messages { get; set; }
 
         public string? MaxQuantitySafetyStock { get; set; }
 
-        public bool IsMaxQuantityLimitedStock { get; set; }
+        public bool? IsMaxQuantityLimitedStock { get; set; }
 
         public int MaxQuantityLimitedStock { get; set; }
 
         public string? Status { get; set; }
 
-        public bool IsQuantityLimited { get; set; }
+        public bool? IsQuantityLimited { get; set; }
     }
 
 

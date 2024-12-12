@@ -26,7 +26,7 @@ namespace KixDutyFree.App.Models.Response
 
         public SubmitPaymentResponseForm? Form { get; set; }
 
-        public bool Error { get; set; }
+        public bool? Error { get; set; }
     }
 
     public class Address
@@ -66,9 +66,9 @@ namespace KixDutyFree.App.Models.Response
 
         public object? Payment { get; set; }
 
-        public bool RegisteredUser { get; set; }
+        public bool? RegisteredUser { get; set; }
 
-        public bool IsExternallyAuthenticated { get; set; }
+        public bool? IsExternallyAuthenticated { get; set; }
 
         public List<object>? CustomerPaymentInstruments { get; set; }
     }
@@ -91,7 +91,7 @@ namespace KixDutyFree.App.Models.Response
 
         public string? Phone { get; set; }
 
-        public bool EmailOptIn { get; set; }
+        public bool? EmailOptIn { get; set; }
 
         public string? Password { get; set; }
     }
@@ -144,9 +144,9 @@ namespace KixDutyFree.App.Models.Response
     {
         public SubmitPaymentResources? Resources { get; set; }
 
-        public bool Shippable { get; set; }
+        public bool? Shippable { get; set; }
 
-        public bool UsingMultiShipping { get; set; }
+        public bool? UsingMultiShipping { get; set; }
 
         public object? OrderNumber { get; set; }
 
@@ -163,7 +163,7 @@ namespace KixDutyFree.App.Models.Response
         public Totals? Totals { get; set; }
         public Steps? Steps { get; set; }
 
-        public OrderItems? Items { get; set; }
+        //public OrderItems? Items { get; set; }
 
         public Billing? Billing { get; set; }
 
@@ -239,7 +239,7 @@ namespace KixDutyFree.App.Models.Response
     public class Step
     {
         [JsonProperty("iscompleted")]
-        public bool IsCompleted { get; set; }
+        public bool? IsCompleted { get; set; }
     }
 
     public class OrderItems
@@ -263,11 +263,11 @@ namespace KixDutyFree.App.Models.Response
 
         public SubmitPaymentAvailability? Availability { get; set; }
 
-        public bool Available { get; set; }
+        public bool? Available { get; set; }
 
-        public bool PlusButtonDisabled { get; set; }
+        public bool? PlusButtonDisabled { get; set; }
 
-        public bool MinusButtonDisabled { get; set; }
+        public bool? MinusButtonDisabled { get; set; }
 
         public List<Quantity>? Quantities { get; set; }
 
@@ -291,7 +291,7 @@ namespace KixDutyFree.App.Models.Response
 
         public int Quantity { get; set; }
 
-        public bool IsGift { get; set; }
+        public bool? IsGift { get; set; }
 
         public List<Promotion>? ApplicablePromotions { get; set; }
 
@@ -299,11 +299,11 @@ namespace KixDutyFree.App.Models.Response
 
         public string? UUID { get; set; }
 
-        public bool IsOrderable { get; set; }
+        public bool? IsOrderable { get; set; }
 
         public string? ShipmentUUID { get; set; }
 
-        public bool IsBonusProductLineItem { get; set; }
+        public bool? IsBonusProductLineItem { get; set; }
 
         public PriceTotal? PriceTotal { get; set; }
 
@@ -319,9 +319,9 @@ namespace KixDutyFree.App.Models.Response
 
         public bool? IsAllowSameDayReservation { get; set; }
 
-        public bool IsAllowSameDayPickUp { get; set; }
+        public bool? IsAllowSameDayPickUp { get; set; }
 
-        public bool IsAgeVerificationRequired { get; set; }
+        public bool? IsAgeVerificationRequired { get; set; }
 
         public string? ProductUrl { get; set; }
 
@@ -329,7 +329,7 @@ namespace KixDutyFree.App.Models.Response
 
         public List<Category>? Categories { get; set; }
 
-        public bool IsSameDayPickup { get; set; }
+        public bool? IsSameDayPickup { get; set; }
 
         public List<Promotion>? Promotions { get; set; }
 
@@ -338,23 +338,23 @@ namespace KixDutyFree.App.Models.Response
 
     public class SubmitPaymentAvailability
     {
-        public bool Available { get; set; }
+        public bool? Available { get; set; }
 
         public string? MaxOrderQuantity { get; set; }
 
-        public bool Quantity { get; set; }
+        public bool? Quantity { get; set; }
 
         public List<Message>? Messages { get; set; }
 
         public string? MaxQuantitySafetyStock { get; set; }
 
-        public bool IsMaxQuantityLimitedStock { get; set; }
+        public bool? IsMaxQuantityLimitedStock { get; set; }
 
         public int MaxQuantityLimitedStock { get; set; }
 
         public string? Status { get; set; }
 
-        public bool IsQuantityLimited { get; set; }
+        public bool? IsQuantityLimited { get; set; }
     }
 
     public class SubmitPaymentPrice
@@ -433,7 +433,7 @@ namespace KixDutyFree.App.Models.Response
 
         public object? ShippingAddress { get; set; }
 
-        public bool IsGift { get; set; }
+        public bool? IsGift { get; set; }
 
         public object? GiftMessage { get; set; }
     }
@@ -455,11 +455,11 @@ namespace KixDutyFree.App.Models.Response
 
         public object? EstimatedArrivalTime { get; set; }
 
-        public bool Default { get; set; }
+        public bool? Default { get; set; }
 
         public string? ShippingCost { get; set; }
 
-        public bool Selected { get; set; }
+        public bool? Selected { get; set; }
     }
 
     public class SubmitPaymentFlightData
@@ -497,7 +497,7 @@ namespace KixDutyFree.App.Models.Response
 
     public class SubmitPaymentResponseForm
     {
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? HtmlName { get; set; }
 
@@ -536,20 +536,20 @@ namespace KixDutyFree.App.Models.Response
 
         public string? HtmlName { get; set; }
 
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? Label { get; set; }
 
-        public bool Checked { get; set; }
+        public bool? Checked { get; set; }
 
-        public bool Selected { get; set; }
+        public bool? Selected { get; set; }
 
         public string? FormType { get; set; }
     }
 
     public class AddressFields
     {
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? HtmlName { get; set; }
 
@@ -594,7 +594,7 @@ namespace KixDutyFree.App.Models.Response
 
         public string? HtmlName { get; set; }
 
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? Label { get; set; }
 
@@ -619,16 +619,16 @@ namespace KixDutyFree.App.Models.Response
 
         public object? Label { get; set; }
 
-        public bool Submitted { get; set; }
+        public bool? Submitted { get; set; }
 
-        public bool Triggered { get; set; }
+        public bool? Triggered { get; set; }
 
         public string? FormType { get; set; }
     }
 
     public class SubmitPaymentOption
     {
-        public bool Checked { get; set; }
+        public bool? Checked { get; set; }
 
         public string? HtmlValue { get; set; }
 
@@ -636,14 +636,14 @@ namespace KixDutyFree.App.Models.Response
 
         public string? Id { get; set; }
 
-        public bool Selected { get; set; }
+        public bool? Selected { get; set; }
 
         public string? Value { get; set; }
     }
 
     public class ContactInfoFields
     {
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? HtmlName { get; set; }
 
@@ -664,13 +664,13 @@ namespace KixDutyFree.App.Models.Response
     {
         public string? HtmlValue { get; set; }
 
-        public bool Mandatory { get; set; }
+        public bool? Mandatory { get; set; }
 
         public string? DynamicHtmlName { get; set; }
 
         public string? HtmlName { get; set; }
 
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public int? MaxLength { get; set; }
 
@@ -682,7 +682,7 @@ namespace KixDutyFree.App.Models.Response
 
     public class CreditCardFields
     {
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? HtmlName { get; set; }
 
@@ -698,7 +698,7 @@ namespace KixDutyFree.App.Models.Response
 
     public class GmoCreditCardFields
     {
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
         public string? HtmlName { get; set; }
 
@@ -721,11 +721,11 @@ namespace KixDutyFree.App.Models.Response
 
         public string? HtmlName { get; set; }
 
-        public bool Valid { get; set; }
+        public bool? Valid { get; set; }
 
-        public bool Checked { get; set; }
+        public bool? Checked { get; set; }
 
-        public bool Selected { get; set; }
+        public bool? Selected { get; set; }
 
         public string? FormType { get; set; }
     }

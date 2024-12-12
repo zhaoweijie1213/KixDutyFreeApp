@@ -9,10 +9,26 @@
     Loading="@Loading"
     Items="_Orders"
     ItemsPerPage="50"
+    Search="@_search"
     Class="elevation-1">
+        <TopContent>
+               <MToolbar>
+                <MToolbarTitle>订单列表</MToolbarTitle>
+                <MDivider Class="mx-4"
+                Inset
+                Vertical></MDivider>
+                <MSpacer></MSpacer>
+                <MTextField @bind-Value="_search"
+                            AppendIcon="mdi-magnify"
+                            Label="搜索"
+                            SingleLine
+                            HideDetails="true"></MTextField>
+                </MToolbar>
+        </TopContent>
     </MDataTable>
 </MContainer>
 @code {
+    private string _search = string.Empty;
 
     private List<DataTableHeader<OrdersEntity>> _headers = new List<DataTableHeader<OrdersEntity>>
         {

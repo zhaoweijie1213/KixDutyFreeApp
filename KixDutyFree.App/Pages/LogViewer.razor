@@ -10,7 +10,46 @@
 <MCard>
     <MCardTitle>日志查看器</MCardTitle>
     <MCardText>
-        <MDataTable Items="logEvents" HideDefaultFooter Headers="_headers" ItemsPerPage="5000">
+        <MDataTable Stripe Loading="@Loading" Items="logEvents" HideDefaultFooter Headers="_headers" ItemsPerPage="5000" Class="elevation-1">
+            <ItemColContent>
+                @if (context.Header.Value == "Level")
+                {
+                    switch (context.Item.Level)
+                    {
+                        case LogEventLevel.Information:
+                            <MChip Class="ma-2"
+                            Color="success"
+                            Label>
+                                @context.Item.Level
+                            </MChip>
+                            break;
+                        case LogEventLevel.Warning:
+                            <MChip Class="ma-2"
+                                   Color="warning"
+                                   Label>
+                                @context.Item.Level
+                            </MChip>
+                            break;
+                        case LogEventLevel.Error:
+                            <MChip Class="ma-2"
+                                   Color="error"
+                                   Label>
+                                @context.Item.Level
+                            </MChip>
+                            break;
+                        default:
+                            <MChip Class="ma-2"
+                                   Label>
+                                @context.Item.Level
+                            </MChip>
+                            break;
+                    }
+                }
+                else
+                {
+                    @context.Value
+                }
+            </ItemColContent>
         </MDataTable>
     </MCardText>
 </MCard>
@@ -21,12 +60,14 @@
 
     private System.Threading.Timer? _timer;
 
+    private bool Loading = false;
+
     private readonly TimeSpan _refreshInterval = TimeSpan.FromSeconds(2); // 设置刷新间隔
 
     private List<DataTableHeader<LogEvent>> _headers = new List<DataTableHeader<LogEvent>>
         {
-          new (){ Text= "时间",Align= DataTableHeaderAlign.Center, Value= "Timestamp",Width = 120, CellRender = dessert => dessert.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")},
-          new (){ Text= "级别", Align= DataTableHeaderAlign.Center, Value= "Level"},
+          new (){ Text= "时间",Align= DataTableHeaderAlign.Center, Value= "Timestamp",Width = 220, CellRender = dessert => dessert.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff"),Fixed = DataTableFixed.Left},
+          new (){ Text= "级别", Align= DataTableHeaderAlign.Center, Value= "Level",Width = 220,Fixed = DataTableFixed.Left},
           new (){ Text= "消息",Align= DataTableHeaderAlign.Center, Value= "Message",CellRender =  dessert => dessert.RenderMessage()},
           new (){
               Text= "异常",
@@ -39,29 +80,26 @@
     {
         // 初始加载日志
         LoadLogEvents();
+        // 设置定时器
+        _timer = new System.Threading.Timer( _ =>
+        {
+            LoadLogEvents();
 
-        // // 设置定时器
-        // _timer = new System.Threading.Timer(async _ =>
-        // {
-        //     await InvokeAsync(async () =>
-        //     {
-        //         LoadLogEvents();
-        //         StateHasChanged();
-        //         await ScrollToBottom();
-        //     });
-        // }, null, TimeSpan.Zero, _refreshInterval);
-    }
-
-    private async Task ScrollToBottom()
-    {
-        await JSRuntime.InvokeVoidAsync("scrollToBottom", scrollContainer);
+        }, null, TimeSpan.Zero, _refreshInterval);
     }
 
 
     private void LoadLogEvents()
     {
+        Loading = true;
         // 获取并排序日志事件
-        logEvents = LogStore.GetLogEvents().ToList();
+        logEvents = LogStore.GetLogEvents().OrderByDescending(i => i.Timestamp).ToList();
+        // 更新 UI 并滚动到最底部
+         InvokeAsync( () =>
+        {
+            StateHasChanged();
+        });
+        Loading = false;
     }
 
     public void Dispose()

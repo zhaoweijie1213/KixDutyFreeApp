@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KixDutyFree App"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0"
 #define MyAppPublisher "ZhaoWeiJie"
 #define MyAppExeName "KixDutyFree.App.exe"
 #define MyAppAssocName MyAppName + " File"
@@ -12,7 +12,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{0D8FC431-66CA-4886-86D4-75F415A9B71E}
+AppId={{7F5A5920-C696-469D-AF56-34A45831FEE8}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -31,116 +31,20 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputBaseFilename=KixDutyFreeAppSetup
-SetupIconFile=F:\Git\KixDutyFreeApp\app.ico
+SetupIconFile=F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\publish\win-x64\wwwroot\favicon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\appsettings.Development.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\appsettings.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Azure.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Azure.Identity.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\BemIt.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Com.Ctrip.Framework.Apollo.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Com.Ctrip.Framework.Apollo.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\DeepCloner.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\DM.DmProvider.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\DynamicExpresso.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\FluentValidation.DependencyInjectionExtensions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\FluentValidation.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\HandyControl.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Kdbndp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\kix_app_database.db"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.deps.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.staticwebassets.endpoints.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.App.staticwebassets.runtime.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.Shared.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\KixDutyFree.Shared.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\log4net.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Magicodes.IE.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Magicodes.IE.EPPlus.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Magicodes.IE.Excel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Mapster.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Mapster.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Masa.Blazor.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\MediatR.Contracts.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\MediatR.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.AspNetCore.Authentication.JwtBearer.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.AspNetCore.Components.WebView.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.AspNetCore.Components.WebView.Wpf.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Bcl.AsyncInterfaces.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Bcl.TimeProvider.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Data.SqlClient.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Data.Sqlite.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Extensions.DependencyModel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Extensions.Logging.Log4Net.AspNetCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Identity.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.IdentityModel.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.IdentityModel.JsonWebTokens.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.IdentityModel.Logging.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.IdentityModel.Protocols.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.IdentityModel.Tokens.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.SqlServer.Server.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Web.WebView2.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Web.WebView2.Core.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Web.WebView2.WinForms.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Web.WebView2.WinForms.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Web.WebView2.Wpf.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Microsoft.Web.WebView2.Wpf.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\MySqlConnector.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Npgsql.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\OneOf.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Oracle.ManagedDataAccess.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Oscar.Data.SqlClient.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Quartz.AspNetCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Quartz.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Quartz.Extensions.DependencyInjection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Quartz.Extensions.Hosting.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\QYQ.Base.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.AspNetCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Enrichers.Environment.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Extensions.Hosting.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Extensions.Logging.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Formatting.Compact.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Settings.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Sinks.Console.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Sinks.Debug.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Serilog.Sinks.File.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\SkiaSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\SQLitePCLRaw.batteries_v2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\SQLitePCLRaw.core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\SQLitePCLRaw.provider.e_sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\SqlSugar.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\System.ClientModel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\System.DirectoryServices.Protocols.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\System.IdentityModel.Tokens.Jwt.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\System.Linq.Dynamic.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\System.Memory.Data.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\System.Runtime.Caching.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\Util.Reflection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\WebDriver.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\WebDriver.Support.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\订单_20241210.xlsx"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\商品.xlsx"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\账号.xlsx"; DestDir: "{app}"; Flags: ignoreversion
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\publish\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "F:\Git\KixDutyFreeApp\KixDutyFree.App\bin\Release\net9.0-windows\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

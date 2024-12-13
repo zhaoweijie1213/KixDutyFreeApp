@@ -160,6 +160,7 @@ namespace KixDutyFree.App.Manage
         {
             try
             {
+                IsLoading = true;
                 bool headless = configuration.GetSection("Headless").Get<bool>();
                 //_httpClient = httpClientFactory.CreateClient(account.Email);
                 var res = await seleniumService.CreateInstancesAsync(account, headless);
@@ -183,6 +184,10 @@ namespace KixDutyFree.App.Manage
             catch (Exception e)
             {
                 logger.BaseErrorLog("InitAsync", e);
+            }
+            finally
+            {
+                IsLoading = false;
             }
             ErrorCount = 0;
             return IsLoginSuccess;
@@ -237,7 +242,7 @@ namespace KixDutyFree.App.Manage
         /// <returns></returns>
         public async Task RelodAsync()
         {
-            logger.LogInformation("MonitorProductsAsync.重新初始化客户端: {Email}", Account.Email);
+            logger.LogInformation("RelodAsync.重新初始化客户端: {Email}", Account.Email);
             await QuitAsync();
             await InitAsync(Account);
         }
@@ -298,7 +303,7 @@ namespace KixDutyFree.App.Manage
             bool isAvailable = false;
             try
             {
-                if (cancellationToken.IsCancellationRequested == true) return (isAvailable, null);
+                if (cancellationToken.IsCancellationRequested == true || IsLoading) return (isAvailable, null);
                 if (_driver == null)
                 {
                     throw new Exception("driver不能为null");
@@ -362,15 +367,15 @@ namespace KixDutyFree.App.Manage
             }
             catch (WebDriverTimeoutException ex)
             {
-                logger.BaseErrorLog("CheckProductAvailabilityAsync.WebDriverTimeoutException", ex);
+                logger.BaseErrorLog("FullCheckProductAvailabilityAsync.WebDriverTimeoutException", ex);
                 await RelodAsync();
             }
             catch (Exception ex)
             {
                 ErrorCount++;
-                logger.LogError("CheckProductAvailabilityAsync.错误次数: {ErrorCount}", ErrorCount);
+                logger.LogError("FullCheckProductAvailabilityAsync.错误次数: {ErrorCount}", ErrorCount);
                 // 记录异常日志
-                logger.BaseErrorLog($"CheckProductAvailabilityAsync.检查商品时出错", ex);
+                logger.BaseErrorLog($"FullCheckProductAvailabilityAsync.检查商品时出错", ex);
             }
             return (isAvailable, null);
         }

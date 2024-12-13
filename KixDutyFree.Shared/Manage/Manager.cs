@@ -14,8 +14,7 @@ using System.Collections.Concurrent;
 
 namespace KixDutyFree.Shared.Manage
 {
-    public class Manager(ILogger<Manager> logger, ProductMonitorRepository productMonitorRepository, IConfiguration configuration
-        , AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService,ProductService productService
+    public class Manager(ILogger<Manager> logger, ProductMonitorRepository productMonitorRepository, AccountClientFactory accountClientFactory, QuartzManagement quartzManagement, AccountService accountService 
         , AppConfigRepository appConfigRepository) : ISingletonDependency
     {
         /// <summary>

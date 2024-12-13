@@ -11,7 +11,7 @@
         <MButton Text Color="primary" Target="_blank" Href="https://www.kixdutyfree.jp/cn">Kix duty free主网站</MButton>
     </MAppBar>
 
-    <MNavigationDrawer App @bind-Value="_drawer">
+    <MNavigationDrawer App @bind-Value="_drawer" Clipped="false">
         <ChildContent>
             <MList Nav Routable>
                 <MListItem Href="/" ActiveClass="primary--text">
@@ -49,7 +49,7 @@
             </MList>
         </ChildContent>
         <AppendContent>
-            <MSwitch @bind-Value="_open" LeftText="开" RightText="关" Color="black" Label="重启时重新下单" TrackColor="#E5E6EB" OnClick="@OnSwitchClick"></MSwitch>
+            <MSwitch @bind-Value="_open" LeftText="开" RightText="关" Color="white" Label="重启时重新下单" TrackColor="@SwitchColor()" OnClick="@OnSwitchClick"></MSwitch>
         </AppendContent>
 
     </MNavigationDrawer>
@@ -88,6 +88,19 @@
         if (appConfig != null)
         {
             _open = appConfig.ReOrderOnRestart;
+        }
+    }
+
+    private string SwitchColor()
+    {
+        if (_open)
+        {
+
+            return "success";
+        }
+        else
+        {
+            return "grey";
         }
     }
 

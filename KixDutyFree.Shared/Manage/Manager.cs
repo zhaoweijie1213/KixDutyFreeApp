@@ -30,7 +30,7 @@ namespace KixDutyFree.Shared.Manage
             {
                 appConfig = new Models.Entity.AppConfigEntity
                 {
-                    ReOrderOnRestart = false
+                    ReOrderOnRestart = true
                 };
                 await appConfigRepository.InsertAsync(appConfig);
             }

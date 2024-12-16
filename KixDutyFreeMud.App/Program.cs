@@ -3,10 +3,10 @@ using KixDutyFreeMud.App.Components;
 using Serilog;
 using KixDutyFree.App.Models.Config;
 using KixDutyFree.App.Models;
-using KixDutyFree.App.Services;
 using Quartz;
 using QYQ.Base.Common.IOCExtensions;
 using Quartz.AspNetCore;
+using KixDutyFree.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,15 +19,13 @@ builder.Services.AddSerilog(configureLogger =>
 // Add MudBlazor services
 builder.Services.AddMudServices();
 
-// 如果应用作为 Windows 服务运行，则配置应用
-builder.Host.UseWindowsService();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddMultipleService("^KixDutyFree");
 builder.Services.AddHostedService<WorkerService>();
-builder.Services.Configure<List<AccountModel>>(builder.Configuration.GetSection("Accounts"));
+builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
 builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
 builder.Services.Configure<FlightInfoModel>(builder.Configuration.GetSection("FlightInfo"));
 builder.Services.AddQuartz().AddQuartzServer(options =>
@@ -37,6 +35,17 @@ builder.Services.AddQuartz().AddQuartzServer(options =>
 });
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseDefaultThreadPool(x => x.MaxConcurrency = 50);
+    //q.UseInMemoryStore();
+});
+builder.Services.AddQuartzHostedService(options =>
+{
+    // when shutting down we want jobs to complete gracefully
+    options.WaitForJobsToComplete = true;
+});
 
 var app = builder.Build();
 

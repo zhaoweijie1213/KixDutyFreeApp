@@ -1,0 +1,263 @@
+﻿@page "/"
+@using KixDutyFree.App.Models.Entity
+@using KixDutyFree.App.Service
+@using KixDutyFree.Shared.Models
+@using KixDutyFree.Shared.Models.Input
+@using KixDutyFree.Shared.Services
+@using KixDutyFree.App.Pages.Components.Index
+@inject ProductService productService
+@inject IJSRuntime JSRuntime
+@inject LoadingService loadingService
+@implements IDisposable
+
+<PageTitle>商品列表</PageTitle>
+
+<MContainer Fluid>
+    <MRow >
+        <MCol Cols="12">
+            <MButton Color="primary" OnClick="()=> dialog = true">新增商品</MButton>
+        </MCol>
+    </MRow>
+    <MRow>
+        @foreach (var product in products)
+        {
+            <MCol Md="4" Lg="3" Xl="3">
+                <MCard>
+                    <ProgressContent>
+                        <MProgressLinear Color="deep-purple" Height="10" Indeterminate />
+                    </ProgressContent>
+                    <ChildContent>
+                        <MImage Alt="@product.Id" MaxHeight="250" Src="@product.Image" />
+                        <MCardTitle>@product.Name</MCardTitle>
+                        <MCardText>
+                            <div class="my-4 text-subtitle-1">ID: @product.Id</div>
+                            <div>创建日期：@product.CreateTime.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                            <div>监控状态：<MIcon Color="@GetIconColor(product.MonitorStatus)">mdi-circle</MIcon>@product.MonitorStatus</div>
+                            <div>可用状态：<MIcon Color="@GetIconColor(product.IsAvailable)">mdi-circle</MIcon>@product.IsAvailable</div>
+                            <div>设置购买数量：@product.Quantity</div>
+                            <div>最大购买数量：@product.MaxQuantity</div>
+                        </MCardText>
+                        <MCardActions>
+                            <MButton Color="deep-purple lighten-2" Text @onclick="@(() => OpenProductPage(product.Address))">商品页面</MButton>
+                            <MButton Color="deep-purple lighten-2" Text @onclick="@(() => EditItem(product))">修改</MButton>
+                            <MButton Color="red accent-3" Text @onclick="@(() => ShowDeleteDialog(product.Id))">删除</MButton>
+                        </MCardActions>
+                    </ChildContent>
+                </MCard>
+            </MCol>
+        }
+    </MRow>
+</MContainer>
+<PEnqueuedSnackbars @ref="_enqueuedSnackbars" Position="SnackPosition.TopCenter"></PEnqueuedSnackbars>
+<MDialog @bind-Value="_dialogDelete" MAxWidth="500">
+    <ChildContent>
+        <MCard>
+            <MCardTitle>
+                提示
+            </MCardTitle>
+            <MCardText>确认要删除该商品吗?</MCardText>
+            <MCardActions>
+                <MSpacer></MSpacer>
+                <MButton Color="green darken-1" Loading="@DelBtnLoading"
+                Text
+                OnClick="DelAsync">
+                    确认
+                </MButton>
+                <MButton Color="green darken-1"
+                Text
+                OnClick="() => _dialogDelete = false">
+                    取消
+                </MButton>
+            </MCardActions>
+        </MCard>
+    </ChildContent>
+</MDialog>
+<MDialog @bind-Value="dialog"
+MaxWidth="700">
+    <MCard>
+        <MCardTitle>
+            <span class="text-h5">@FormTitle</span>
+        </MCardTitle>
+
+        <MCardText>
+            <MContainer>
+                <MRow>
+                    <MCol Cols="12">
+                        <MTextField @bind-Value="_editedItem.Address" Label="地址"></MTextField>
+                    </MCol>
+                    <MCol Cols="12">
+                        <MTextField @bind-Value="_editedItem.Quantity" Label="数量"></MTextField>
+                    </MCol>
+                </MRow>
+            </MContainer>
+        </MCardText>
+
+        <MCardActions>
+            <MSpacer></MSpacer>
+            <MButton Color="blue darken-1" Loading="@EditBtnLoading"
+            Text
+            OnClick="Save">
+                保存
+            </MButton>
+            <MButton Color="blue darken-1"
+            Text
+            OnClick="Close">
+                取消
+            </MButton>
+        </MCardActions>
+    </MCard>
+</MDialog>
+@code {
+    public List<ProductMonitorInfo> products { get; set; } = new();
+
+    public bool dialog { get; set; } = false;
+
+    private bool _dialogDelete;
+
+    public string Message { get; set; } = string.Empty;
+
+    public string Id { get; set; } = string.Empty;
+
+    private AddProductInput _editedItem { get; set; } = new();
+
+    public string SnackbarColor { get; set; } = "success";
+
+    public bool EditBtnLoading { get; set; } = false;
+    public bool DelBtnLoading { get; set; } = false;
+
+    public string FormTitle
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Id))
+            {
+                return "编辑";
+            }
+            else
+            {
+                return "新增";
+            }
+        }
+    }
+
+    private PEnqueuedSnackbars? _enqueuedSnackbars;
+
+    private void Enqueue(AlertTypes type, string content)
+    {
+        _enqueuedSnackbars?.EnqueueSnackbar(new SnackbarOptions()
+            {
+                Content = content,
+                Type = type,
+                Closeable = true
+            });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await loadingService.ShowAsync();
+        await productService.GetProductsAsync();
+        products = productService.Products;
+        await loadingService.HideAsync();
+        productService.OnChange += HandleLoadingChange;
+    }
+
+
+    private void HandleLoadingChange()
+    {
+        products = productService.Products;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Close()
+    {
+        dialog = false;
+        _editedItem = new AddProductInput();
+        Id = string.Empty;
+    }
+
+    public async Task Save()
+    {
+        EditBtnLoading = true;
+        if (!string.IsNullOrEmpty(Id))
+        {
+            await productService.UpdateMonitorStatusAndQuantityAsync(_editedItem.Id, _editedItem.Quantity);
+        }
+        else
+        {
+            await productService.StartMonitorAsync(_editedItem);
+        }
+        EditBtnLoading = false;
+        Enqueue(AlertTypes.Success, "操作成功");
+        Close();
+    }
+
+    public void EditItem(ProductMonitorInfo item)
+    {
+        Id = item.Id;
+        _editedItem = new AddProductInput()
+        {
+            Id = item.Id,
+            Address = item.Address,
+            Quantity = item.Quantity
+        };
+        dialog = true;
+    }
+
+    private void ShowDeleteDialog(string id){
+        _dialogDelete = true;
+        Id = id;
+    }
+
+    private async Task OpenProductPage(string address)
+    {
+        await JSRuntime.InvokeVoidAsync("open", address, "_blank");
+    }
+
+    private async Task DelAsync()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Enqueue(AlertTypes.Warning, "请先选择要删除的商品");
+            return;
+        }
+        DelBtnLoading = true;
+        await loadingService.ShowAsync();
+        var status = await productService.DelAsync(Id);
+        await loadingService.HideAsync();
+
+        if (status)
+        {
+            Enqueue(AlertTypes.Success, "操作成功");
+        }
+        else
+        {
+            Enqueue(AlertTypes.Error, "删除失败");
+        }
+        DelBtnLoading = false;
+        _dialogDelete = false;
+        Id = string.Empty;
+    }
+
+    /// <summary>
+    /// 获取图标颜色
+    /// </summary>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public string GetIconColor(bool status)
+    {
+        if (status)
+        {
+            return "success";
+        }
+        else
+        {
+            return "error";
+        }
+    }
+
+    public void Dispose()
+    {
+        // 取消订阅，防止内存泄漏
+        productService.OnChange -= HandleLoadingChange;
+    }
+}

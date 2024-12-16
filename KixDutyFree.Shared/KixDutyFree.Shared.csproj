@@ -22,13 +22,4 @@
 	<PackageReference Include="SqlSugarCore" Version="5.1.4.170" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="商品.xlsx">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="账号.xlsx">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

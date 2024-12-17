@@ -445,13 +445,19 @@ namespace KixDutyFree.App.Manage
                                 var quantityInput = cardProduct.FindElement(By.Name("product-quantity"));
                                 // 获取 value 属性的值
                                 int quantityValue = Convert.ToInt32(quantityInput.GetDomAttribute("value"));
+                                if (quantityValue <= 0)
+                                {
+                                    //移除该商品
+                                    var res = await RemoveProductLineItemAsync(pid, uuid, cancellationToken);
+                                    ////修改监控状态
+                                    //await productMonitorService.UpdateCancelAsync(Account.Email, pid);
+                                }
                                 if (pid == product.Id && quantityValue != quantity)
                                 {
                                     //修正购物车数量
                                     var updateQuantity = await CartUpdateQuantityAsync(pid, quantity, uuid, cancellationToken);
                                     logger.LogInformation("PlaceOrderAsync.修正购物车数量:账号 {Account},Id {UpdatedPid},数量 {UpdatedQty}", Account.Email, updateQuantity?.UpdatedPid, updateQuantity?.UpdatedQty);
                                 }
-
                                 if (productMonitor != null && productMonitor.Setup != OrderSetup.Completed)
                                 {
                                     productMonitor.Setup = OrderSetup.AddedToCart;

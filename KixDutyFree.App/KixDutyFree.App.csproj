@@ -10,7 +10,7 @@
 	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 	<UseWindowsForms>True</UseWindowsForms>
 	<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
-	<Version>1.0.7</Version>
+	<Version>1.0.8</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.5.1" />

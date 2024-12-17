@@ -12,7 +12,7 @@ namespace KixDutyFree.Shared.Services
     /// </summary>
     public class LoadingService : ISingletonDependency
     {
-        private bool _isLoading;
+        private bool _isLoading = false;
         private DateTime _loadingStartTime;
         private readonly int _minDisplayTimeMs = 200;
         private readonly SemaphoreSlim _semaphore = new(1, 1);

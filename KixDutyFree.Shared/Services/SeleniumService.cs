@@ -48,16 +48,16 @@ namespace KixDutyFree.Shared.Services
                         {
                             options.AddArgument("--headless");
                             options.AddArgument("--disable-gpu");
-                            options.AddArgument("--no-sandbox");
+                            //options.AddArgument("--no-sandbox");
                             options.AddArgument("--disable-dev-shm-usage");
                         }
 
-                        return new ChromeDriver(service, options);
+                        return new ChromeDriver(service, options,TimeSpan.FromMinutes(3));
                     });
 
                     // 设置页面加载超时时间为 120 秒
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
-                    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
+                    //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
                     await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn");
                     //获取标题

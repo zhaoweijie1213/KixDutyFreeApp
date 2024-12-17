@@ -229,6 +229,9 @@ namespace KixDutyFree.App.Models.Response
 
         public List<Message>? Messages { get; set; }
 
+        /// <summary>
+        /// QUANTITY_LIMITED : 达到限购
+        /// </summary>
         public string? Status { get; set; }
 
         public bool IsQuantityLimited { get; set; }

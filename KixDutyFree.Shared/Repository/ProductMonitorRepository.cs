@@ -30,5 +30,19 @@ namespace KixDutyFree.App.Repository
                 Setup = OrderSetup.Completed
             }).Where(i => i.Setup == OrderSetup.OrderPlaced).ExecuteCommandAsync();
         }
+
+        /// <summary>
+        /// 修改为已取消状态
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public Task<int> UpdateCancelAsync(string email, string productId)
+        {
+            return Db.Updateable<ProductMonitorEntity>().SetColumns(i => new ProductMonitorEntity()
+            {
+                Setup = OrderSetup.Cancel
+            }).Where(i => i.Account == email && i.ProductId == productId).ExecuteCommandAsync();
+        }
     }
 }

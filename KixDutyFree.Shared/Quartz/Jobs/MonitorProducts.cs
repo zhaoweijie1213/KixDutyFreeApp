@@ -40,7 +40,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
                 bool isAvailable=  await defaultClient.CheckProductAvailabilityAsync(product, context.CancellationToken);
                 if (isAvailable)
                 {
-                    List<Task> tasks = new List<Task>();
+                    List<Task> tasks = [];
                     //下单
                     foreach (var client in accountClientFactory.Clients) 
                     {

@@ -37,6 +37,12 @@
         /// </summary>
         public const string UpdateQuantity = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Cart-UpdateQuantity";
 
+
+        /// <summary>
+        /// 从购物车移除该商品
+        /// </summary>
+        public const string RemoveProductLineItem = "https://www.kixdutyfree.jp/on/demandware.store/Sites-KixDutyFree-Site/zh_CN/Cart-RemoveProductLineItem";
+
         /// <summary>
         /// 获取航班信息
         /// </summary>

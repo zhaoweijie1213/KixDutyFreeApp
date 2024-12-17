@@ -58,7 +58,6 @@ namespace KixDutyFree.Shared.Services
                     // 设置页面加载超时时间为 120 秒
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
                     //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
-                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
                     await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn");
                     //获取标题
                     var title = driver.Title;

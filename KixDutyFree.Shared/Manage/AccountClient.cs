@@ -743,7 +743,7 @@ namespace KixDutyFree.App.Manage
         /// 退出
         /// </summary>
         /// <returns></returns>
-        public Task QuitAsync()
+        public async Task QuitAsync()
         {
             // 关闭并释放旧的 ChromeDriver 实例
             if (_driver != null)
@@ -754,6 +754,8 @@ namespace KixDutyFree.App.Manage
                     {
                         IsLoading = true;
                         _driver?.Quit();
+                        _driver = null;
+                        await Task.Delay(3000);
                     }
                     logger.LogInformation("ReinitializeDriverAsync. 旧的 ChromeDriver 实例已关闭并释放。");
                 }

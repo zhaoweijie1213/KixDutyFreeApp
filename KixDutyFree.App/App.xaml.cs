@@ -59,7 +59,7 @@ namespace KixDutyFree.App
                 cfg.RegisterServicesFromAssembly(sharedAssembly);
             });
             builder.Services.AddMultipleService("^KixDutyFree");
-            builder.Services.AddHostedService<WorkerService>();
+            //builder.Services.AddHostedService<WorkerService>();
             builder.Services.AddHostedService<StartupService>();
             builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
             builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
@@ -89,31 +89,34 @@ namespace KixDutyFree.App
             builder.Services.AddSingleton<MainWindow>();
             _host = builder.Build();
             GobalObject.serviceProvider = _host.Services;
-            Task.Run(async () =>
-            {
-                await _host.StartAsync();
-            });
-
             _logger = GobalObject.serviceProvider.GetRequiredService<ILogger<App>>();
             // 订阅 RestartRequested 事件
             var restartService = GobalObject.serviceProvider.GetRequiredService<IRestartService>();
-
             restartService.RestartRequested += RestartApplication;
-
-
+ 
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
-        
+
             //// 获取日志服务并重定向 Console
             //var loggingService = _host.Services.GetRequiredService<ILoggingService>();
             //Console.SetOut(new ConsoleLogger(loggingService));
 
             //var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             //mainWindow.Show();
-
             base.OnStartup(e);
+            try
+            {
+                await _host.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                // 记录异常或显示消息
+                HandyControl.Controls.MessageBox.Show($"启动应用程序失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                // 关闭当前应用程序
+                Current.Shutdown();
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)

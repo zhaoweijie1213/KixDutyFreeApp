@@ -769,7 +769,7 @@ namespace KixDutyFree.App.Manage
                 }
             }
             logger.LogInformation("QuitAsync.停止实例:{email}", Account.Email);
-            return Task.CompletedTask;
+            //return Task.CompletedTask;
         }
 
         #region API请求

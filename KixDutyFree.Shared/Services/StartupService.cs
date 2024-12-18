@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class StartupService(Manager manager) : IHostedService
+    public class StartupService(Manager manager, CheckVersionService checkVersionService) : IHostedService
     {
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            await checkVersionService.CheckForUpdateAsync();
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

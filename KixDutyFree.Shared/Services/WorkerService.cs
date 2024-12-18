@@ -37,10 +37,10 @@ namespace KixDutyFree.Shared.Services
             await manager.InitClientAsync();
         }
 
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await manager.StopAsync();
-        }
+        //public override async Task StopAsync(CancellationToken cancellationToken)
+        //{
+        //    await manager.StopAsync();
+        //}
 
         private void OpenBrowser(string url)
         {

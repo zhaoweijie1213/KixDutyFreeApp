@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QYQ.Base.Common.IOCExtensions;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace KixDutyFree.Shared.Manage
 {
@@ -81,5 +82,6 @@ namespace KixDutyFree.Shared.Manage
                 await accountClientFactory.DefaultClient.QuitAsync();
             }
         }
+
     }
 }

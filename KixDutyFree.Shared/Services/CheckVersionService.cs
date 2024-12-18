@@ -17,7 +17,7 @@ namespace KixDutyFree.Shared.Services
     /// <summary>
     /// 版本检测
     /// </summary>
-    public class CheckVersionService(ILogger<CheckVersionService> logger,IHttpClientFactory httpClientFactory) : ISingletonDependency
+    public class CheckVersionService(ILogger<CheckVersionService> logger, IHttpClientFactory httpClientFactory) : ISingletonDependency
     {
         /// <summary>
         /// 所有者
@@ -68,7 +68,7 @@ namespace KixDutyFree.Shared.Services
             if (string.IsNullOrEmpty(currentVersion)) return;
 
             logger.LogInformation("当前版本: {currentVersion}", currentVersion);
-            GitHubRelease? latestRelease = await GetLatestReleaseAsync(owner, repo);
+            GitHubReleaseResponse? latestRelease = await GetLatestReleaseAsync(owner, repo);
             if (latestRelease != null)
             {
                 logger.LogInformation("最新版本: {latestRelease.TagName}", latestRelease.TagName);
@@ -84,11 +84,16 @@ namespace KixDutyFree.Shared.Services
                     //    logger.LogInformation($"检测到新版本 {latestRelease.TagName}，准备下载 {asset.Name}...");
                     //    string downUrl = asset.BrowserDownloadUrl;
                     //}
-
-                    OnNewVersionAvailable?.Invoke(null, latestRelease);
+                    GitHubRelease gitHubRelease = new GitHubRelease()
+                    {
+                        Name = latestRelease.Name ?? "",
+                        Body = latestRelease.Body.Split("\r\n").ToList(),
+                        BrowserDownloadUrl = latestRelease.Assets.FirstOrDefault()?.BrowserDownloadUrl ?? string.Empty
+                    };
+                    OnNewVersionAvailable?.Invoke(null, gitHubRelease);
                 }
             }
-     
+
         }
 
         /// <summary>
@@ -97,9 +102,9 @@ namespace KixDutyFree.Shared.Services
         /// <param name="owner"></param>
         /// <param name="repo"></param>
         /// <returns></returns>
-        public async Task<GitHubRelease?> GetLatestReleaseAsync(string owner, string repo)
+        public async Task<GitHubReleaseResponse?> GetLatestReleaseAsync(string owner, string repo)
         {
-            GitHubRelease? gitHubRelease = null;
+            GitHubReleaseResponse? gitHubRelease = null;
             try
             {
                 var url = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
@@ -108,7 +113,7 @@ namespace KixDutyFree.Shared.Services
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
-                gitHubRelease = JsonConvert.DeserializeObject<GitHubRelease>(json) ?? new();
+                gitHubRelease = JsonConvert.DeserializeObject<GitHubReleaseResponse>(json) ?? new();
             }
             catch (Exception e)
             {
@@ -116,7 +121,7 @@ namespace KixDutyFree.Shared.Services
             }
             return gitHubRelease;
         }
-            
+
 
         /// <summary>
         /// 比较版本号
@@ -143,7 +148,7 @@ namespace KixDutyFree.Shared.Services
             return Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
         }
 
-        public class GitHubRelease
+        public class GitHubReleaseResponse
         {
             [JsonProperty("url")]
             public string? Url { get; set; }
@@ -344,23 +349,38 @@ namespace KixDutyFree.Shared.Services
             public string? OrganizationsUrl { get; set; }
 
             [JsonProperty("repos_url")]
-            public string? ReposUrl { get; set; } 
+            public string? ReposUrl { get; set; }
 
             [JsonProperty("events_url")]
-            public string? EventsUrl { get; set; } 
+            public string? EventsUrl { get; set; }
 
             [JsonProperty("received_events_url")]
-            public string? ReceivedEventsUrl { get; set; } 
+            public string? ReceivedEventsUrl { get; set; }
 
             [JsonProperty("type")]
-            public string? Type { get; set; } 
+            public string? Type { get; set; }
 
             [JsonProperty("user_view_type")]
-            public string? UserViewType { get; set; } 
+            public string? UserViewType { get; set; }
 
             [JsonProperty("site_admin")]
             public bool SiteAdmin { get; set; }
         }
     }
 
+    public class GitHubRelease
+    {
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<string> Body { get; set; } = [];
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string BrowserDownloadUrl { get; set; } = string.Empty;
+
+    }
 }

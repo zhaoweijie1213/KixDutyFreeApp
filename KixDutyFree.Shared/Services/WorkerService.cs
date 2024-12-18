@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class WorkerService(ILogger<WorkerService> logger, Manager manager, QuartzManagement quartzManagement) : BackgroundService
+    public class WorkerService(ILogger<WorkerService> logger, Manager manager, QuartzManagement quartzManagement,IServiceProvider services) : BackgroundService
     {
 
         //public override async Task StartAsync(CancellationToken cancellationToken)
@@ -26,21 +26,16 @@ namespace KixDutyFree.Shared.Services
             await quartzManagement.StartMonitorAsync();
             //错误检查
             await quartzManagement.StartErrorCheckAsync();
-            //var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
-            //var address = "http://localhost:5128";
-            //if (address != null)
-            //{
-            //    // 打开浏览器
-            //    OpenBrowser(address);
-            //}
+            var serverAddresses = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
+            var address = "http://localhost:5128";
+            if (address != null)
+            {
+                // 打开浏览器
+                OpenBrowser(address);
+            }
             //加载客户端
             await manager.InitClientAsync();
         }
-
-        //public override async Task StopAsync(CancellationToken cancellationToken)
-        //{
-        //    await manager.StopAsync();
-        //}
 
         private void OpenBrowser(string url)
         {

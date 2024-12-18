@@ -15,6 +15,7 @@ using Masa.Blazor;
 using KixDutyFree.App.Service;
 using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace KixDutyFree.App
 {
@@ -52,7 +53,7 @@ namespace KixDutyFree.App
                 cfg.RegisterServicesFromAssembly(sharedAssembly);
             });
             builder.Services.AddMultipleService("^KixDutyFree");
-            builder.Services.AddHostedService<WorkerService>();
+            //builder.Services.AddHostedService<WorkerService>();
             builder.Services.AddHostedService<StartupService>();
             builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
             builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
@@ -107,5 +108,33 @@ namespace KixDutyFree.App
             _host.StopAsync().GetAwaiter().GetResult();
             base.OnExit(e);
         }
+
+        /// <summary>
+        /// 重启应用程序
+        /// </summary>
+        public void RestartApplication()
+        {
+            try
+            {
+                // 获取当前可执行文件的路径
+                string exePath = Assembly.GetExecutingAssembly().Location;
+
+                // 启动新的应用程序实例
+                Process.Start(new ProcessStartInfo(exePath)
+                {
+                    UseShellExecute = true
+                });
+
+                // 关闭当前应用程序
+                Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                // 记录异常或显示消息
+                HandyControl.Controls.MessageBox.Show($"无法重启应用程序：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
     }
 }

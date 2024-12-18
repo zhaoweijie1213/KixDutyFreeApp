@@ -154,10 +154,10 @@ MaxWidth="700">
 
     protected override async Task OnInitializedAsync()
     {
-        await loadingService.ShowAsync();
+        // await loadingService.ShowAsync();
         await productService.GetProductsAsync();
         products = productService.Products;
-        await loadingService.HideAsync();
+        // await loadingService.HideAsync();
         productService.OnChange += HandleLoadingChange;
     }
 

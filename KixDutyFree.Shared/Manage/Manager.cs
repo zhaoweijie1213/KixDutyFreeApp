@@ -73,14 +73,16 @@ namespace KixDutyFree.Shared.Manage
         /// <returns></returns>
         public async Task StopAsync()
         {
+            List<Task> tasks = new List<Task>();
             foreach (var client in accountClientFactory.Clients.Values)
             {
-                await client.QuitAsync();
+                tasks.Add(client.QuitAsync());
             }
             if (accountClientFactory.DefaultClient != null)
             {
-                await accountClientFactory.DefaultClient.QuitAsync();
+                tasks.Add(accountClientFactory.DefaultClient.QuitAsync());
             }
+            await Task.WhenAll(tasks);
         }
 
     }

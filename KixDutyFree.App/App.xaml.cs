@@ -16,6 +16,9 @@ using KixDutyFree.App.Service;
 using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
 using System.Reflection;
 using System.Diagnostics;
+using KixDutyFree.Shared.Services.Interface;
+using Microsoft.Extensions.Logging;
+using QYQ.Base.Common.Extension;
 
 namespace KixDutyFree.App
 {
@@ -25,13 +28,16 @@ namespace KixDutyFree.App
     public partial class App : System.Windows.Application
     {
 
-        private IHost _host;
+        private readonly IHost _host;
+
+        private readonly ILogger<App> _logger;
 
         public App()
         {
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddWpfBlazorWebView();
-            builder.Services.AddMasaBlazor(options => {
+            builder.Services.AddMasaBlazor(options =>
+            {
                 // new Locale(current, fallback);
                 options.Locale = new Locale("zh-CN", "en-US");
             });
@@ -53,7 +59,7 @@ namespace KixDutyFree.App
                 cfg.RegisterServicesFromAssembly(sharedAssembly);
             });
             builder.Services.AddMultipleService("^KixDutyFree");
-            //builder.Services.AddHostedService<WorkerService>();
+            builder.Services.AddHostedService<WorkerService>();
             builder.Services.AddHostedService<StartupService>();
             builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
             builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
@@ -87,6 +93,14 @@ namespace KixDutyFree.App
             {
                 await _host.StartAsync();
             });
+
+            _logger = GobalObject.serviceProvider.GetRequiredService<ILogger<App>>();
+            // 订阅 RestartRequested 事件
+            var restartService = GobalObject.serviceProvider.GetRequiredService<IRestartService>();
+
+            restartService.RestartRequested += RestartApplication;
+
+
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -116,20 +130,46 @@ namespace KixDutyFree.App
         {
             try
             {
-                // 获取当前可执行文件的路径
-                string exePath = Assembly.GetExecutingAssembly().Location;
 
-                // 启动新的应用程序实例
-                Process.Start(new ProcessStartInfo(exePath)
+                _logger.LogInformation("RestartApplication:重新启动应用程序");
+
+                /***
+                 * MessageBox.Show 或 Application.Current.Shutdown 这类操作需要在 UI 线程上执行。如果这些操作在后台线程上调用，就会导致“调用线程无法访问此对象，因为另一个线程拥有该对象”的错误。
+                 * 在您的场景中，RestartApplication 方法被 RestartRequested 事件触发，而该事件可能在后台线程（例如，HostedService 或其他业务逻辑线程）上被触发。这导致 RestartApplication 方法在非 UI 线程上执行，从而尝试访问 UI 元素时引发异常。
+                 * 解决方案
+                 * 要解决这个问题，您需要确保所有涉及 UI 操作的方法（如 MessageBox.Show 和 Application.Current.Shutdown）都在 UI 线程上执行。可以通过 WPF 的 Dispatcher 将这些操作调度到 UI 线程。
+                 * 确保 RestartApplication 方法中的所有 UI 操作都在 UI 线程上执行。可以使用 Dispatcher.Invoke 或 Dispatcher.BeginInvoke 来实现这一点
+                 * ***/
+
+                // 使用 Dispatcher 确保在 UI 线程上执行
+                Current.Dispatcher.Invoke(async () =>
                 {
-                    UseShellExecute = true
-                });
+                    // 获取当前可执行文件的路径
+                    string? exePath = Process.GetCurrentProcess().MainModule?.FileName;
 
-                // 关闭当前应用程序
-                Current.Shutdown();
+                    if (!string.IsNullOrEmpty(exePath))
+                    {
+                        // 停止 Host
+                        if (_host != null)
+                        {
+                            await _host.StopAsync();
+                        }
+
+                        // 启动新的应用程序实例
+                        Process.Start(new ProcessStartInfo(exePath)
+                        {
+                            UseShellExecute = true
+                        });
+
+                        // 关闭当前应用程序
+                        Current.Shutdown();
+                    }
+                });
+               
             }
             catch (Exception ex)
             {
+                _logger.BaseErrorLog("RestartApplication", ex);
                 // 记录异常或显示消息
                 HandyControl.Controls.MessageBox.Show($"无法重启应用程序：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }

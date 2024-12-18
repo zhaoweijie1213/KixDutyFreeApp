@@ -24,6 +24,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddMultipleService("^KixDutyFree");
+builder.Services.AddHostedService<StartupService>();
 builder.Services.AddHostedService<WorkerService>();
 builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
 builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));

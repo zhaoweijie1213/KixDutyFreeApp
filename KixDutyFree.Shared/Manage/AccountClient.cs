@@ -743,7 +743,7 @@ namespace KixDutyFree.App.Manage
         /// 退出
         /// </summary>
         /// <returns></returns>
-        public async Task QuitAsync()
+        public Task QuitAsync()
         {
             // 关闭并释放旧的 ChromeDriver 实例
             if (_driver != null)
@@ -755,7 +755,7 @@ namespace KixDutyFree.App.Manage
                         IsLoading = true;
                         _driver?.Quit();
                         _driver = null;
-                        await Task.Delay(3000);
+                        //await Task.Delay(3000);
                     }
                     logger.LogInformation("ReinitializeDriverAsync. 旧的 ChromeDriver 实例已关闭并释放。");
                 }
@@ -769,7 +769,7 @@ namespace KixDutyFree.App.Manage
                 }
             }
             logger.LogInformation("QuitAsync.停止实例:{email}", Account.Email);
-            //return Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         #region API请求

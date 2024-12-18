@@ -73,7 +73,7 @@ namespace KixDutyFree.Shared.Manage
         /// <returns></returns>
         public async Task StopAsync()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = [];
             foreach (var client in accountClientFactory.Clients.Values)
             {
                 tasks.Add(client.QuitAsync());

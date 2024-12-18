@@ -11,7 +11,11 @@ MaxWidth="700">
 
         <MCardText>
             <div class="text-h5">@Name</div>
-            <div class="text-subtitle-2">@BodyContent</div>
+            @foreach (var content in BodyContent)
+            {
+                <div class="text-subtitle-2 font-weight-medium">@content</div>
+            }
+
         </MCardText>
 
         <MCardActions>
@@ -29,7 +33,7 @@ MaxWidth="700">
 
     private string Name { get; set; } = string.Empty;
 
-    private string BodyContent { get; set; } = string.Empty;
+    private List<string> BodyContent { get; set; } = [];
 
     private string DownloadUrl { get; set; } = string.Empty;
 
@@ -42,8 +46,11 @@ MaxWidth="700">
 
     private void HandleNewVersionAvailable(object? sender, GitHubRelease release)
     {
-
-        BodyContent = release.Body;
+        if (!string.IsNullOrEmpty(release.Body))
+        {
+            BodyContent = release.Body.Split("\r\n").ToList();
+        }
+     
         DownloadUrl = release.Assets.FirstOrDefault()?.BrowserDownloadUrl ?? string.Empty;
 
         InvokeAsync(() =>

@@ -18,6 +18,8 @@ namespace KixDutyFree.Shared.Services
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await Task.Delay(3000, cancellationToken);
+            await checkVersionService.CheckForUpdateAsync();
+
             await manager.InitDataAsync();
             //商品监控
             await quartzManagement.StartMonitorAsync();
@@ -25,7 +27,7 @@ namespace KixDutyFree.Shared.Services
             await quartzManagement.StartErrorCheckAsync();
             //加载客户端
             await manager.InitClientAsync();
-            await checkVersionService.CheckForUpdateAsync();
+
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

@@ -98,13 +98,6 @@ namespace KixDutyFree.App
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-
-            //// 获取日志服务并重定向 Console
-            //var loggingService = _host.Services.GetRequiredService<ILoggingService>();
-            //Console.SetOut(new ConsoleLogger(loggingService));
-
-            //var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-            //mainWindow.Show();
             base.OnStartup(e);
             try
             {

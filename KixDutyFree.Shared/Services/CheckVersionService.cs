@@ -71,7 +71,7 @@ namespace KixDutyFree.Shared.Services
             GitHubReleaseResponse? latestRelease = await GetLatestReleaseAsync(owner, repo);
             if (latestRelease != null)
             {
-                logger.LogInformation("最新版本: {latestRelease.TagName}", latestRelease.TagName);
+                logger.LogInformation("最新版本: {TagName}", latestRelease.TagName);
 
                 _IsNewVersionAvailable = IsNewVersionAvailable(currentVersion, latestRelease.TagName);
 

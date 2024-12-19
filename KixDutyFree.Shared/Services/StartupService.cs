@@ -13,13 +13,10 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class StartupService(ILogger<StartupService> logger, Manager manager, CheckVersionService checkVersionService, QuartzManagement quartzManagement) : IHostedService
+    public class StartupService(ILogger<StartupService> logger, Manager manager, QuartzManagement quartzManagement) : IHostedService
     {
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay(3000, cancellationToken);
-            await checkVersionService.CheckForUpdateAsync();
-
             await manager.InitDataAsync();
             //商品监控
             await quartzManagement.StartMonitorAsync();
@@ -49,6 +46,21 @@ namespace KixDutyFree.Shared.Services
             {
                 logger.BaseErrorLog($"OpenBrowser", ex);
             }
+        }
+    }
+
+    public class CheckVersionStartupService(CheckVersionService checkVersionService) : IHostedService
+    {
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await Task.Delay(3000, cancellationToken);
+            await checkVersionService.CheckForUpdateAsync();
+
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
     }
 }

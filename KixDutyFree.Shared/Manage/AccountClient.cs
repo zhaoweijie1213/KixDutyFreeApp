@@ -37,7 +37,7 @@ namespace KixDutyFree.App.Manage
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory, IMemoryCache memoryCache 
         , ProductInfoRepository productInfoRepository, ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService, IMediator  mediator, OrderService orderService
-        , ProductMonitorService productMonitorService) : ITransientDependency
+        , ProductMonitorService productMonitorService, ClientMonitor clientMonitor) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -185,6 +185,7 @@ namespace KixDutyFree.App.Manage
             catch (Exception e)
             {
                 logger.BaseErrorLog("InitAsync", e);
+                clientMonitor.AddError();
             }
             finally
             {

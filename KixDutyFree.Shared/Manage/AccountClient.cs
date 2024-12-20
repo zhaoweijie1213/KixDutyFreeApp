@@ -37,7 +37,7 @@ namespace KixDutyFree.App.Manage
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory, IMemoryCache memoryCache 
         , ProductInfoRepository productInfoRepository, ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService, IMediator  mediator, OrderService orderService
-        , ProductMonitorService productMonitorService) : ITransientDependency
+        , ProductMonitorService productMonitorService, ClientMonitor clientMonitor) : ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -185,6 +185,7 @@ namespace KixDutyFree.App.Manage
             catch (Exception e)
             {
                 logger.BaseErrorLog("InitAsync", e);
+                clientMonitor.AddError();
             }
             finally
             {
@@ -372,7 +373,7 @@ namespace KixDutyFree.App.Manage
             }
             catch (WebDriverTimeoutException ex)
             {
-                logger.BaseErrorLog("FullCheckProductAvailabilityAsync.WebDriverTimeoutException", ex);
+                logger.BaseErrorLog("FullCheckProductAvailabilityAsync.WebDriverTimeoutException,请检查网络是否正常", ex);
                 await RelodAsync();
             }
             catch (Exception ex)
@@ -456,7 +457,7 @@ namespace KixDutyFree.App.Manage
                                 {
                                     //修正购物车数量
                                     var updateQuantity = await CartUpdateQuantityAsync(pid, quantity, uuid, cancellationToken);
-                                    logger.LogInformation("PlaceOrderAsync.修正购物车数量:账号 {Account},Id {UpdatedPid},数量 {UpdatedQty}", Account.Email, updateQuantity?.UpdatedPid, updateQuantity?.UpdatedQty);
+                                    logger.LogInformation("AddCartAsync.修正购物车数量:账号 {Account},Id {UpdatedPid},数量 {UpdatedQty}", Account.Email, updateQuantity?.UpdatedPid, updateQuantity?.UpdatedQty);
                                 }
                                 if (productMonitor != null && productMonitor.Setup != OrderSetup.Completed)
                                 {
@@ -504,6 +505,7 @@ namespace KixDutyFree.App.Manage
                                 }
                                 logger.LogInformation("PlaceOrderAsync.商品 {ProductName} 加入购物车成功！", product.ProductName);
                             }
+
                             else
                             {
                                 logger.LogWarning("PlaceOrderAsync.商品 {ProductName} 加入购物车失败！", product.ProductName);
@@ -661,10 +663,10 @@ namespace KixDutyFree.App.Manage
                                 logger.LogWarning("PlaceOrderAsync.无法下单，请检查航班信息是否正确!");
                             }
                         }
-                        catch (NoSuchElementException)
+                        catch (WebDriverTimeoutException e)
                         {
                             // 未找到元素，处理异常
-                            logger.LogError("PlaceOrderAsync.未能找到csrf_token的输入元素");
+                            logger.BaseErrorLog("PlaceOrderAsync.未能在规定时间完成,请检查网络是否正常", e);
                         }
                     });
                 }
@@ -831,7 +833,7 @@ namespace KixDutyFree.App.Manage
             request.Content = new FormUrlEncodedContent(formData);
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
+            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<CartAddProductResponse>(content, new JsonSerializerSettings
@@ -858,7 +860,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
+            logger.LogInformation("CartUpdateQuantityAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<CartUpdateQuantityResponse>(content, new JsonSerializerSettings
@@ -885,7 +887,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
+            logger.LogInformation("RemoveProductLineItemAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<RemoveProductLineItemResponse>(content, new JsonSerializerSettings
@@ -915,7 +917,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
+            logger.LogInformation("FlightGetInfoAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<FlightGetInfoResponse>(content, new JsonSerializerSettings
@@ -971,7 +973,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
-            logger.LogDebug("CartAddProductAsync.响应:{content}", content);
+            logger.LogInformation("FlightSaveInfoAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<FlightSaveInfoResponse>(content, new JsonSerializerSettings
@@ -1028,7 +1030,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("SubmitPaymentAsync.响应:{content}", content);
+            logger.LogInformation("SubmitPaymentAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<SubmitPaymentResponse>(content);
@@ -1056,7 +1058,7 @@ namespace KixDutyFree.App.Manage
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("PlaceOrderAsync.响应:{content}", content);
+            logger.LogInformation("PlaceOrderAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<PlaceOrderResponse>(content, new JsonSerializerSettings

@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 namespace KixDutyFree.Shared.Services
 {
 
-    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository, CacheManage cacheManage) : ITransientDependency
+    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository, CacheManage cacheManage, ClientMonitor clientMonitor) : ITransientDependency
     {
 
         public const string Home = "https://www.kixdutyfree.jp/cn";
@@ -68,19 +68,25 @@ namespace KixDutyFree.Shared.Services
                     if (account != null)
                     {
                         isLogin = await Login(account, driver);
+                        status = isLogin;
                     }
-                    status = true;
+                    else
+                    {
+                        status = true;
+                    }
             
                 }
                 catch (Exception e)
                 {
                     status = false;
+                    isLogin = false;
                     if (driver != null)
                     {
                         driver.Quit();
                         driver.Dispose();
                     }
                     logger.BaseErrorLog("CreateInstancesAsync", e);
+                    clientMonitor.AddError();
                 }
             }
             return new(driver!, isLogin);
@@ -105,12 +111,12 @@ namespace KixDutyFree.Shared.Services
                 //点击登录按钮
                 var loginSubmit = driver.FindElement(By.XPath("//div[contains(@class, 'login-submit-button') and contains(@class, 'pt-1')]//button[contains(@class, 'btn') and contains(@class, 'btn-block') and contains(@class, 'btn-primary') and contains(@class, 'btn-login')]"));
                 loginSubmit.Click();
-                logger.LogInformation("TaskStartAsync.登录:{email}", email);
+                logger.LogInformation("Login.登录:{email}", email);
                 isLogin = await IsLogin(driver);
             }
             catch (NoSuchElementException e)
             {
-                logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                logger.LogWarning("Login:{Message}/r/n{StackTrace}", e.Message, e.StackTrace);
             }
             return isLogin;
         }
@@ -127,14 +133,16 @@ namespace KixDutyFree.Shared.Services
             try
             {
                 WebDriverWait wait = new(driver, TimeSpan.FromSeconds(60));
-                if (driver.Url.Contains(AccountUrl))
-                {
-                    await driver.Navigate().GoToUrlAsync(Home);
-                }
-                else
-                {
-                    await driver.Navigate().GoToUrlAsync(AccountUrl);
-                }
+                //刷新当前页面
+                await driver.Navigate().RefreshAsync();
+                //if (driver.Url.Contains(AccountUrl))
+                //{
+               
+                //}
+                //else
+                //{
+                //    await driver.Navigate().GoToUrlAsync(AccountUrl);
+                //}
                 // 尝试查找表示已登录状态的元素
                 var accountInfo = wait.Until(driver =>
                 {
@@ -157,10 +165,11 @@ namespace KixDutyFree.Shared.Services
                     logger.LogInformation("已登录: {name}", nameElement.Text);
                 }
             }
-            catch (WebDriverTimeoutException)
+            catch (WebDriverTimeoutException e)
             {
                 isLogin = false;
-                logger.LogWarning("未检测到登录状态，超时未找到指定元素。");
+                logger.BaseErrorLog("IsLogin.未检测到登录状态，超时未找到指定元素,请检查网络是否正常", e);
+                clientMonitor.AddLoginError();
             }
 
             return isLogin;
@@ -203,7 +212,7 @@ namespace KixDutyFree.Shared.Services
                 }
                 catch (NoSuchElementException e)
                 {
-                    logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                    logger.BaseErrorLog("GetProductIdAsync", e);
                 }
             }
 
@@ -413,7 +422,7 @@ namespace KixDutyFree.Shared.Services
             }
             catch (NoSuchElementException e)
             {
-                logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                logger.BaseErrorLog("Confirm", e);
             }
             ////同意网站cookie
             //try

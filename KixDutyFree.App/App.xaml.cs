@@ -61,6 +61,7 @@ namespace KixDutyFree.App
             builder.Services.AddMultipleService("^KixDutyFree");
             //builder.Services.AddHostedService<WorkerService>();
             builder.Services.AddHostedService<StartupService>();
+            builder.Services.AddHostedService<CheckVersionStartupService>();
             builder.Services.Configure<List<AccountInfo>>(builder.Configuration.GetSection("Accounts"));
             builder.Services.Configure<ProductModel>(builder.Configuration.GetSection("Products"));
             builder.Services.Configure<FlightInfoModel>(builder.Configuration.GetSection("FlightInfo"));

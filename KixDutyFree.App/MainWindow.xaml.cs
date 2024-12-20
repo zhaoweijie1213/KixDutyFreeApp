@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using Quartz.AspNetCore;
 using Serilog;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace KixDutyFree.App
 {
@@ -66,6 +67,7 @@ namespace KixDutyFree.App
             // 设置窗口大小为屏幕尺寸的80%
             this.Width = screenWidth * 0.8;
             this.Height = screenHeight * 0.8;
+            this.Title = $"Kix Duty Free App {GetCurrentVersion()}";
         }
 
         private void NotifyIcon_MouseDoubleClick(object sender, RoutedEventArgs e)
@@ -127,6 +129,15 @@ namespace KixDutyFree.App
             this.Hide();
             // 可选：在此处记录日志或执行其他操作
             base.OnClosing(e);
+        }
+
+        /// <summary>
+        /// 获取当前应用程序的版本
+        /// </summary>
+        /// <returns></returns>
+        public static string? GetCurrentVersion()
+        {
+            return Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
         }
     }
 }

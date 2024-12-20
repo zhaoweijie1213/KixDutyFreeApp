@@ -505,14 +505,13 @@ namespace KixDutyFree.App.Manage
                                 }
                                 logger.LogInformation("PlaceOrderAsync.商品 {ProductName} 加入购物车成功！", product.ProductName);
                             }
-
                             else
                             {
-                                logger.LogWarning("PlaceOrderAsync.商品 {ProductName} 加入购物车失败！", product.ProductName);
+                                logger.LogWarning("PlaceOrderAsync.商品 {ProductName} 加入购物车失败！{Message}", product.ProductName, res?.Message);
                             }
                         }
 
-                  
+
                     });
                     //下单
                     await PlaceOrderAsync(productMonitor, product?.ProductName ?? "", cancellationToken);

@@ -40,7 +40,7 @@ namespace KixDutyFree.Shared.Manage
         {
             LoginError++;
             logger.LogWarning("AddLoginError.登录错误次数：{LoginError}", LoginError);
-            if (LoginError >= 3)
+            if (LoginError >= 1)
             {
                 lock (_lock)
                 {

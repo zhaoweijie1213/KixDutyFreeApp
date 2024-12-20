@@ -502,10 +502,15 @@ namespace KixDutyFree.App.Manage
                                     };
                                     productMonitor = await productMonitorService.InsertProductMonitorAsync(productMonitor);
                                 }
+                                logger.LogInformation("PlaceOrderAsync.商品 {ProductName} 加入购物车成功！", product.ProductName);
+                            }
+                            else
+                            {
+                                logger.LogWarning("PlaceOrderAsync.商品 {ProductName} 加入购物车失败！", product.ProductName);
                             }
                         }
 
-                        logger.LogInformation("PlaceOrderAsync.商品 {ProductName} 加入购物车成功！", product.ProductName);
+                  
                     });
                     //下单
                     await PlaceOrderAsync(productMonitor, product?.ProductName ?? "", cancellationToken);

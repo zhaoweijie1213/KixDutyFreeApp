@@ -47,7 +47,7 @@ namespace KixDutyFree.Shared.Manage
                     if (!IsRestarting)
                     {
                         IsRestarting = true;
-                        logger.LogError("登录错误次数达到3次，准备重启应用程序。");
+                        logger.LogError("登录错误次数达到{LoginError}次，准备重启应用程序。", LoginError);
                         restartService.RequestRestart();
                     }
                  
@@ -70,7 +70,7 @@ namespace KixDutyFree.Shared.Manage
                 {
                     if (!IsRestarting)
                     {
-                        logger.LogError("初始化错误次数达到3次，准备重启应用程序。");
+                        logger.LogError("初始化错误次数达到{InitError}次，准备重启应用程序。", InitError);
                         restartService.RequestRestart();
                     }
                 }

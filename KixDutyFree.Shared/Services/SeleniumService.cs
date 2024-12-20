@@ -133,14 +133,16 @@ namespace KixDutyFree.Shared.Services
             try
             {
                 WebDriverWait wait = new(driver, TimeSpan.FromSeconds(60));
-                if (driver.Url.Contains(AccountUrl))
-                {
-                    await driver.Navigate().GoToUrlAsync(Home);
-                }
-                else
-                {
-                    await driver.Navigate().GoToUrlAsync(AccountUrl);
-                }
+                //刷新当前页面
+                await driver.Navigate().RefreshAsync();
+                //if (driver.Url.Contains(AccountUrl))
+                //{
+               
+                //}
+                //else
+                //{
+                //    await driver.Navigate().GoToUrlAsync(AccountUrl);
+                //}
                 // 尝试查找表示已登录状态的元素
                 var accountInfo = wait.Until(driver =>
                 {

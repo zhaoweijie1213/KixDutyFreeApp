@@ -47,7 +47,7 @@ namespace KixDutyFree.Shared.Manage
                     if (!IsRestarting)
                     {
                         IsRestarting = true;
-                        logger.LogError("登录错误次数达到{LoginError}次，准备重启应用程序。", LoginError);
+                        logger.LogError("AddLoginError.登录错误次数达到{LoginError}次，准备重启应用程序。", LoginError);
                         restartService.RequestRestart();
                     }
                  
@@ -62,7 +62,7 @@ namespace KixDutyFree.Shared.Manage
         public void AddError()
         {
             InitError++;
-            logger.LogWarning("AddInitError.初始化错误次数：{InitError}", InitError);
+            logger.LogWarning("AddError.初始化错误次数：{InitError}", InitError);
 
             if (InitError >= 3)
             {
@@ -70,7 +70,7 @@ namespace KixDutyFree.Shared.Manage
                 {
                     if (!IsRestarting)
                     {
-                        logger.LogError("初始化错误次数达到{InitError}次，准备重启应用程序。", InitError);
+                        logger.LogError("AddError.初始化错误次数达到{InitError}次，准备重启应用程序。", InitError);
                         restartService.RequestRestart();
                     }
                 }

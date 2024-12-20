@@ -68,8 +68,12 @@ namespace KixDutyFree.Shared.Services
                     if (account != null)
                     {
                         isLogin = await Login(account, driver);
+                        status = isLogin;
                     }
-                    status = true;
+                    else
+                    {
+                        status = true;
+                    }
             
                 }
                 catch (Exception e)
@@ -162,7 +166,7 @@ namespace KixDutyFree.Shared.Services
             catch (WebDriverTimeoutException e)
             {
                 isLogin = false;
-                logger.BaseErrorLog("IsLogin.未检测到登录状态，超时未找到指定元素", e);
+                logger.BaseErrorLog("IsLogin.未检测到登录状态，超时未找到指定元素,请检查网络是否正常", e);
                 clientMonitor.AddLoginError();
             }
 

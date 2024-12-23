@@ -332,6 +332,7 @@ namespace KixDutyFree.App.Manage
                             await productInfoRepository.UpdateAsync(product);
                         }
                         isAvailable = res?.Product?.Availability?.Available ?? false;
+                        //可用或者已达上限
                         if (isAvailable || res?.Product?.Availability?.Status == "QUANTITY_LIMITED")
                         {
                             //var productConfig = await cacheManage.GetProductsAsync();
@@ -452,6 +453,7 @@ namespace KixDutyFree.App.Manage
                                     var res = await RemoveProductLineItemAsync(pid, uuid, cancellationToken);
                                     ////修改监控状态
                                     //await productMonitorService.UpdateCancelAsync(Account.Email, pid);
+                                    logger.LogInformation("AddCartAsync.移除不可用商品:{pid}", res?.UpdatedPid);
                                 }
                                 if (pid == product.Id && quantityValue != quantity)
                                 {

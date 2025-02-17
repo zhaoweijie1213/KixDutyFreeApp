@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QYQ.Base.Common.IOCExtensions;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace KixDutyFree.Shared.Manage
 {
@@ -72,14 +73,17 @@ namespace KixDutyFree.Shared.Manage
         /// <returns></returns>
         public async Task StopAsync()
         {
+            List<Task> tasks = [];
             foreach (var client in accountClientFactory.Clients.Values)
             {
-                await client.QuitAsync();
+                tasks.Add(client.QuitAsync());
             }
             if (accountClientFactory.DefaultClient != null)
             {
-                await accountClientFactory.DefaultClient.QuitAsync();
+                tasks.Add(accountClientFactory.DefaultClient.QuitAsync());
             }
+            await Task.WhenAll(tasks);
         }
+
     }
 }

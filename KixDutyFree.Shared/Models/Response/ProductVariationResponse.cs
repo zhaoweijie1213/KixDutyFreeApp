@@ -115,7 +115,11 @@ namespace KixDutyFree.App.Models.Response
 
         public bool ReadyToOrder { get; set; }
 
+        /// <summary>
+        /// 是否可以在线定购
+        /// </summary>
         public bool Online { get; set; }
+
         public string? PageTitle { get; set; }
 
         public string? PageDescription { get; set; }
@@ -229,6 +233,9 @@ namespace KixDutyFree.App.Models.Response
 
         public List<Message>? Messages { get; set; }
 
+        /// <summary>
+        /// QUANTITY_LIMITED : 达到限购
+        /// </summary>
         public string? Status { get; set; }
 
         public bool IsQuantityLimited { get; set; }

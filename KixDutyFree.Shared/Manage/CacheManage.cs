@@ -4,6 +4,7 @@ using KixDutyFree.App.Models.Excel;
 using KixDutyFree.App.Repository;
 using Magicodes.ExporterAndImporter.Core;
 using Magicodes.ExporterAndImporter.Excel;
+using Mapster;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using QYQ.Base.Common.IOCExtensions;
@@ -126,7 +127,7 @@ namespace KixDutyFree.Shared.Manage
         /// 获取监控信息
         /// </summary>
         /// <param name="email"></param>
-        /// <param name="productid"></param>
+        /// <param name="productId"></param>
         /// <returns></returns>
         public async Task<ProductMonitorEntity?> GetProductMonitorAsync(string email, string productId)
         {
@@ -136,10 +137,20 @@ namespace KixDutyFree.Shared.Manage
                 productInfo = await productMonitorRepository.QueryAsync(email, productId);
                 if (productInfo != null)
                 {
-                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(30));
+                    memoryCache.Set(key, productInfo, TimeSpan.FromMinutes(10));
                 }
             }
             return productInfo;
+        }
+
+        /// <summary>
+        /// 设置监控信息
+        /// </summary>
+        /// <param name="entity"></param>
+        public void SetProductMonitorAsync(ProductMonitorEntity entity)
+        {
+            string key = CustomCacheKeys.ProductMonitor(entity.Account, entity.ProductId);
+            memoryCache.Set(key, entity, TimeSpan.FromMinutes(10));
         }
     }
 }

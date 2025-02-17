@@ -56,6 +56,11 @@ namespace KixDutyFree.App.Models.Entity
     public enum OrderSetup
     {
         /// <summary>
+        /// 已取消
+        /// </summary>
+        Cancel = -1,
+
+        /// <summary>
         /// 暂时无货
         /// </summary>
         None = 0,

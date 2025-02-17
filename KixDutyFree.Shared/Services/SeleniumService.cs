@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 namespace KixDutyFree.Shared.Services
 {
 
-    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository, CacheManage cacheManage) : ITransientDependency
+    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository, CacheManage cacheManage, ClientMonitor clientMonitor) : ITransientDependency
     {
 
         public const string Home = "https://www.kixdutyfree.jp/cn";
@@ -48,17 +48,16 @@ namespace KixDutyFree.Shared.Services
                         {
                             options.AddArgument("--headless");
                             options.AddArgument("--disable-gpu");
-                            options.AddArgument("--no-sandbox");
+                            //options.AddArgument("--no-sandbox");
                             options.AddArgument("--disable-dev-shm-usage");
                         }
 
-                        return new ChromeDriver(service, options);
+                        return new ChromeDriver(service, options,TimeSpan.FromMinutes(3));
                     });
 
                     // 设置页面加载超时时间为 120 秒
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
-                    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
-                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
+                    //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(120);
                     await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn");
                     //获取标题
                     var title = driver.Title;
@@ -69,19 +68,25 @@ namespace KixDutyFree.Shared.Services
                     if (account != null)
                     {
                         isLogin = await Login(account, driver);
+                        status = isLogin;
                     }
-                    status = true;
+                    else
+                    {
+                        status = true;
+                    }
             
                 }
                 catch (Exception e)
                 {
                     status = false;
+                    isLogin = false;
                     if (driver != null)
                     {
                         driver.Quit();
                         driver.Dispose();
                     }
                     logger.BaseErrorLog("CreateInstancesAsync", e);
+                    clientMonitor.AddError();
                 }
             }
             return new(driver!, isLogin);
@@ -106,12 +111,12 @@ namespace KixDutyFree.Shared.Services
                 //点击登录按钮
                 var loginSubmit = driver.FindElement(By.XPath("//div[contains(@class, 'login-submit-button') and contains(@class, 'pt-1')]//button[contains(@class, 'btn') and contains(@class, 'btn-block') and contains(@class, 'btn-primary') and contains(@class, 'btn-login')]"));
                 loginSubmit.Click();
-                logger.LogInformation("TaskStartAsync.登录:{email}", email);
+                logger.LogInformation("Login.登录:{email}", email);
                 isLogin = await IsLogin(driver);
             }
             catch (NoSuchElementException e)
             {
-                logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                logger.LogWarning("Login:{Message}/r/n{StackTrace}", e.Message, e.StackTrace);
             }
             return isLogin;
         }
@@ -128,14 +133,16 @@ namespace KixDutyFree.Shared.Services
             try
             {
                 WebDriverWait wait = new(driver, TimeSpan.FromSeconds(60));
-                if (driver.Url.Contains(AccountUrl))
-                {
-                    await driver.Navigate().GoToUrlAsync(Home);
-                }
-                else
-                {
-                    await driver.Navigate().GoToUrlAsync(AccountUrl);
-                }
+                //刷新当前页面
+                await driver.Navigate().RefreshAsync();
+                //if (driver.Url.Contains(AccountUrl))
+                //{
+               
+                //}
+                //else
+                //{
+                //    await driver.Navigate().GoToUrlAsync(AccountUrl);
+                //}
                 // 尝试查找表示已登录状态的元素
                 var accountInfo = wait.Until(driver =>
                 {
@@ -158,10 +165,11 @@ namespace KixDutyFree.Shared.Services
                     logger.LogInformation("已登录: {name}", nameElement.Text);
                 }
             }
-            catch (WebDriverTimeoutException)
+            catch (WebDriverTimeoutException e)
             {
                 isLogin = false;
-                logger.LogWarning("未检测到登录状态，超时未找到指定元素。");
+                logger.BaseErrorLog("IsLogin.未检测到登录状态，超时未找到指定元素,请检查网络是否正常", e);
+                clientMonitor.AddLoginError();
             }
 
             return isLogin;
@@ -177,37 +185,50 @@ namespace KixDutyFree.Shared.Services
         public async Task<ProductInfoEntity?> GetProductIdAsync(string address, ChromeDriver driver, int quantity)
         {
             var product = await productInfoRepository.FindByAddressAsync(address);
+            string productId = "";
             if (product == null)
             {
-                try
+                // 使用正则表达式提取商品 ID
+                Regex regex = new(@"-(\d+)\.html$");
+                Match match = regex.Match(address);
+                if (match.Success)
                 {
-                    // 导航到商品页面
-                    await driver.Navigate().GoToUrlAsync(address);
-                    var productDetail = driver.FindElement(By.ClassName("product-detail"));
-                    // 获取 data-pid 属性的值 得到商品id
-                    string productId = productDetail.GetDomAttribute("data-pid");
-                    if (productId != null)
+                    productId = match.Groups[match.Groups.Count - 1].Value;
+                    logger.LogInformation("商品 ID: {productId}", productId);
+                }
+                else
+                {
+                    try
                     {
+                        // 导航到商品页面
+                        await driver.Navigate().GoToUrlAsync(address);
+                        var productDetail = driver.FindElement(By.ClassName("product-detail"));
+                        // 获取 data-pid 属性的值 得到商品id
+                        productId = productDetail.GetDomAttribute("data-pid");
 
-                        product = new ProductInfoEntity()
-                        {
-                            Id = productId,
-                            Address = address,
-                            Quantity = quantity,
-                            CreateTime = DateTime.Now,
-                            UpdateTime = DateTime.Now
-                        };
-                        product = await productInfoRepository.InsertAsync(product);
-                        //设置缓存
-                        cacheManage.SetProductInfoByAddress(address, product);
+                    }
+                    catch (NoSuchElementException e)
+                    {
+                        logger.BaseErrorLog("GetProductIdAsync", e);
                     }
                 }
-                catch (NoSuchElementException e)
+
+                if (!string.IsNullOrEmpty(productId))
                 {
-                    logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+
+                    product = new ProductInfoEntity()
+                    {
+                        Id = productId,
+                        Address = address,
+                        Quantity = quantity,
+                        CreateTime = DateTime.Now,
+                        UpdateTime = DateTime.Now
+                    };
+                    product = await productInfoRepository.InsertAsync(product);
+                    //设置缓存
+                    cacheManage.SetProductInfoByAddress(address, product);
                 }
             }
-
             return product;
         }
 
@@ -414,7 +435,7 @@ namespace KixDutyFree.Shared.Services
             }
             catch (NoSuchElementException e)
             {
-                logger.LogWarning("TaskStartAsync:{Message}", e.Message);
+                logger.BaseErrorLog("Confirm", e);
             }
             ////同意网站cookie
             //try

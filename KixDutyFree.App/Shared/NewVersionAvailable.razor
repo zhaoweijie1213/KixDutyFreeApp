@@ -1,0 +1,72 @@
+@using KixDutyFree.Shared.Services
+@using static KixDutyFree.Shared.Services.CheckVersionService
+@inject CheckVersionService checkVersionService
+
+<MDialog @bind-Value="IsOpen"
+MaxWidth="500">
+    <MCard>
+        <MCardTitle>
+            检测到新版本
+        </MCardTitle>
+        <MCardText>
+            <div class="text-h5" style="color:black;">@Name</div>
+            @foreach (var content in BodyContent)
+            {
+            <div class="text-subtitle-2 font-weight-medium" style="color:black;">@content</div>
+            }
+        </MCardText>
+
+        <MCardActions>
+            <MSpacer></MSpacer>
+            <MButton Text Color="blue darken-1" Target="_blank" @bind-Href="DownloadUrl">
+                前往下载
+            </MButton>
+            <MButton Color="blue darken-1" Text OnClick="Close">关闭</MButton>
+        </MCardActions>
+    </MCard>
+</MDialog>
+
+@code {
+    private bool IsOpen { get; set; }
+
+    private string Name { get; set; } = string.Empty;
+
+    private List<string> BodyContent { get; set; } = [];
+
+    private string DownloadUrl { get; set; } = string.Empty;
+
+    // private bool ConfirmBtnLoading { get; set; }
+
+    protected override void OnInitialized()
+    {
+        checkVersionService.OnNewVersionAvailable += HandleNewVersionAvailable;
+    }
+
+    private void HandleNewVersionAvailable(object? sender, GitHubRelease release)
+    {
+        Name = release.Name;
+        BodyContent = release.Body;
+        DownloadUrl = release.BrowserDownloadUrl;
+        InvokeAsync(() =>
+        {
+            IsOpen = true;
+            StateHasChanged();
+        });
+    }
+
+    // public void Confirm()
+    // {
+
+    // }
+
+    public void Close()
+    {
+        IsOpen = false;
+    }
+
+    public void Dispose()
+    {
+        checkVersionService.OnNewVersionAvailable -= HandleNewVersionAvailable;
+    }
+
+}

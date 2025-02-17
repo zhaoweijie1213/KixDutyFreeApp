@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using KixDutyFree.App.Models.Entity
+@using KixDutyFree.Shared.Models
 @using KixDutyFree.Shared.Services
 @inject ProductService productService
 @inject IJSRuntime JSRuntime
@@ -28,7 +29,7 @@
 </MudGrid>
 
 @code {
-    public List<ProductInfoEntity> products { get; set; } = new();
+    public List<ProductMonitorInfo> products { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {

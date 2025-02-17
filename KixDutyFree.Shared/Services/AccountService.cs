@@ -147,9 +147,9 @@ namespace KixDutyFree.Shared.Services
 
             var trigger = TriggerBuilder.Create()
                 .WithIdentity($"login_check_trigger_{email}", "login_check")
-                .StartNow()
+                .StartAt(DateTime.Now.AddMinutes(5))
                 .WithSimpleSchedule(x => x
-                .WithIntervalInMinutes(10)
+                .WithIntervalInMinutes(5)
                 .RepeatForever())
                 .Build();
             await scheduler.ScheduleJob(job, trigger);
@@ -257,6 +257,8 @@ namespace KixDutyFree.Shared.Services
 
             return Task.CompletedTask;
         }
+
+
     }
 
  

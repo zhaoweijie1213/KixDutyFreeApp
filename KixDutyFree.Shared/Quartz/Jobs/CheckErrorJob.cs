@@ -17,7 +17,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
     /// <param name="logger"></param>
     /// <param name="accountClientFactory"></param>
     [DisallowConcurrentExecution]
-    public class CheckErrorJob(ILogger<CheckErrorJob> logger, AccountClientFactory accountClientFactory) : IJob, ITransientDependency
+    public class CheckErrorJob(ILogger<CheckErrorJob> logger, AccountClientFactory accountClientFactory, ClientMonitor clientMonitor) : IJob, ITransientDependency
     {
         public async Task Execute(IJobExecutionContext context)
         {
@@ -25,9 +25,11 @@ namespace KixDutyFree.Shared.Quartz.Jobs
             {
                 foreach (var client in accountClientFactory.Clients)
                 {
-                    if (client.Value.ErrorCount >= 5)
+                    if (client.Value.ErrorCount >= 2)
                     {
                         await client.Value.RelodAsync();
+
+                        clientMonitor.AddError();
                     }
                 }
             }

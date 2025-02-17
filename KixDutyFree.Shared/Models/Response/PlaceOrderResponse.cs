@@ -28,6 +28,11 @@
         /// <summary>
         /// 
         /// </summary>
+        public string ErrorMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string OrderID { get; set; } = string.Empty;
 
         /// <summary>

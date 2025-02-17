@@ -268,7 +268,7 @@ namespace KixDutyFree.App.Manage
                 }
                 // 检查商品是否有货
                 var res = await ProductVariationAsync(product.Id, 1, cancellationToken);
-                isAvailable = res?.Product?.Availability?.Available ?? false;
+                //isAvailable = res?.Product?.Availability?.Available ?? false;
                 if (res != null && string.IsNullOrEmpty(product.Name))
                 {
                     product.Name = res.Product?.ProductName ?? "";
@@ -276,13 +276,16 @@ namespace KixDutyFree.App.Manage
                     product.UpdateTime = DateTime.Now;
                     await productService.ProductAddOrUpdateAync(product);
                 }
-                if (isAvailable)
+                //商品可用状态判断
+                if (res?.Product?.Available == false || res?.Product?.Availability?.Available == false || res?.Product?.ReadyToOrder == false || res?.Product?.Online == false)
                 {
-                    logger.LogInformation("商品:{Name}可用,最大定购数{MaxOrderQuantity}", product.Name, res?.Product?.Availability?.MaxOrderQuantity);
+                    isAvailable = false;
+                    logger.LogInformation("商品:{Name}不可用,最大定购数{MaxOrderQuantity}", product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                 }
                 else
                 {
-                    logger.LogInformation("商品:{Name}不可用,最大定购数{MaxOrderQuantity}", product.Name, res?.Product?.Availability?.MaxOrderQuantity);
+                    isAvailable = true;
+                    logger.LogInformation("商品:{Name}可用,最大定购数{MaxOrderQuantity}", product.Name, res?.Product?.Availability?.MaxOrderQuantity);
                 }
 
                 productService.UpdateStock(product.Id, isAvailable, res?.Product?.Availability?.MaxOrderQuantity ?? 0);
@@ -316,7 +319,7 @@ namespace KixDutyFree.App.Manage
                 {
                     //查询最新订单,判断当前流程信息
                     var productMonitor = await cacheManage.GetProductMonitorAsync(Account.Email, product.Id);
-                    if (productMonitor != null && productMonitor.Setup == OrderSetup.OrderPlaced)
+                    if (productMonitor != null && productMonitor.Setup == OrderSetup.OrderPlaced && !string.IsNullOrEmpty(productMonitor.OrderId))
                     {
                         logger.LogInformation("FullCheckProductAvailabilityAsync:{Account}\t{Name}已有订单,订单状态{Setup}", Account.Email, product.Name, productMonitor.Setup.ToString());
                         return (isAvailable, null);
@@ -332,7 +335,15 @@ namespace KixDutyFree.App.Manage
                             await productInfoRepository.UpdateAsync(product);
                         }
                         isAvailable = res?.Product?.Availability?.Available ?? false;
-                        //可用或者已达上限
+                        //if (res?.Product?.Available == false || res?.Product?.Availability?.Available == false || res?.Product?.ReadyToOrder == false || res?.Product?.Online == false)
+                        //{
+
+                        //}
+                        //else
+                        //{
+
+                        //}
+                        //可用或者数量有限
                         if (isAvailable || res?.Product?.Availability?.Status == "QUANTITY_LIMITED")
                         {
                             //var productConfig = await cacheManage.GetProductsAsync();

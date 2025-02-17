@@ -185,37 +185,50 @@ namespace KixDutyFree.Shared.Services
         public async Task<ProductInfoEntity?> GetProductIdAsync(string address, ChromeDriver driver, int quantity)
         {
             var product = await productInfoRepository.FindByAddressAsync(address);
+            string productId = "";
             if (product == null)
             {
-                try
+                // 使用正则表达式提取商品 ID
+                Regex regex = new(@"-(\d+)\.html$");
+                Match match = regex.Match(address);
+                if (match.Success)
                 {
-                    // 导航到商品页面
-                    await driver.Navigate().GoToUrlAsync(address);
-                    var productDetail = driver.FindElement(By.ClassName("product-detail"));
-                    // 获取 data-pid 属性的值 得到商品id
-                    string productId = productDetail.GetDomAttribute("data-pid");
-                    if (productId != null)
+                    productId = match.Groups[match.Groups.Count - 1].Value;
+                    logger.LogInformation("商品 ID: {productId}", productId);
+                }
+                else
+                {
+                    try
                     {
+                        // 导航到商品页面
+                        await driver.Navigate().GoToUrlAsync(address);
+                        var productDetail = driver.FindElement(By.ClassName("product-detail"));
+                        // 获取 data-pid 属性的值 得到商品id
+                        productId = productDetail.GetDomAttribute("data-pid");
 
-                        product = new ProductInfoEntity()
-                        {
-                            Id = productId,
-                            Address = address,
-                            Quantity = quantity,
-                            CreateTime = DateTime.Now,
-                            UpdateTime = DateTime.Now
-                        };
-                        product = await productInfoRepository.InsertAsync(product);
-                        //设置缓存
-                        cacheManage.SetProductInfoByAddress(address, product);
+                    }
+                    catch (NoSuchElementException e)
+                    {
+                        logger.BaseErrorLog("GetProductIdAsync", e);
                     }
                 }
-                catch (NoSuchElementException e)
+
+                if (!string.IsNullOrEmpty(productId))
                 {
-                    logger.BaseErrorLog("GetProductIdAsync", e);
+
+                    product = new ProductInfoEntity()
+                    {
+                        Id = productId,
+                        Address = address,
+                        Quantity = quantity,
+                        CreateTime = DateTime.Now,
+                        UpdateTime = DateTime.Now
+                    };
+                    product = await productInfoRepository.InsertAsync(product);
+                    //设置缓存
+                    cacheManage.SetProductInfoByAddress(address, product);
                 }
             }
-
             return product;
         }
 

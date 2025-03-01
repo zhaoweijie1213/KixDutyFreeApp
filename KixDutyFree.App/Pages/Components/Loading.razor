@@ -1,0 +1,30 @@
+﻿@using KixDutyFree.Shared.Services
+@inject LoadingService loadingService
+@implements IDisposable
+
+
+<MOverlay Contained @bind-Value="isLoading">
+    <MProgressCircular indeterminate Size="64"></MProgressCircular>
+</MOverlay>
+
+
+@code {
+    private bool isLoading;
+
+    protected override void OnInitialized()
+    {
+        loadingService.OnChange += HandleLoadingChange;
+        isLoading = loadingService.IsLoading;
+    }
+
+    private void HandleLoadingChange()
+    {
+        isLoading = loadingService.IsLoading;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        loadingService.OnChange -= HandleLoadingChange;
+    }
+}

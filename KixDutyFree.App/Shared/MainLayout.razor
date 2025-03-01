@@ -1,0 +1,126 @@
+﻿@using KixDutyFree.App.Pages.Components
+@using KixDutyFree.Shared.Repository
+@inject AppConfigRepository appConfigRepository
+@inherits LayoutComponentBase
+
+<MApp>
+    <MAppBar App>
+        <MAppBarNavIcon @onclick="() => _drawer = !_drawer"></MAppBarNavIcon>
+        <MToolbarTitle>Kix Duty Free App</MToolbarTitle>
+        <MSpacer></MSpacer>
+        <MButton Text Color="primary" Target="_blank" Href="https://www.kixdutyfree.jp/cn">Kix duty free主网站</MButton>
+    </MAppBar>
+
+    <MNavigationDrawer App @bind-Value="_drawer" Clipped="false">
+        <ChildContent>
+            <MList Nav Routable>
+                <MListItem Href="/" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-cart-variant</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>商品列表</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/account" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-account-edit</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>账号列表</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/orders" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-order-bool-ascending</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>订单列表</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/logs" ActiveClass="primary--text">
+                    <MListItemIcon>
+                        <MIcon>mdi-math-log</MIcon>
+                    </MListItemIcon>
+                    <MListItemContent>
+                        <MListItemTitle>日志</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+            </MList>
+        </ChildContent>
+        <AppendContent>
+            <MSwitch @bind-Value="_open" LeftText="开" RightText="关" Color="white" Label="重启时重新下单" TrackColor="@SwitchColor()" OnClick="@OnSwitchClick"></MSwitch>
+        </AppendContent>
+
+    </MNavigationDrawer>
+    <PEnqueuedSnackbars @ref="_enqueuedSnackbars" Position="SnackPosition.TopCenter"></PEnqueuedSnackbars>
+    <MMain Class="grey lighten-4">
+        <MContainer Fluid>
+            <Loading />
+            <NewVersionAvailable />
+            <MErrorHandler>
+                @Body
+            </MErrorHandler>
+        </MContainer>
+    </MMain>
+</MApp>
+
+@code {
+    private bool? _drawer;
+
+    private bool _open { get; set; } = true;
+
+    private PEnqueuedSnackbars? _enqueuedSnackbars;
+
+    private void Enqueue(AlertTypes type, string content)
+    {
+        _enqueuedSnackbars?.EnqueueSnackbar(new SnackbarOptions()
+            {
+                Content = content,
+                Type = type,
+                Closeable = true
+            });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _drawer = true;
+        var appConfig = await appConfigRepository.FindAsync();
+        if (appConfig != null)
+        {
+            _open = appConfig.ReOrderOnRestart;
+        }
+    }
+
+    private string SwitchColor()
+    {
+        if (_open)
+        {
+
+            return "success";
+        }
+        else
+        {
+            return "grey";
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newValue"></param>
+    /// <returns></returns>
+    private async Task OnSwitchClick()
+    {
+        // _open = !_open;
+        await appConfigRepository.UpdateReOrderAsync(_open);
+        if (_open)
+        {
+            Enqueue(AlertTypes.Success, "已开启,当程序重启时重新下单");
+        }
+        else
+        {
+            Enqueue(AlertTypes.Success, "已关闭");
+        }
+    }
+}

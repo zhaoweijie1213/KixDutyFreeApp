@@ -1,0 +1,116 @@
+﻿@using KixDutyFree.Shared.Models.Input
+@using KixDutyFree.Shared.Services
+@inject ProductService productService
+
+<PModal @bind-Value="Show"
+FormModel="input"
+Persistent
+Title="新增商品"
+Width="500"
+OnSave="HandleOnSave"
+OnCancel="HandleOnCancel">
+    <MRow>
+        <MCol Cols="12">
+            <MTextField @bind-Value="input.Address"
+            Label="地址"
+            Dense
+            Outlined
+            HideDetails="@("auto")" />
+        </MCol>
+        <MCol Cols="12">
+            <MTextField @bind-Value="input.Quantity"
+            Label="数量"
+            Dense
+            Hint="填0时会以最大可以购买数量下单"
+            Outlined
+            HideDetails="@("auto")" />
+        </MCol>
+        @if (exception != null)
+        {
+            <MCol Cols="12">
+                @exception.Message
+            </MCol>
+        }
+    </MRow>
+</PModal>
+
+<MSnackbar @bind-Value="_snackbar"
+Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
+    @Message
+</MSnackbar>
+
+@code {
+    [Parameter]
+    public bool Show { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+
+    public bool _snackbar { get; set; }
+
+    public string Message { get; set; } = string.Empty;
+
+
+    public string SnackbarColor { get; set; } = "success";
+
+    AddProductInput input = new();
+    private bool throwException;
+    private Exception? exception;
+
+    private void OnInputChange(ChangeEventArgs e)
+    {
+        // 当子组件内的输入有变化时，通过回调通知父组件更新值
+        ShowChanged.InvokeAsync((bool)e.Value!);
+    }
+
+    protected override void OnParametersSet()
+    {
+        input = new();
+    }
+
+    /// <summary>
+    /// 保存按钮
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    private async Task HandleOnSave(ModalActionEventArgs args)
+    {
+        try
+        {
+            //查询商品是否已存在
+            var product = await productService.GetProductAsync(input.Address);
+            if (product == null)
+            {
+                await productService.StartMonitorAsync(input);
+                Show = false;
+                Message = "操作成功";
+                SnackbarColor = "success";
+                _snackbar = true;
+          
+            }
+            else
+            {
+                Message = "已存在该商品";
+                SnackbarColor = "warning";
+                _snackbar = true;
+            }
+
+        }
+        catch (Exception e)
+        {
+            args.Cancel();
+            exception = e;
+        }
+    }
+
+    private async void HandleOnCancel()
+    {
+        Show = false;
+        exception = null;
+
+
+        // 通知父组件
+        await ShowChanged.InvokeAsync(false);
+    }
+}

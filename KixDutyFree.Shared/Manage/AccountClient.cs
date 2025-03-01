@@ -458,7 +458,18 @@ namespace KixDutyFree.App.Manage
                                 var quantityInput = cardProduct.FindElement(By.Name("product-quantity"));
                                 // 获取 value 属性的值
                                 int quantityValue = Convert.ToInt32(quantityInput.GetDomAttribute("value"));
-                                if (quantityValue <= 0)
+                                //查找是否有已售罄警告信息
+                                string restriction = "";
+                                try
+                                {
+                                    restriction = cardProduct.FindElement(By.ClassName("lineitem-availability-restriction")).Text;
+                                }
+                                catch (Exception)
+                                {
+                                    //没有警告信息的不处理
+                                    logger.LogInformation("");
+                                }
+                                if (quantityValue <= 0 || restriction.Contains("该商品在您预订完成前已售罄"))
                                 {
                                     //移除该商品
                                     var res = await RemoveProductLineItemAsync(pid, uuid, cancellationToken);

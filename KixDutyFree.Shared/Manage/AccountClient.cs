@@ -165,9 +165,8 @@ namespace KixDutyFree.App.Manage
             try
             {
                 IsLoading = true;
-                bool headless = configuration.GetSection("Headless").Get<bool>();
                 //_httpClient = httpClientFactory.CreateClient(account.Email);
-                var res = await seleniumService.CreateInstancesAsync(account, headless);
+                var res = await seleniumService.CreateInstancesAsync(account);
                 await SetDriverAsync(res.Item1);
                 IsLoginSuccess = res.Item2;
                 //设置httpClient Cookie

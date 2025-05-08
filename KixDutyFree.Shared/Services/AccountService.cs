@@ -1,8 +1,8 @@
-﻿using KixDutyFree.App.Manage;
-using KixDutyFree.App.Models;
+﻿using KixDutyFree.App.Models;
 using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Quartz;
 using KixDutyFree.Shared.Manage;
+using KixDutyFree.Shared.Manage.Client;
 using KixDutyFree.Shared.Models;
 using KixDutyFree.Shared.Models.Entity;
 using KixDutyFree.Shared.Quartz.Jobs;

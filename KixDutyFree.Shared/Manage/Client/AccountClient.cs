@@ -1,4 +1,5 @@
-﻿using KixDutyFree.App.Models;
+﻿using KixDutyFree.App.Manage;
+using KixDutyFree.App.Models;
 using KixDutyFree.App.Models.Config;
 using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Models.Response;
@@ -30,7 +31,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 
-namespace KixDutyFree.App.Manage
+namespace KixDutyFree.Shared.Manage.Client
 {
     /// <summary>
     /// 账号客户端
@@ -652,7 +653,7 @@ namespace KixDutyFree.App.Manage
                                         };
                                         await orderService.AddOrderAsync(order);
                                         //信息导出到表格
-                                        await excelProcess.OrderExportAsync(new Models.Excel.OrderExcel()
+                                        await excelProcess.OrderExportAsync(new App.Models.Excel.OrderExcel()
                                         {
                                             OrderId = productMonitor.OrderId,
                                             ProductId = productMonitor.ProductId,
@@ -814,7 +815,7 @@ namespace KixDutyFree.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             ProductVariationResponse? data = null;
-            HttpRequestMessage request = new(HttpMethod.Get, Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
+            HttpRequestMessage request = new(HttpMethod.Get, KixDutyFreeApi.Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", CookieHeader);
             var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -842,7 +843,7 @@ namespace KixDutyFree.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             CartAddProductResponse? data = null;
-            var request = new HttpRequestMessage(HttpMethod.Post, Cart.AddProduct);
+            var request = new HttpRequestMessage(HttpMethod.Post, KixDutyFreeApi.Cart.AddProduct);
             // 构建表单数据
             var formData = new List<KeyValuePair<string, string>>
             {
@@ -877,7 +878,7 @@ namespace KixDutyFree.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             CartUpdateQuantityResponse? data = null;
-            var request = new HttpRequestMessage(HttpMethod.Get, Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
+            var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -904,7 +905,7 @@ namespace KixDutyFree.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             RemoveProductLineItemResponse? data = null;
-            var request = new HttpRequestMessage(HttpMethod.Get, Cart.RemoveProductLineItem + $"?pid={productId}&uuid={uuid}");
+            var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.RemoveProductLineItem + $"?pid={productId}&uuid={uuid}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -934,7 +935,7 @@ namespace KixDutyFree.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             FlightGetInfoResponse? data = null;
-            var request = new HttpRequestMessage(HttpMethod.Get, Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
+            var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -987,7 +988,7 @@ namespace KixDutyFree.App.Manage
                 new("connectingFlight", connectingFlight),
                 new("agreeProductLimits", agreeProductLimits)
             };
-            var request = new HttpRequestMessage(HttpMethod.Post, Cart.FlightSaveInfo)
+            var request = new HttpRequestMessage(HttpMethod.Post, KixDutyFreeApi.Cart.FlightSaveInfo)
             {
                 Content = new FormUrlEncodedContent(formData)
             };
@@ -1044,7 +1045,7 @@ namespace KixDutyFree.App.Manage
                 new ("dwfrm_billing_paymentMethod", "Instore_Payment") //到店支付
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, CheckoutServices.SubmitPayment)
+            var request = new HttpRequestMessage(HttpMethod.Post, KixDutyFreeApi.CheckoutServices.SubmitPayment)
             {
                 Content = new FormUrlEncodedContent(formData)
             };
@@ -1075,7 +1076,7 @@ namespace KixDutyFree.App.Manage
                 throw new Exception("_httpClient未初始化");
             }
             PlaceOrderResponse? data = null;
-            var request = new HttpRequestMessage(HttpMethod.Post, CheckoutServices.PlaceOrder);
+            var request = new HttpRequestMessage(HttpMethod.Post, KixDutyFreeApi.CheckoutServices.PlaceOrder);
             request.Headers.Remove("Cookie");
             request.Headers.Add("Cookie", await SyncCookies());
             var response = await _httpClient.SendAsync(request, cancellationToken);

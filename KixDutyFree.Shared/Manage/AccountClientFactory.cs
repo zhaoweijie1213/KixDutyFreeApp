@@ -1,4 +1,4 @@
-﻿using KixDutyFree.App.Manage;
+﻿using KixDutyFree.Shared.Manage.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QYQ.Base.Common.IOCExtensions;

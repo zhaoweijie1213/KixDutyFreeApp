@@ -70,7 +70,6 @@ namespace KixDutyFree.App
                 // when shutting down we want jobs to complete gracefully
                 options.WaitForJobsToComplete = true;
             });
-            builder.Services.AddHttpClient();
             builder.Services.AddMemoryCache();
 
             builder.Services.AddQuartz(q =>

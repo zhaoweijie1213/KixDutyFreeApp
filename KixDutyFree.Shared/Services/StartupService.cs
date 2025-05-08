@@ -15,6 +15,7 @@ namespace KixDutyFree.Shared.Services
 {
     public class StartupService(ILogger<StartupService> logger, Manager manager, QuartzManagement quartzManagement) : IHostedService
     {
+
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await manager.InitDataAsync();
@@ -62,5 +63,7 @@ namespace KixDutyFree.Shared.Services
         {
             return Task.CompletedTask;
         }
+
+
     }
 }

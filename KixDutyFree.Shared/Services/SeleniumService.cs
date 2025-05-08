@@ -2,7 +2,9 @@
 using KixDutyFree.App.Models.Entity;
 using KixDutyFree.App.Repository;
 using KixDutyFree.Shared.Manage;
+using Magicodes.ExporterAndImporter.Excel.Utility.TemplateExport;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -14,7 +16,7 @@ using System.Text.RegularExpressions;
 namespace KixDutyFree.Shared.Services
 {
 
-    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository, CacheManage cacheManage, ClientMonitor clientMonitor) : ITransientDependency
+    public class SeleniumService(ILogger<SeleniumService> logger, ProductInfoRepository productInfoRepository, CacheManage cacheManage, ClientMonitor clientMonitor,IConfiguration configuration) : ITransientDependency
     {
 
         public const string Home = "https://www.kixdutyfree.jp/cn";
@@ -23,18 +25,30 @@ namespace KixDutyFree.Shared.Services
 
         public const string AccountUrl = "https://www.kixdutyfree.jp/cn/account";
 
+        const int MaxConcurrent = 5;
+
+        /// <summary>
+        /// ① 限制同时并发启动的 Chrome 数量，避免资源打爆
+        /// 这里示例用静态信号量，最大 5 个并发实例
+        /// </summary>
+        private readonly SemaphoreSlim _bootPool = new(MaxConcurrent);
+
         /// <summary>
         /// 创建实例
         /// </summary>
-        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountInfo? account, bool headless = false)
+        public async Task<(ChromeDriver, bool)> CreateInstancesAsync(AccountInfo? account)
         {
             ChromeDriver? driver = null;
             bool isLogin = false;
             bool status = false;
+
+            bool headless = configuration.GetSection("Headless").Get<bool>();
+
             while (!status)
             {
                 try
                 {
+                    await _bootPool.WaitAsync();
                     // 在后台线程中实例化ChromeDriver
                     driver = await Task.Run(() =>
                     {
@@ -44,15 +58,27 @@ namespace KixDutyFree.Shared.Services
                         service.InitializationTimeout = TimeSpan.FromMinutes(2);
 
                         var options = new ChromeOptions();
+
+                        // ② 为每个实例指定独立、可写 profile，彻底避免 Preferences 文件锁
+                        var profileDir = CreateTempProfile();
+                        options.AddArgument($"--user-data-dir={profileDir}");
+                        options.AddArgument("--profile-directory=Default");
+
                         if (headless)
                         {
-                            options.AddArgument("--headless");
+                            //options.AddArgument("--headless");
+                            //options.AddArgument("--disable-gpu");
+                            ////options.AddArgument("--no-sandbox");
+                            //options.AddArgument("--disable-dev-shm-usage");
+                            // ③ Headless & 容器/服务兼容参数
+                            options.AddArgument("--headless=new");      // 新版 Headless
                             options.AddArgument("--disable-gpu");
-                            //options.AddArgument("--no-sandbox");
+                            options.AddArgument("--no-sandbox");
                             options.AddArgument("--disable-dev-shm-usage");
+                            options.AddArgument("--remote-debugging-port=0"); // 避免 DevToolsActivePort
                         }
 
-                        return new ChromeDriver(service, options,TimeSpan.FromMinutes(3));
+                        return new ChromeDriver(service, options, TimeSpan.FromMinutes(3));
                     });
 
                     // 设置页面加载超时时间为 120 秒
@@ -74,7 +100,7 @@ namespace KixDutyFree.Shared.Services
                     {
                         status = true;
                     }
-            
+
                 }
                 catch (Exception e)
                 {
@@ -88,9 +114,25 @@ namespace KixDutyFree.Shared.Services
                     logger.BaseErrorLog("CreateInstancesAsync", e);
                     clientMonitor.AddError();
                 }
+                finally
+                {
+                    _bootPool.Release();                  // ← 释放并发池名额
+                }
             }
             return new(driver!, isLogin);
         }
+
+        /// <summary>
+        /// 创建临时文件夹
+        /// </summary>
+        /// <returns></returns>
+        private static string CreateTempProfile()
+        {
+            var path = Path.Combine(Path.GetTempPath(), "selenium", Guid.NewGuid().ToString());
+            Directory.CreateDirectory(path);
+            return path;
+        }
+
 
         /// <summary>
         /// 登录
@@ -102,17 +144,21 @@ namespace KixDutyFree.Shared.Services
             //检测登录按钮
             try
             {
-                await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn/login/");
-                //输入账号密码
-                var email = driver.FindElement(By.Id("login-form-email"));
-                email.SendKeys(account.Email);
-                var pwd = driver.FindElement(By.Id("login-form-password"));
-                pwd.SendKeys(account.Password);
-                //点击登录按钮
-                var loginSubmit = driver.FindElement(By.XPath("//div[contains(@class, 'login-submit-button') and contains(@class, 'pt-1')]//button[contains(@class, 'btn') and contains(@class, 'btn-block') and contains(@class, 'btn-primary') and contains(@class, 'btn-login')]"));
-                loginSubmit.Click();
-                logger.LogInformation("Login.登录:{email}", email);
-                isLogin = await IsLogin(driver);
+                await Task.Run(async () =>
+                {
+                    await driver.Navigate().GoToUrlAsync("https://www.kixdutyfree.jp/cn/login/");
+                    //输入账号密码
+                    var email = driver.FindElement(By.Id("login-form-email"));
+                    email.SendKeys(account.Email);
+                    var pwd = driver.FindElement(By.Id("login-form-password"));
+                    pwd.SendKeys(account.Password);
+                    //点击登录按钮
+                    var loginSubmit = driver.FindElement(By.XPath("//div[contains(@class, 'login-submit-button') and contains(@class, 'pt-1')]//button[contains(@class, 'btn') and contains(@class, 'btn-block') and contains(@class, 'btn-primary') and contains(@class, 'btn-login')]"));
+                    loginSubmit.Click();
+                    logger.LogInformation("Login.登录:{email}", email);
+                    isLogin = await IsLogin(driver);
+                });
+
             }
             catch (NoSuchElementException e)
             {
@@ -182,7 +228,7 @@ namespace KixDutyFree.Shared.Services
         /// <param name="driver"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        public async Task<ProductInfoEntity?> GetProductIdAsync(string address, ChromeDriver driver, int quantity)
+        public async Task<ProductInfoEntity?> GetProductIdAsync(string address, int quantity)
         {
             var product = await productInfoRepository.FindByAddressAsync(address);
             string productId = "";
@@ -198,18 +244,29 @@ namespace KixDutyFree.Shared.Services
                 }
                 else
                 {
+                    ChromeDriver? driver = null;
                     try
                     {
+                        //开始商品监控任务
+                        bool headless = configuration.GetSection("Headless").Get<bool>();
+                        //创建浏览器实例
+                        var res = await CreateInstancesAsync(null);
+                        driver = res.Item1;
                         // 导航到商品页面
                         await driver.Navigate().GoToUrlAsync(address);
                         var productDetail = driver.FindElement(By.ClassName("product-detail"));
                         // 获取 data-pid 属性的值 得到商品id
-                        productId = productDetail.GetDomAttribute("data-pid");
+                        productId = productDetail.GetDomAttribute("data-pid") ?? "";
 
                     }
                     catch (NoSuchElementException e)
                     {
                         logger.BaseErrorLog("GetProductIdAsync", e);
+                    }
+                    finally
+                    {
+                        driver?.Quit();
+                        driver?.Dispose();
                     }
                 }
 
@@ -419,36 +476,30 @@ namespace KixDutyFree.Shared.Services
         /// </summary>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public Task Confirm(ChromeDriver driver)
+        public async Task Confirm(ChromeDriver driver)
         {
-            //查询是否有年龄确认dialog对话框
-            try
+            var task = Task.Run(() =>
             {
-                var ageConfirmDialog = driver.FindElement(By.ClassName("modal-dialog"));
-                var ageModalHeader = ageConfirmDialog.FindElement(By.ClassName("modal-header"));
-                if (ageModalHeader.FindElement(By.TagName("span")).Text == "年龄认证")
+                //查询是否有年龄确认dialog对话框
+                try
                 {
-                    //年龄确认
-                    var ageButton = ageConfirmDialog.FindElement(By.Id("age_yes"));
-                    ageButton.Click();
+                    var ageConfirmDialog = driver.FindElement(By.ClassName("modal-dialog"));
+                    var ageModalHeader = ageConfirmDialog.FindElement(By.ClassName("modal-header"));
+                    if (ageModalHeader.FindElement(By.TagName("span")).Text == "年龄认证")
+                    {
+                        //年龄确认
+                        var ageButton = ageConfirmDialog.FindElement(By.Id("age_yes"));
+                        ageButton.Click();
+                    }
                 }
-            }
-            catch (NoSuchElementException e)
-            {
-                logger.BaseErrorLog("Confirm", e);
-            }
-            ////同意网站cookie
-            //try
-            //{
-            //    var trustCookie = driver.FindElement(By.Id("onetrust-accept-btn-handler"));
-            //    trustCookie.Click();
-            //}
-            //catch (NoSuchElementException e)
-            //{
-            //    logger.LogWarning("TaskStartAsync:{Message}", e.Message);
-            //}
+                catch (NoSuchElementException e)
+                {
+                    logger.BaseErrorLog("Confirm", e);
+                }
 
-            return Task.CompletedTask;
+            });
+
+            await task;
         }
 
         /// <summary>

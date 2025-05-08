@@ -165,9 +165,8 @@ namespace KixDutyFree.App.Manage
             try
             {
                 IsLoading = true;
-                bool headless = configuration.GetSection("Headless").Get<bool>();
                 //_httpClient = httpClientFactory.CreateClient(account.Email);
-                var res = await seleniumService.CreateInstancesAsync(account, headless);
+                var res = await seleniumService.CreateInstancesAsync(account);
                 await SetDriverAsync(res.Item1);
                 IsLoginSuccess = res.Item2;
                 //设置httpClient Cookie
@@ -458,7 +457,18 @@ namespace KixDutyFree.App.Manage
                                 var quantityInput = cardProduct.FindElement(By.Name("product-quantity"));
                                 // 获取 value 属性的值
                                 int quantityValue = Convert.ToInt32(quantityInput.GetDomAttribute("value"));
-                                if (quantityValue <= 0)
+                                //查找是否有已售罄警告信息
+                                string restriction = "";
+                                try
+                                {
+                                    restriction = cardProduct.FindElement(By.ClassName("lineitem-availability-restriction")).Text;
+                                }
+                                catch (Exception)
+                                {
+                                    //没有警告信息的不处理
+                                    logger.LogInformation("");
+                                }
+                                if (quantityValue <= 0 || restriction.Contains("该商品在您预订完成前已售罄"))
                                 {
                                     //移除该商品
                                     var res = await RemoveProductLineItemAsync(pid, uuid, cancellationToken);

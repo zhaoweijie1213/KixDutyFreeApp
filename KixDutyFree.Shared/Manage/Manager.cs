@@ -11,7 +11,10 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QYQ.Base.Common.IOCExtensions;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reflection;
+using System.Management;
+using System.Runtime.InteropServices;
 
 namespace KixDutyFree.Shared.Manage
 {
@@ -66,6 +69,10 @@ namespace KixDutyFree.Shared.Manage
             await quartzManagement.StartLoginCheckAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly string _root = Path.Combine(Path.GetTempPath(), "selenium");
 
         /// <summary>
         /// 停止
@@ -83,7 +90,95 @@ namespace KixDutyFree.Shared.Manage
                 tasks.Add(accountClientFactory.DefaultClient.QuitAsync());
             }
             await Task.WhenAll(tasks);
+
+            var drivers = Process.GetProcessesByName("chromedriver");
+            foreach (var p in drivers)
+            {
+                try 
+                { 
+                    p.Kill();
+                }
+                catch
+                {
+                    /* ignore */
+                }
+            }
+            var tempRoot = Path.Combine(Path.GetTempPath(), "selenium");
+            KillChromeWithTempRoot(tempRoot);
+
+            await SeleniumTempCleanupAsync();
         }
+
+        /// <summary>
+        /// 杀掉所有命令行里含有 tempRoot 的 chrome.exe 进程
+        /// </summary>
+        public void KillChromeWithTempRoot(string tempRoot)
+        {
+            // 1. 用 WMI 查询出所有 name=chrome.exe 且 CommandLine 包含 tempRoot 的进程 ID
+            string wmiQuery =
+                $"SELECT ProcessId FROM Win32_Process " +
+                $"WHERE Name='chrome.exe' AND CommandLine LIKE '%{tempRoot.Replace("\\", "\\\\")}%'";
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                logger.LogInformation("当前非 Windows 平台，跳过 Chrome 进程清理。");
+                return;
+            }
+            using var searcher = new ManagementObjectSearcher(wmiQuery);
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                var pidObj = mo["ProcessId"];
+                if (pidObj != null && int.TryParse(pidObj.ToString(), out int pid))
+                {
+                    try
+                    {
+                        var proc = Process.GetProcessById(pid);
+                        proc.Kill();
+                        logger.LogInformation("Killed chrome.exe (PID={pid})", pid);
+                    }
+                    catch
+                    {
+                        // 可能已经退出，忽略
+                    }
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// 删除临时文件
+        /// </summary>
+        public Task SeleniumTempCleanupAsync()
+        {
+            try
+            {
+                if (!Directory.Exists(_root))
+                {
+                    logger.LogInformation("Selenium Temp 目录不存在，无需清理。");
+
+                }
+
+                var dirs = Directory.GetDirectories(_root);
+                foreach (var dir in dirs)
+                {
+                    try
+                    {
+                        Directory.Delete(dir, true);
+                        logger.LogInformation("已删除临时 Selenium Profile：{dir}", dir);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "删除临时目录失败：{dir}", dir);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "清理 Selenium Temp 目录时发生错误");
+            }
+            return Task.CompletedTask;
+        }
+
 
     }
 }

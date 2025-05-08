@@ -121,12 +121,9 @@ namespace KixDutyFree.Shared.Services
             bool status = false;
             try
             {
-                //开始商品监控任务
-                bool headless = configuration.GetSection("Headless").Get<bool>();
-                //创建浏览器实例
-                var res = await seleniumService.CreateInstancesAsync(null, headless);
+          
 
-                var info = await seleniumService.GetProductIdAsync(input.Address, res.Item1, input.Quantity);
+                var info = await seleniumService.GetProductIdAsync(input.Address, input.Quantity);
 
                 if (info != null)
                 {
@@ -153,8 +150,6 @@ namespace KixDutyFree.Shared.Services
                     status = false;
                     logger.LogWarning("StartMonitorAsync.未获取到商品信息:{address}", input.Address);
                 }
-                res.Item1.Quit();
-                res.Item1.Dispose();
             }
             catch (Exception e)
             {

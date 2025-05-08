@@ -64,18 +64,16 @@ namespace KixDutyFree.Shared.Services
                         options.AddArgument($"--user-data-dir={profileDir}");
                         options.AddArgument("--profile-directory=Default");
 
+
                         if (headless)
                         {
-                            //options.AddArgument("--headless");
-                            //options.AddArgument("--disable-gpu");
-                            ////options.AddArgument("--no-sandbox");
-                            //options.AddArgument("--disable-dev-shm-usage");
+                            options.AddArgument("--window-size=1920,1080");
                             // ③ Headless & 容器/服务兼容参数
-                            options.AddArgument("--headless=new");      // 新版 Headless
-                            options.AddArgument("--disable-gpu");
+                            options.AddArgument("--headless");      // 新版 Headless
+                            //options.AddArgument("--disable-gpu");
                             options.AddArgument("--no-sandbox");
                             options.AddArgument("--disable-dev-shm-usage");
-                            options.AddArgument("--remote-debugging-port=0"); // 避免 DevToolsActivePort
+                            //options.AddArgument("--remote-debugging-port=0"); // 避免 DevToolsActivePort
                         }
 
                         return new ChromeDriver(service, options, TimeSpan.FromMinutes(3));

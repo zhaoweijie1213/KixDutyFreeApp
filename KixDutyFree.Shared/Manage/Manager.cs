@@ -69,10 +69,6 @@ namespace KixDutyFree.Shared.Manage
             await quartzManagement.StartLoginCheckAsync();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private readonly string _root = Path.Combine(Path.GetTempPath(), "selenium");
 
         /// <summary>
         /// 停止
@@ -103,10 +99,17 @@ namespace KixDutyFree.Shared.Manage
                     /* ignore */
                 }
             }
+            //旧临时文件夹
             var tempRoot = Path.Combine(Path.GetTempPath(), "selenium");
-            KillChromeWithTempRoot(tempRoot);
 
-            await SeleniumTempCleanupAsync();
+            KillChromeWithTempRoot(tempRoot);
+            await SeleniumTempCleanupAsync(tempRoot);
+
+            //新临时文件夹
+            var newTempRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "selenium");
+
+            KillChromeWithTempRoot(newTempRoot);
+            await SeleniumTempCleanupAsync(newTempRoot);
         }
 
         /// <summary>
@@ -148,17 +151,17 @@ namespace KixDutyFree.Shared.Manage
         /// <summary>
         /// 删除临时文件
         /// </summary>
-        public Task SeleniumTempCleanupAsync()
+        public Task SeleniumTempCleanupAsync(string path)
         {
             try
             {
-                if (!Directory.Exists(_root))
+                if (!Directory.Exists(path))
                 {
                     logger.LogInformation("Selenium Temp 目录不存在，无需清理。");
 
                 }
 
-                var dirs = Directory.GetDirectories(_root);
+                var dirs = Directory.GetDirectories(path);
                 foreach (var dir in dirs)
                 {
                     try

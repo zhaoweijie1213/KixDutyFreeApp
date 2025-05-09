@@ -172,6 +172,7 @@ namespace KixDutyFree.Shared.Manage.Client
                 IsLoginSuccess = res.Item2;
                 //设置httpClient Cookie
                 _httpClient = httpClientFactory.CreateClient(account?.Email ?? "DefaultClient");
+                _httpClient.BaseAddress = new Uri("https://www.kixdutyfree.jp");
                 _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                 await SyncCookies();
                 logger.LogInformation("InitAsync.初始化完成");

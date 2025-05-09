@@ -126,8 +126,11 @@ namespace KixDutyFree.Shared.Services
         /// <returns></returns>
         private static string CreateTempProfile()
         {
-            var path = Path.Combine(Path.GetTempPath(), "selenium", Guid.NewGuid().ToString());
-            Directory.CreateDirectory(path);
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "selenium", Guid.NewGuid().ToString());
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             return path;
         }
 

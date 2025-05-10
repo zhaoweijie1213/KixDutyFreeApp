@@ -15,6 +15,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Management;
 using System.Runtime.InteropServices;
+using KixDutyFree.Shared.Manage.Client;
+using KixDutyFree.Shared.Models.Enum;
 
 namespace KixDutyFree.Shared.Manage
 {
@@ -47,7 +49,7 @@ namespace KixDutyFree.Shared.Manage
         /// 初始化客户端
         /// </summary>
         /// <returns></returns>
-        public async Task InitClientAsync()
+        public async Task InitClientAsync(ClientType clientType)
         {
             var appConfig = await appConfigRepository.FindAsync();
             if (appConfig?.ReOrderOnRestart == true)
@@ -62,7 +64,7 @@ namespace KixDutyFree.Shared.Manage
             List<Task> tasks = [];
             foreach (var account in accounts)
             {
-                tasks.Add(accountService.CreateClientAsync(account));
+                tasks.Add(accountService.CreateClientAsync(account, clientType));
             }
             await Task.WhenAll(tasks);
             //检查登录状态任务

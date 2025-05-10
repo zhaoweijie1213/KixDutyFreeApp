@@ -3,8 +3,10 @@ using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Quartz;
 using KixDutyFree.Shared.Manage;
 using KixDutyFree.Shared.Manage.Client;
+using KixDutyFree.Shared.Manage.Client.Interface;
 using KixDutyFree.Shared.Models;
 using KixDutyFree.Shared.Models.Entity;
+using KixDutyFree.Shared.Models.Enum;
 using KixDutyFree.Shared.Quartz.Jobs;
 using KixDutyFree.Shared.Repository;
 using log4net.Core;
@@ -114,8 +116,9 @@ namespace KixDutyFree.Shared.Services
         /// 新增账号
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="clientType"></param>
         /// <returns></returns>
-        public async Task AddAccountAsync(AccountEntity entity)
+        public async Task AddAccountAsync(AccountEntity entity, ClientType clientType)
         {
             entity = await accountRepository.InsertAsync(entity);
        
@@ -127,7 +130,7 @@ namespace KixDutyFree.Shared.Services
                 NotifyStateChanged();
             }
             //初始化账号client
-            await CreateClientAsync(account);
+            await CreateClientAsync(account, clientType);
             await StartLoginCheckAsync(account.Email);
         }
 
@@ -183,7 +186,7 @@ namespace KixDutyFree.Shared.Services
                     account.Quantity = entity.Quantity;
                 }
                 //修改客户端账号信息
-                if(accountClientFactory.Clients.TryGetValue(entity.Email, out AccountClient? accountClient))
+                if(accountClientFactory.Clients.TryGetValue(entity.Email, out IAccountClient? accountClient))
                 {
                     accountClient.Account = account;
                 }
@@ -203,7 +206,7 @@ namespace KixDutyFree.Shared.Services
             var scheduler = await schedulerFactory.GetScheduler();
             await scheduler.UnscheduleJob(new TriggerKey($"login_check_trigger_{email}", "login_check"));
             //移除客户端
-            if (accountClientFactory.Clients.TryGetValue(email, out AccountClient? accountClient))
+            if (accountClientFactory.Clients.TryGetValue(email, out IAccountClient? accountClient))
             {
                 if (accountClient != null)
                 {
@@ -224,14 +227,23 @@ namespace KixDutyFree.Shared.Services
         /// 创建客户端
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> CreateClientAsync(AccountInfo account)
+        public async Task<bool> CreateClientAsync(AccountInfo account, ClientType clientType)
         {
             bool status = false;
-            var accountClient = serviceProvider.GetService<AccountClient>()!;
-            //tasks.Add(accountClient.InitAsync(account));
-            if (accountClientFactory.Clients.TryAdd(account.Email, accountClient))
+            IAccountClient client;
+            switch (clientType)
             {
-                status = await accountClient.InitAsync(account);
+                case ClientType.Selenium:
+                    client = serviceProvider.GetRequiredService<AccountClient>();
+                    break;
+                default:
+                    client = serviceProvider.GetRequiredService<HttpAccountClient>();
+                    break;
+            }
+        
+            if (accountClientFactory.Clients.TryAdd(account.Email, client))
+            {
+                status = await client.InitAsync(account);
             }
             else
             {

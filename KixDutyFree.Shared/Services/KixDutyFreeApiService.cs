@@ -1,4 +1,5 @@
-﻿using KixDutyFree.App.Manage;
+﻿using Dm;
+using KixDutyFree.App.Manage;
 using KixDutyFree.App.Models.Response;
 using KixDutyFree.Shared.Models.Response;
 using log4net.Core;
@@ -16,15 +17,8 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class KixDutyFreeApiService(ILogger<KixDutyFreeApiService> logger) : ITransientDependency
+    public class KixDutyFreeApiService(ILogger<KixDutyFreeApiService> logger,IHttpClientFactory httpClientFactory) : ITransientDependency
     {
-
-        /// <summary>
-        /// http客户端
-        /// </summary>
-        public HttpClient? _httpClient { get; set; }
-
-        private string CookieHeader { get; set; } = string.Empty;
 
 
         #region API请求
@@ -36,12 +30,8 @@ namespace KixDutyFree.Shared.Services
         /// <param name="password"></param>
         /// <param name="csrfToken"></param>
         /// <returns></returns>
-        public async Task<bool> LoginAsync(string email, string password, string csrfToken)
+        public async Task<LoginResponse?> LoginAsync(HttpClient httpClient, string email, string password, string csrfToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             var data = new Dictionary<string, string>
             {
                 ["loginEmail"] = email,
@@ -54,32 +44,27 @@ namespace KixDutyFree.Shared.Services
             };
             //using var request = new FormUrlEncodedContent(data);
             //request.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-            var res = await _httpClient.SendAsync(httpRequest);
+            var res = await httpClient.SendAsync(httpRequest);
             if (!res.IsSuccessStatusCode)
             {
                 logger.LogError("HttpAccountClient: 登录失败，状态码 {StatusCode}", res.StatusCode);
-                return false;
+                return null;
             }
-            var content =  await res.Content.ReadAsStringAsync();
+            var content = await res.Content.ReadAsStringAsync();
+            logger.LogDebug("LoginAsync.响应:{content}", content);
             var response = JsonConvert.DeserializeObject<LoginResponse>(content);
-            return response?.Success ?? false;
+            return response;
         }
 
         /// <summary>
         /// 商品数量变化
         /// </summary>
         /// <returns></returns>
-        public async Task<ProductVariationResponse?> ProductVariationAsync(string productId, int quantity, CancellationToken cancellationToken)
+        public async Task<ProductVariationResponse?> ProductVariationAsync(HttpClient httpClient, string productId, int quantity, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             ProductVariationResponse? data = null;
             HttpRequestMessage request = new(HttpMethod.Get, KixDutyFreeApi.Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
-            request.Headers.Remove("Cookie");
-            request.Headers.Add("Cookie", CookieHeader);
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogDebug("ProductVariationAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -97,12 +82,8 @@ namespace KixDutyFree.Shared.Services
         /// 添加到购物车
         /// </summary>
         /// <returns></returns>
-        public async Task<CartAddProductResponse?> CartAddProductAsync(string productId, int quantity, CancellationToken cancellationToken)
+        public async Task<CartAddProductResponse?> CartAddProductAsync(HttpClient httpClient, string productId, int quantity, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             CartAddProductResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Post, KixDutyFreeApi.Cart.AddProduct);
             // 构建表单数据
@@ -113,7 +94,7 @@ namespace KixDutyFree.Shared.Services
             };
             // 使用 FormUrlEncodedContent 设置请求内容
             request.Content = new FormUrlEncodedContent(formData);
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -130,15 +111,11 @@ namespace KixDutyFree.Shared.Services
         /// <summary>
         /// 修改购物车商品数量
         /// </summary>
-        public async Task<CartUpdateQuantityResponse?> CartUpdateQuantityAsync(string productId, int quantity, string uuid, CancellationToken cancellationToken)
+        public async Task<CartUpdateQuantityResponse?> CartUpdateQuantityAsync(HttpClient httpClient, string productId, int quantity, string uuid, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             CartUpdateQuantityResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation("CartUpdateQuantityAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -155,15 +132,11 @@ namespace KixDutyFree.Shared.Services
         /// <summary>
         /// 移除购物车商品
         /// </summary>
-        public async Task<RemoveProductLineItemResponse?> RemoveProductLineItemAsync(string productId, string uuid, CancellationToken cancellationToken)
+        public async Task<RemoveProductLineItemResponse?> RemoveProductLineItemAsync(HttpClient httpClient, string productId, string uuid, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             RemoveProductLineItemResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.RemoveProductLineItem + $"?pid={productId}&uuid={uuid}");
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation("RemoveProductLineItemAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -183,15 +156,11 @@ namespace KixDutyFree.Shared.Services
         /// <param name="date">yyyy/MM/dd</param>
         /// <param name="time">HH:mm</param>
         /// <returns></returns>
-        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(DateTime dateTime, CancellationToken cancellationToken)
+        public async Task<FlightGetInfoResponse?> FlightGetInfoAsync(HttpClient httpClient, DateTime dateTime, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             FlightGetInfoResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation("FlightGetInfoAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -219,13 +188,9 @@ namespace KixDutyFree.Shared.Services
         /// <param name="agreeProductLimits"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<FlightSaveInfoResponse?> FlightSaveInfoAsync(string csrfToken, string calendarStartDate, string departureDate, string departureTime, string airlinesNo, string flightNo, string otherflightno
+        public async Task<FlightSaveInfoResponse?> FlightSaveInfoAsync(HttpClient httpClient, string csrfToken, string calendarStartDate, string departureDate, string departureTime, string airlinesNo, string flightNo, string otherflightno
             , string connectingFlight, CancellationToken cancellationToken, string agreeProductLimits = "yes")
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             FlightSaveInfoResponse? data = null;
             // 构建表单数据
             var formData = new List<KeyValuePair<string, string>>
@@ -245,7 +210,7 @@ namespace KixDutyFree.Shared.Services
             {
                 Content = new FormUrlEncodedContent(formData)
             };
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("FlightSaveInfoAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -264,12 +229,8 @@ namespace KixDutyFree.Shared.Services
         /// 提交付款信息
         /// </summary>
         /// <returns></returns>
-        public async Task<SubmitPaymentResponse?> SubmitPaymentAsync(string email, string csrfToken, CancellationToken cancellationToken)
+        public async Task<SubmitPaymentResponse?> SubmitPaymentAsync(HttpClient httpClient, string email, string csrfToken, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             SubmitPaymentResponse? data = null;
             // 构建表单数据
             var formData = new List<KeyValuePair<string, string>>
@@ -297,7 +258,7 @@ namespace KixDutyFree.Shared.Services
             {
                 Content = new FormUrlEncodedContent(formData)
             };
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation("SubmitPaymentAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
@@ -312,15 +273,11 @@ namespace KixDutyFree.Shared.Services
         /// 下单
         /// </summary>
         /// <returns></returns>
-        public async Task<PlaceOrderResponse?> PlaceOrderAsync(CancellationToken cancellationToken)
+        public async Task<PlaceOrderResponse?> PlaceOrderAsync(HttpClient httpClient, CancellationToken cancellationToken)
         {
-            if (_httpClient == null)
-            {
-                throw new Exception("_httpClient未初始化");
-            }
             PlaceOrderResponse? data = null;
             var request = new HttpRequestMessage(HttpMethod.Post, KixDutyFreeApi.CheckoutServices.PlaceOrder);
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation("PlaceOrderAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)

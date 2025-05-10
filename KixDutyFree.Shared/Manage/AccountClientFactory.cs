@@ -1,4 +1,6 @@
 ﻿using KixDutyFree.Shared.Manage.Client;
+using KixDutyFree.Shared.Manage.Client.Interface;
+using KixDutyFree.Shared.Models.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QYQ.Base.Common.IOCExtensions;
@@ -21,12 +23,12 @@ namespace KixDutyFree.Shared.Manage
         /// <summary>
         /// 客户端
         /// </summary>
-        public ConcurrentDictionary<string, AccountClient> Clients { get; set; } = new();
+        public ConcurrentDictionary<string, IAccountClient> Clients { get; set; } = new();
 
         /// <summary>
         /// 默认客户端
         /// </summary>
-        public AccountClient? DefaultClient { get; set; }
+        public IAccountClient? DefaultClient { get; set; }
 
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -35,9 +37,9 @@ namespace KixDutyFree.Shared.Manage
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        public  AccountClient? GetClient(string account)
+        public IAccountClient? GetClient(string account)
         {
-            Clients.TryGetValue(account, out AccountClient? client);
+            Clients.TryGetValue(account, out IAccountClient? client);
             return client;
         }
 
@@ -45,7 +47,7 @@ namespace KixDutyFree.Shared.Manage
         /// 获取默认客户端
         /// </summary>
         /// <returns></returns>
-        public async Task<AccountClient> GetDefaultClientAsync()
+        public async Task<IAccountClient> GetDefaultClientAsync(ClientType clientType = ClientType.Http)
         {
             logger.LogInformation("GetDefaultClientAsync.获取默认客户端");
             if (DefaultClient == null)
@@ -55,7 +57,18 @@ namespace KixDutyFree.Shared.Manage
                 {
                     if (DefaultClient == null)
                     {
-                        var accountClient = serviceProvider.GetService<AccountClient>()!;
+                        IAccountClient accountClient;
+                        switch (clientType)
+                        {
+                            case ClientType.Selenium:
+                                accountClient = serviceProvider.GetRequiredService<AccountClient>();
+                                break;
+
+                            default:
+                                accountClient = serviceProvider.GetRequiredService<HttpAccountClient>();
+                                break;
+                        }
+                       
                         await accountClient.InitAsync(null); // 确保 InitAsync 能处理 null 参数
                         DefaultClient = accountClient;
                         logger.LogInformation("GetDefaultClientAsync.默认客户端初始化完成");

@@ -2,6 +2,7 @@
 @using KixDutyFree.App.Models
 @using KixDutyFree.Shared.Models
 @using KixDutyFree.Shared.Models.Entity
+@using KixDutyFree.Shared.Models.Enum
 @using KixDutyFree.Shared.Services
 @using Mapster
 @inject AccountService accountService;
@@ -187,7 +188,7 @@
         }
         else
         {
-            await accountService.AddAccountAsync(_editedItem);
+            await accountService.AddAccountAsync(_editedItem, ClientType.Http);
         }
         SaveLoading = false;
         Close();

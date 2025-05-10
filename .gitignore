@@ -5,3 +5,4 @@ logs
 /KixDutyFreeMud.App/kix_app_database.db
 PublishProfiles
 Output
+/KixDutyFree.App/KixDutyFree.App.csproj.user

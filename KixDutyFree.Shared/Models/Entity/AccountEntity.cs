@@ -28,7 +28,7 @@ namespace KixDutyFree.Shared.Models.Entity
         /// <summary>
         /// 航班时间
         /// </summary>
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now.Date.AddDays(7).AddHours(10);
 
         /// <summary>
         /// 航空公司名称

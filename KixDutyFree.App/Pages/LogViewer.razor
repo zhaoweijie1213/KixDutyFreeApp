@@ -9,9 +9,10 @@
 
 <MContainer Fluid>
     <MDataTable Id="logViewTable" Stripe Loading="@Loading" Items="logEvents" Headers="_headers" Page="@_page"
-    ItemsPerPage="@_itemsPerPage" 
-    OnOptionsUpdate="@HandleOnOptionsUpdate"
-    ServerItemsLength="@_total" Class="elevation-1">
+        ItemsPerPage="@_itemsPerPage"
+        HideDefaultFooter
+        OnOptionsUpdate="@HandleOnOptionsUpdate"
+        ServerItemsLength="@_total" Class="elevation-1">
         <TopContent>
             <MToolbar>
                 <MToolbarTitle>日志列表</MToolbarTitle>

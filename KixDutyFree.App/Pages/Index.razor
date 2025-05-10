@@ -83,10 +83,10 @@ MaxWidth="700">
             <MContainer>
                 <MRow>
                     <MCol Cols="12">
-                        <MTextField @bind-Value="_editedItem.Address" Label="地址"></MTextField>
+                        <MTextField @bind-Value="_editedItem.Address" Label="地址" Hint="商品的地址"></MTextField>
                     </MCol>
                     <MCol Cols="12">
-                        <MTextField @bind-Value="_editedItem.Quantity" Label="数量"></MTextField>
+                        <MTextField @bind-Value="_editedItem.Quantity" Label="数量" Hint="填0时,会以能够购买的最大数量下单"></MTextField>
                     </MCol>
                 </MRow>
             </MContainer>

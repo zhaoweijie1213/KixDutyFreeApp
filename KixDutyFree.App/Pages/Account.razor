@@ -8,13 +8,19 @@
 @inject AccountService accountService;
 @implements IDisposable
 
+<style>
+    .account-table{
+        height: 100vh;
+    }
+</style>
+
 <PageTitle>账号列表</PageTitle>
 <MContainer Fluid>
-    <MDataTable Stripe Headers="_headers"
+<MDataTable Stripe Headers="_headers" HideDefaultFooter
     Loading="@Loading"
     Items="Accounts"
     ItemsPerPage="50"
-    Class="elevation-1">
+                Class="elevation-1 fill-height">
         <TopContent>
             <MToolbar>
                 <MToolbarTitle>账号管理</MToolbarTitle>

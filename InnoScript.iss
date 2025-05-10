@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KixDutyFree App"
-#define MyAppVersion "1.3.2.2"
+#define MyAppVersion "2.0.0.0"
 #define MyAppPublisher "ZhaoWeiJie"
 #define MyAppExeName "KixDutyFree.App.exe"
 #define MyAppAssocName MyAppName + " File"

@@ -1,5 +1,6 @@
 ﻿using KixDutyFree.App.Quartz;
 using KixDutyFree.Shared.Manage;
+using KixDutyFree.Shared.Models.Enum;
 using log4net.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace KixDutyFree.Shared.Services
             //错误检查
             await quartzManagement.StartErrorCheckAsync();
             //加载客户端
-            await manager.InitClientAsync();
+            await manager.InitClientAsync(ClientType.Http);
 
         }
 

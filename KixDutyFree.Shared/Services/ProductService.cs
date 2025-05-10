@@ -133,11 +133,15 @@ namespace KixDutyFree.Shared.Services
                         .WithIdentity($"monitor_job_{info.Id}", "monitor")
                         .Build();
 
+                    //随机抖动
+                    var baseInterval = 5;
+                    var jitter = new Random().Next(0, 3); // 0,1,2 秒
+
                     var trigger = TriggerBuilder.Create()
                         .WithIdentity($"monitor_trigger_{info.Id}", "monitor")
                         .StartNow()
                         .WithSimpleSchedule(x => x
-                        .WithIntervalInSeconds(10)
+                        .WithIntervalInSeconds(baseInterval + jitter)
                         .RepeatForever())
                         .Build();
                     await scheduler.ScheduleJob(job, trigger);

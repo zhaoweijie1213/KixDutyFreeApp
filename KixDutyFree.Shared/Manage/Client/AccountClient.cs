@@ -6,6 +6,7 @@ using KixDutyFree.App.Models.Response;
 using KixDutyFree.App.Repository;
 using KixDutyFree.Shared.EventHandler;
 using KixDutyFree.Shared.Manage;
+using KixDutyFree.Shared.Manage.Client.Interface;
 using KixDutyFree.Shared.Models;
 using KixDutyFree.Shared.Models.Entity;
 using KixDutyFree.Shared.Models.Response;
@@ -38,7 +39,7 @@ namespace KixDutyFree.Shared.Manage.Client
     /// </summary>
     public class AccountClient(ILogger<AccountClient> logger, SeleniumService seleniumService, IConfiguration configuration, IHttpClientFactory httpClientFactory, IMemoryCache memoryCache 
         , ProductInfoRepository productInfoRepository, ExcelProcess excelProcess, CacheManage cacheManage, ProductService productService, IMediator  mediator, OrderService orderService
-        , ProductMonitorService productMonitorService, ClientMonitor clientMonitor) : ITransientDependency
+        , ProductMonitorService productMonitorService, ClientMonitor clientMonitor) : IAccountClient, ITransientDependency
     {
         public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -68,6 +69,11 @@ namespace KixDutyFree.Shared.Manage.Client
         /// 是否成功登录
         /// </summary>
         public bool IsLoginSuccess { get; set; } = false;
+
+        /// <summary>
+        /// 是否正在下单
+        /// </summary>
+        public bool IsPlaceOrdering { get; set; } = false;
 
         /// <summary>
         /// 正在加载

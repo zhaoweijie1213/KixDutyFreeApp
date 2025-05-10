@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace KixDutyFree.Shared.Models.Enum
 {
     /// <summary>
-    /// 客户端状态
+    /// 客户端类型
     /// </summary>
-    public enum ClientStatus
+    public enum ClientType
     {
+        Selenium,
 
+        Http
     }
 }

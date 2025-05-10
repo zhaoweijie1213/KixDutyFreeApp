@@ -31,7 +31,7 @@ namespace KixDutyFree.Shared.Manage.Client
     /// 使用 IHttpClientFactory + HtmlAgilityPack 完成登录及后续操作。
     /// 与原 Selenium 驱动的 AccountClient 并存。
     /// </summary>
-    public class HttpAccountClient(ILogger<HttpAccountClient> logger, KixDutyFreeApiService kixDutyFreeApiService, ProductService productService
+    public class HttpAccountClient(ILogger<HttpAccountClient> logger,IHttpClientFactory httpClientFactory, KixDutyFreeApiService kixDutyFreeApiService, ProductService productService
         , CacheManage cacheManage, ProductInfoRepository productInfoRepository, ProductMonitorService productMonitorService,IMemoryCache memoryCache, OrderService orderService
         , ExcelProcess excelProcess, IMediator mediator) 
         : IAccountClient, ITransientDependency
@@ -114,20 +114,20 @@ namespace KixDutyFree.Shared.Manage.Client
             {
                 if (_httpClient == null)
                 {
-                    //_httpClient = httpClientFactory.CreateClient(account?.Email ?? "DefaultClient");
-                    //_httpClient.BaseAddress = new Uri("https://www.kixdutyfree.jp");
-                    //_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
-                    var handler = new HttpClientHandler
-                    {
-                        CookieContainer = _cookieJar,
-                        UseCookies = true,
-                        AllowAutoRedirect = true
-                    };
-                    _httpClient = new HttpClient(handler)
-                    {
-                        BaseAddress = new Uri("https://www.kixdutyfree.jp")
-                    };
+                    _httpClient = httpClientFactory.CreateClient(account?.Email ?? "DefaultClient");
+                    _httpClient.BaseAddress = new Uri("https://www.kixdutyfree.jp");
                     _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+                    //var handler = new HttpClientHandler
+                    //{
+                    //    CookieContainer = _cookieJar,
+                    //    UseCookies = true,
+                    //    AllowAutoRedirect = true
+                    //};
+                    //_httpClient = new HttpClient(handler)
+                    //{
+                    //    BaseAddress = new Uri("https://www.kixdutyfree.jp")
+                    //};
+                    //_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
                 }
 
                 if (account != null)

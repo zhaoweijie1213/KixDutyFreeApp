@@ -50,6 +50,16 @@ namespace KixDutyFree.Shared.Services
                 logger.LogError("HttpAccountClient: 登录失败，状态码 {StatusCode}", res.StatusCode);
                 return null;
             }
+
+            //// 打印所有 Set-Cookie 头
+            //if (res.Headers.TryGetValues("Set-Cookie", out var scs))
+            //{
+            //    foreach (var sc in scs)
+            //    {
+            //        logger.LogInformation("登录时 Set-Cookie: {Cookie}", sc);
+            //    }
+            //}
+
             var content = await res.Content.ReadAsStringAsync();
             logger.LogDebug("LoginAsync.响应:{content}", content);
             var response = JsonConvert.DeserializeObject<LoginResponse>(content);
@@ -66,7 +76,7 @@ namespace KixDutyFree.Shared.Services
             HttpRequestMessage request = new(HttpMethod.Get, KixDutyFreeApi.Cart.ProductVariation + $"?pid={productId}&quantity={quantity}");
             var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogDebug("ProductVariationAsync.响应:{content}", content);
+            //logger.LogDebug("ProductVariationAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<ProductVariationResponse>(content, new JsonSerializerSettings
@@ -96,7 +106,7 @@ namespace KixDutyFree.Shared.Services
             request.Content = new FormUrlEncodedContent(formData);
             var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogInformation("CartAddProductAsync.响应:{content}", content);
+            //logger.LogInformation("CartAddProductAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<CartAddProductResponse>(content, new JsonSerializerSettings
@@ -117,7 +127,7 @@ namespace KixDutyFree.Shared.Services
             var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.UpdateQuantity + $"?pid={productId}&quantity={quantity}&uuid={uuid}");
             var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogInformation("CartUpdateQuantityAsync.响应:{content}", content);
+            //logger.LogInformation("CartUpdateQuantityAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<CartUpdateQuantityResponse>(content, new JsonSerializerSettings
@@ -138,7 +148,7 @@ namespace KixDutyFree.Shared.Services
             var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.RemoveProductLineItem + $"?pid={productId}&uuid={uuid}");
             var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogInformation("RemoveProductLineItemAsync.响应:{content}", content);
+            //logger.LogInformation("RemoveProductLineItemAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<RemoveProductLineItemResponse>(content, new JsonSerializerSettings
@@ -162,7 +172,7 @@ namespace KixDutyFree.Shared.Services
             var request = new HttpRequestMessage(HttpMethod.Get, KixDutyFreeApi.Cart.FlightGetInfo + $"?date={dateTime:yyyy/MM/dd}&time={dateTime:HH:mm}");
             var response = await httpClient.SendAsync(request, cancellationToken);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogInformation("FlightGetInfoAsync.响应:{content}", content);
+            //logger.LogInformation("FlightGetInfoAsync.响应:{content}", content);
             if (response.IsSuccessStatusCode)
             {
                 data = JsonConvert.DeserializeObject<FlightGetInfoResponse>(content, new JsonSerializerSettings

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using KixDutyFree.App.Manage;
@@ -30,7 +31,7 @@ namespace KixDutyFree.Shared.Manage.Client
     /// 使用 IHttpClientFactory + HtmlAgilityPack 完成登录及后续操作。
     /// 与原 Selenium 驱动的 AccountClient 并存。
     /// </summary>
-    public class HttpAccountClient(IHttpClientFactory httpClientFactory, ILogger<HttpAccountClient> logger, KixDutyFreeApiService kixDutyFreeApiService, ProductService productService
+    public class HttpAccountClient(ILogger<HttpAccountClient> logger,IHttpClientFactory httpClientFactory, KixDutyFreeApiService kixDutyFreeApiService, ProductService productService
         , CacheManage cacheManage, ProductInfoRepository productInfoRepository, ProductMonitorService productMonitorService,IMemoryCache memoryCache, OrderService orderService
         , ExcelProcess excelProcess, IMediator mediator) 
         : IAccountClient, ITransientDependency
@@ -50,7 +51,12 @@ namespace KixDutyFree.Shared.Manage.Client
         /// <summary>
         /// 是否正在下单
         /// </summary>
-        public bool IsPlaceOrdering { get; set; } = false;
+        public bool IsPlaceOrdering { get; set; }
+
+        /// <summary>
+        /// 下单锁，保证同一时刻只有一个 PlaceOrderAsync 在跑
+        /// </summary>
+        private readonly SemaphoreSlim _placeOrderLock = new(1, 1);
 
         /// <summary>
         /// 账号信息
@@ -62,9 +68,43 @@ namespace KixDutyFree.Shared.Manage.Client
         /// </summary>
         public int ErrorCount { get; set; }
 
-        public Task<bool> CheckLoginStatusAsync()
+        /// <summary>
+        /// 检测登录状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> CheckLoginStatusAsync()
         {
-            throw new NotImplementedException();
+            // 1. 获取账户页 HTML
+            var html = await _httpClient.GetStringAsync("/cn/account");
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            // 2. 找到 menu-container-loggedin 区块
+            var menuDiv = doc.DocumentNode
+                .SelectSingleNode("//div[contains(@class,'menu-container-loggedin')]");
+
+            // 3. 检测是否含有“登录/注册”
+            bool isLoggedOut = menuDiv != null
+                && menuDiv.InnerText.Contains("登录/注册", StringComparison.Ordinal);
+
+            if (!isLoggedOut)
+            {
+                // 没看到“登录/注册”，说明已经登录了
+                return true;
+            }
+
+            IsLoginSuccess = false;
+
+            // 4. 否则重新登录一次
+            logger.LogInformation("检测到未登录，尝试重新登录……");
+
+            await LoginAsync(Account);  // 复用 LoginAsync 登录
+
+            if (!IsLoginSuccess)
+            {
+                logger.LogError("重新登录失败！");
+            }
+            return IsLoginSuccess;
         }
 
         /// <inheritdoc />
@@ -92,40 +132,7 @@ namespace KixDutyFree.Shared.Manage.Client
 
                 if (account != null)
                 {
-                    // 1. 获取登录页面并解析 HTML
-                    var html = await _httpClient.GetStringAsync("/cn/login/");
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(html);
-                    // 精确定位登录表单内的 csrf_token
-                    var tokenNode = doc.DocumentNode.SelectSingleNode("//form[@name='login-form']//input[@name='csrf_token']");
-                    var csrf = tokenNode?.GetAttributeValue("value", string.Empty);
-                    if (string.IsNullOrEmpty(csrf))
-                    {
-                        logger.LogError("HttpAccountClient: 无法获取登录表单的 csrf_token");
-                        return false;
-                    }
-
-                    var res = await kixDutyFreeApiService.LoginAsync(_httpClient, account.Email, account.Password, csrf);
-                    if (res?.Success == true)
-                    {
-                        html = await _httpClient.GetStringAsync("/cn/account");
-                        // 一定要重新加载新 HTML
-                        var accountDoc = new HtmlDocument();
-                        accountDoc.LoadHtml(html);
-                        var nameElement = accountDoc.DocumentNode.SelectSingleNode("//span[@class='name']");
-                        if (nameElement != null)
-                        {
-                            logger.LogInformation("{Email}已登录: {name}", account.Email, nameElement.InnerText.Trim());
-                        }
-                        else
-                        {
-                            logger.LogWarning("InitAsync: 登录后未找到用户名");
-                        }
-                        IsLoginSuccess = true;
-                        Account = account;
-                        //发送登录成功事件
-                        await mediator.Publish(new UserLoginStatusChangedNotification(account.Email, IsLoginSuccess));
-                    }
+                    await LoginAsync(account);
                 }
                 else
                 {
@@ -135,6 +142,50 @@ namespace KixDutyFree.Shared.Manage.Client
             catch (Exception ex)
             {
                 logger.LogError(ex, "HttpAccountClient.InitAsync 异常");
+            }
+
+            return IsLoginSuccess;
+        }
+
+        /// <summary>
+        /// 登录
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> LoginAsync(AccountInfo account)
+        {
+            // 1. 获取登录页面并解析 HTML
+            var html = await _httpClient.GetStringAsync("/cn/login/");
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            // 精确定位登录表单内的 csrf_token
+            var tokenNode = doc.DocumentNode.SelectSingleNode("//form[@name='login-form']//input[@name='csrf_token']");
+            var csrf = tokenNode?.GetAttributeValue("value", string.Empty);
+            if (string.IsNullOrEmpty(csrf))
+            {
+                logger.LogError("HttpAccountClient: 无法获取登录表单的 csrf_token");
+                return false;
+            }
+
+            var res = await kixDutyFreeApiService.LoginAsync(_httpClient, account.Email, account.Password, csrf);
+            if (res?.Success == true)
+            {
+                html = await _httpClient.GetStringAsync("/cn/account");
+                // 一定要重新加载新 HTML
+                var accountDoc = new HtmlDocument();
+                accountDoc.LoadHtml(html);
+                var nameElement = accountDoc.DocumentNode.SelectSingleNode("//span[@class='name']");
+                if (nameElement != null)
+                {
+                    logger.LogInformation("{Email}已登录: {name}", account.Email, nameElement.InnerText.Trim());
+                }
+                else
+                {
+                    logger.LogWarning("InitAsync: 登录后未找到用户名");
+                }
+                IsLoginSuccess = true;
+                Account = account;
+                //发送登录成功事件
+                await mediator.Publish(new UserLoginStatusChangedNotification(account.Email, IsLoginSuccess));
             }
 
             return IsLoginSuccess;
@@ -450,6 +501,11 @@ namespace KixDutyFree.Shared.Manage.Client
         {
             try
             {
+                // 等待锁：如果已有线程在下单，就在这里排队
+                await _placeOrderLock.WaitAsync(cancellationToken);
+                IsPlaceOrdering = true;
+
+
                 if (cancellationToken.IsCancellationRequested) return;
                 var date = Account.Date;
                 //获取航班信息
@@ -563,7 +619,7 @@ namespace KixDutyFree.Shared.Manage.Client
                                 CreateTime = productMonitor.UpdateTime
                             });
                         }
-                        else if (placeOrder?.Error == true && placeOrder.ErrorMessage.Contains("您购物车中的一件或多件商品超过了可购买范围，请减少购买数量或移除该商品"))
+                        else if (placeOrder?.Error == true && placeOrder.ErrorMessage?.Contains("您购物车中的一件或多件商品超过了可购买范围，请减少购买数量或移除该商品") == true)
                         {
                             logger.LogWarning("PlaceOrderAsync.下单失败:{Message}", placeOrder.ErrorMessage);
                             //移除不可用的商品
@@ -590,6 +646,10 @@ namespace KixDutyFree.Shared.Manage.Client
                 logger.LogError("PlaceOrderAsync.错误次数: {ErrorCount}", ErrorCount);
                 // 记录异常日志
                 logger.BaseErrorLog("PlaceOrderAsync", ex);
+            }
+            finally
+            {
+                _placeOrderLock.Release();
             }
         }
 

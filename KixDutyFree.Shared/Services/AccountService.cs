@@ -150,7 +150,7 @@ namespace KixDutyFree.Shared.Services
 
             var trigger = TriggerBuilder.Create()
                 .WithIdentity($"login_check_trigger_{email}", "login_check")
-                .StartAt(DateTime.Now.AddMinutes(5))
+                .StartAt(DateTime.Now.AddMinutes(1))
                 .WithSimpleSchedule(x => x
                 .WithIntervalInMinutes(5)
                 .RepeatForever())

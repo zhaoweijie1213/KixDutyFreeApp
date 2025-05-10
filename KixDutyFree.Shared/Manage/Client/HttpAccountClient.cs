@@ -89,20 +89,21 @@ namespace KixDutyFree.Shared.Manage.Client
 
             if (!isLoggedOut)
             {
-                // 没看到“登录/注册”，说明已经登录了
+                // 没看到“登录/注册”，
+                logger.LogInformation("CheckLoginStatusAsync:账号已登录");
                 return true;
             }
 
             IsLoginSuccess = false;
 
             // 4. 否则重新登录一次
-            logger.LogInformation("检测到未登录，尝试重新登录……");
+            logger.LogInformation("CheckLoginStatusAsync:登录过期，尝试重新登录……");
 
             await LoginAsync(Account);  // 复用 LoginAsync 登录
 
             if (!IsLoginSuccess)
             {
-                logger.LogError("重新登录失败！");
+                logger.LogError("CheckLoginStatusAsync:重新登录失败！");
             }
             return IsLoginSuccess;
         }

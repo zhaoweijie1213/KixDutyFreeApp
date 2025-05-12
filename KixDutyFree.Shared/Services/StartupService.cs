@@ -4,6 +4,7 @@ using KixDutyFree.Shared.Models.Enum;
 using log4net.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Quartz;
 using QYQ.Base.Common.Extension;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace KixDutyFree.Shared.Services
 {
-    public class StartupService(ILogger<StartupService> logger, Manager manager, QuartzManagement quartzManagement) : IHostedService
+    public class StartupService(ILogger<StartupService> logger, Manager manager, QuartzManagement quartzManagement, ISchedulerFactory schedulerFactory) : IHostedService
     {
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -31,7 +32,11 @@ namespace KixDutyFree.Shared.Services
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await manager.StopAsync();
+            //关闭任务调度器
+            //var scheduler = await schedulerFactory.GetScheduler();
+            //await scheduler.Shutdown();
+            await manager.StopAsync(ClientType.Http);
+
         }
 
         public void OpenBrowser(string url)

@@ -33,7 +33,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
 
                 productService.UpdateMonitorStatus(id, true);
 
-                var defaultClient = await accountClientFactory.GetDefaultClientAsync();
+                var defaultClient = await accountClientFactory.GetDefaultClientAsync(id);
                 //var product = await cacheManage.GetProductInfoAsync(id);
                 var product = await productInfoRepository.FindAsync(id);
                 if (product == null) return;

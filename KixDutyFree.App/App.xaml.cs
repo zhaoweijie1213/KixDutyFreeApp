@@ -82,6 +82,7 @@ namespace KixDutyFree.App
             {
                 // when shutting down we want jobs to complete gracefully
                 options.WaitForJobsToComplete = true;
+                options.AwaitApplicationStarted = true;
             });
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

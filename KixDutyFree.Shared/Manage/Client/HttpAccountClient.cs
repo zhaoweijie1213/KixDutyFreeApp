@@ -506,7 +506,6 @@ namespace KixDutyFree.Shared.Manage.Client
                 await _placeOrderLock.WaitAsync(cancellationToken);
                 IsPlaceOrdering = true;
 
-
                 if (cancellationToken.IsCancellationRequested) return;
                 var date = Account.Date;
                 //获取航班信息

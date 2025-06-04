@@ -76,42 +76,49 @@ namespace KixDutyFree.Shared.Manage
         /// 停止
         /// </summary>
         /// <returns></returns>
-        public async Task StopAsync()
+        public async Task StopAsync(ClientType clientType)
         {
             List<Task> tasks = [];
             foreach (var client in accountClientFactory.Clients.Values)
             {
                 tasks.Add(client.QuitAsync());
             }
-            if (accountClientFactory.DefaultClient != null)
+            foreach (var client in accountClientFactory.ProductClients.Values)
             {
-                tasks.Add(accountClientFactory.DefaultClient.QuitAsync());
+                tasks.Add(client.QuitAsync());
             }
+            //if (accountClientFactory.DefaultClient != null)
+            //{
+            //    tasks.Add(accountClientFactory.DefaultClient.QuitAsync());
+            //}
             await Task.WhenAll(tasks);
 
-            var drivers = Process.GetProcessesByName("chromedriver");
-            foreach (var p in drivers)
+            if (clientType == ClientType.Selenium)
             {
-                try 
-                { 
-                    p.Kill();
-                }
-                catch
+                var drivers = Process.GetProcessesByName("chromedriver");
+                foreach (var p in drivers)
                 {
-                    /* ignore */
+                    try
+                    {
+                        p.Kill();
+                    }
+                    catch
+                    {
+                        /* ignore */
+                    }
                 }
+                //旧临时文件夹
+                var tempRoot = Path.Combine(Path.GetTempPath(), "selenium");
+
+                KillChromeWithTempRoot(tempRoot);
+                await SeleniumTempCleanupAsync(tempRoot);
+
+                //新临时文件夹
+                var newTempRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "selenium");
+
+                KillChromeWithTempRoot(newTempRoot);
+                await SeleniumTempCleanupAsync(newTempRoot);
             }
-            //旧临时文件夹
-            var tempRoot = Path.Combine(Path.GetTempPath(), "selenium");
-
-            KillChromeWithTempRoot(tempRoot);
-            await SeleniumTempCleanupAsync(tempRoot);
-
-            //新临时文件夹
-            var newTempRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "selenium");
-
-            KillChromeWithTempRoot(newTempRoot);
-            await SeleniumTempCleanupAsync(newTempRoot);
         }
 
         /// <summary>

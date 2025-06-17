@@ -31,7 +31,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
                     bool status = await client.CheckLoginStatusAsync();
                     if (!status)
                     {
-                        await client.RelodAsync();
+                        await client.ReloadAsync();
                     }
                     await mediator.Publish(new UserLoginStatusChangedNotification(email, status));
                 }

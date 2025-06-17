@@ -27,7 +27,7 @@ namespace KixDutyFree.Shared.Quartz.Jobs
                 {
                     if (client.Value.ErrorCount >= 2)
                     {
-                        await client.Value.RelodAsync();
+                        await client.Value.ReloadAsync();
 
                         clientMonitor.AddError();
                     }

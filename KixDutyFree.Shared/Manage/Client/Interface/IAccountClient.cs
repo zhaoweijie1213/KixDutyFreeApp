@@ -51,7 +51,7 @@ namespace KixDutyFree.Shared.Manage.Client.Interface
         /// 重置客户端
         /// </summary>
         /// <returns></returns>
-        public Task<bool> RelodAsync();
+        public Task<bool> ReloadAsync();
 
         /// <summary>
         /// 检查登录状态

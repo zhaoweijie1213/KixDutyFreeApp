@@ -251,9 +251,9 @@ namespace KixDutyFree.Shared.Manage.Client
         /// 重置客户端
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> RelodAsync()
+        public async Task<bool> ReloadAsync()
         {
-            logger.LogInformation("RelodAsync.重新初始化客户端: {Email}", Account.Email);
+            logger.LogInformation("ReloadAsync.重新初始化客户端: {Email}", Account.Email);
             await QuitAsync();
             return await InitAsync(Account);
         }
@@ -393,7 +393,7 @@ namespace KixDutyFree.Shared.Manage.Client
             catch (WebDriverTimeoutException ex)
             {
                 logger.BaseErrorLog("FullCheckProductAvailabilityAsync.WebDriverTimeoutException,请检查网络是否正常", ex);
-                await RelodAsync();
+                await ReloadAsync();
             }
             catch (Exception ex)
             {

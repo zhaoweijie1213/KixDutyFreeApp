@@ -41,10 +41,12 @@ namespace KixDutyFree.Shared.Services
             ChromeDriver? driver = null;
             bool isLogin = false;
             bool status = false;
+            int attempts = 0;
+            const int MaxRetries = 3;
 
             bool headless = configuration.GetSection("Headless").Get<bool>();
 
-            while (!status)
+            while (!status && attempts < MaxRetries)
             {
                 try
                 {
@@ -116,6 +118,11 @@ namespace KixDutyFree.Shared.Services
                 {
                     _bootPool.Release();                  // ← 释放并发池名额
                 }
+                attempts++;
+            }
+            if (!status)
+            {
+                throw new InvalidOperationException("Failed to create browser instance after multiple attempts.");
             }
             return new(driver!, isLogin);
         }

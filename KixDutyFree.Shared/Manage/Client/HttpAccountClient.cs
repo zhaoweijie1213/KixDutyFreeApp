@@ -207,7 +207,7 @@ namespace KixDutyFree.Shared.Manage.Client
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<bool> RelodAsync()
+        public Task<bool> ReloadAsync()
         {
             return Task.FromResult(true);
         }

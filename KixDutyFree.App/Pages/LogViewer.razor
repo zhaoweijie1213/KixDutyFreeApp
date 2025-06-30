@@ -1,4 +1,4 @@
-﻿@page "/logs"
+@page "/logs"
 @using KixDutyFree.App.Service
 @using Serilog.Events
 @inject LogStore LogStore
@@ -8,127 +8,117 @@
 <PageTitle>日志</PageTitle>
 
 <MContainer Fluid>
-    <MDataTable Id="logViewTable" Stripe Loading="@Loading" Items="logEvents" Headers="_headers" Page="@_page"
-        ItemsPerPage="@_itemsPerPage"
-        HideDefaultFooter
-        OnOptionsUpdate="@HandleOnOptionsUpdate"
-        ServerItemsLength="@_total" Class="elevation-1">
-        <TopContent>
-            <MToolbar>
-                <MToolbarTitle>日志列表</MToolbarTitle>
-            </MToolbar>
-        </TopContent>
-        <ItemColContent>
-            @if (context.Header.Value == "Level")
-            {
-                switch (context.Item.Level)
+    <MCard>
+        <MCardTitle>日志</MCardTitle>
+        <MCardText>
+            <div class="log-console" @ref="scrollContainer">
+                @foreach (var item in logEvents.OrderBy(e => e.Timestamp))
                 {
-                    case LogEventLevel.Information:
-                        <MChip Class="ma-2" Color="success" Label>
-                            @context.Item.Level
-                        </MChip>
-                        break;
-                    case LogEventLevel.Warning:
-                        <MChip Class="ma-2"
-                        Color="warning"
-                        Label>
-                            @context.Item.Level
-                        </MChip>
-                        break;
-                    case LogEventLevel.Error:
-                        <MChip Class="ma-2"
-                        Color="error"
-                        Label>
-                            @context.Item.Level
-                        </MChip>
-                        break;
-                    default:
-                        <MChip Class="ma-2"
-                        Label>
-                            @context.Item.Level
-                        </MChip>
-                        break;
+                    <div class="@GetLevelClass(item.Level)">
+                        [@item.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")] @item.Level - @item.RenderMessage()
+                        @if (item.Exception != null)
+                        {
+                            <br />
+                            @item.Exception
+                        }
+                    </div>
                 }
-            }
-            else
-            {
-                @context.Value
-            }
-        </ItemColContent>
-    </MDataTable>
+            </div>
+        </MCardText>
+    </MCard>
 </MContainer>
+
+<style>
+    .log-console {
+        height: 75vh;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 0.875rem;
+        background-color: #272822;
+        color: #e0e0e0;
+        padding: 10px;
+    }
+
+    .log-info {
+        color: #4caf50;
+    }
+
+    .log-warning {
+        color: #ff9800;
+    }
+
+    .log-error {
+        color: #f44336;
+    }
+</style>
+
 @code {
+    /// <summary>
+    /// 日志事件集合
+    /// </summary>
     private List<LogEvent> logEvents = new();
 
+    /// <summary>
+    /// 日志容器引用
+    /// </summary>
     private ElementReference scrollContainer;
 
+    /// <summary>
+    /// 定时器用于定时刷新日志
+    /// </summary>
     private System.Threading.Timer? _timer;
 
-    private int _total;
+    /// <summary>
+    /// 刷新时间间隔
+    /// </summary>
+    private readonly TimeSpan _refreshInterval = TimeSpan.FromSeconds(2);
 
-    private int _itemsPerPage = 50;
-
-    private int _page = 1;
-
-    private DataOptions _options = new(1, 50);
-
-    private bool Loading = false;
-
-    private string height = "100%";
-
-    private readonly TimeSpan _refreshInterval = TimeSpan.FromSeconds(2); // 设置刷新间隔
-
-    private List<DataTableHeader<LogEvent>> _headers = new List<DataTableHeader<LogEvent>>
-        {
-          new (){ Text= "时间",Align= DataTableHeaderAlign.Center, Value= "Timestamp",Width = 220, CellRender = dessert => dessert.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff"),Fixed = DataTableFixed.Left},
-          new (){ Text= "级别", Align= DataTableHeaderAlign.Center, Value= "Level",Width = 220,Fixed = DataTableFixed.Left},
-          new (){ Text= "消息",Align= DataTableHeaderAlign.Center, Value= "Message",CellRender =  dessert => dessert.RenderMessage()},
-          new (){
-              Text= "异常",
-              Align= DataTableHeaderAlign.Center,
-              Value= "Exception",
-              CellRender = dessert => dessert.Exception?.ToString() ?? "-"}
-        };
-
+    /// <summary>
+    /// 初始化设置定时器
+    /// </summary>
     protected override void OnInitialized()
     {
-        // // 初始加载日志
-        // LoadLogEvents();
-        // 设置定时器
         _timer = new System.Threading.Timer(_ =>
         {
-            LoadLogEvents(_page, _itemsPerPage);
-
+            LoadLogEvents();
         }, null, TimeSpan.Zero, _refreshInterval);
     }
 
-    private void HandleOnOptionsUpdate(DataOptions options)
+    /// <summary>
+    /// 加载日志并滚动到底部
+    /// </summary>
+    private void LoadLogEvents()
     {
-        _options = options;
-        _page = options.Page;
-        _itemsPerPage = _options.ItemsPerPage;
-        LoadLogEvents(_options.Page, _options.ItemsPerPage);
+        var data = LogStore.GetLogEvents(1, 500);
+        logEvents = data.List.OrderBy(e => e.Timestamp).ToList();
+        InvokeAsync(async () =>
+        {
+            StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("scrollToBottom", scrollContainer);
+        });
     }
 
-
-    private void LoadLogEvents(int pageNum, int pageSize)
+    /// <summary>
+    /// 获取日志级别样式
+    /// </summary>
+    /// <param name="level">日志级别</param>
+    /// <returns>样式名称</returns>
+    private string GetLevelClass(LogEventLevel level)
     {
-        Loading = true;
-        // 获取并排序日志事件
-        var data = LogStore.GetLogEvents(pageNum, pageSize);
-        logEvents = data.List;
-        _total = data.Total;
-        // 更新 UI 并滚动到最底部
-        InvokeAsync(() =>
-       {
-           StateHasChanged();
-       });
-        Loading = false;
+        return level switch
+        {
+            LogEventLevel.Information => "log-info",
+            LogEventLevel.Warning => "log-warning",
+            LogEventLevel.Error => "log-error",
+            _ => string.Empty
+        };
     }
 
+    /// <summary>
+    /// 释放定时器
+    /// </summary>
     public void Dispose()
     {
-        // 停止并释放定时器
         _timer?.Dispose();
     }
 }

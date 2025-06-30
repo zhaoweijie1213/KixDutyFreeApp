@@ -7,6 +7,7 @@
 - HandyControl实现windows托盘图标
 - HtmlAgilityPack + HttpClient 解析网页元素
 - 优化日志查看页面，采用控制台风格展示日志
+- 优化日志颜色样式，使用 Segoe UI Variable 字体
 
-更新时间: 2025-06-30 11:30:20
+更新时间: 2025-06-30 11:37:33
 

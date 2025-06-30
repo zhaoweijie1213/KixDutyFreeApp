@@ -104,11 +104,10 @@ Color="@SnackbarColor" Timeout="2000" Centered Action="Close" Outlined>
         }
     }
 
-    private async void HandleOnCancel()
+    private async Task HandleOnCancel()
     {
         Show = false;
         exception = null;
-
 
         // 通知父组件
         await ShowChanged.InvokeAsync(false);

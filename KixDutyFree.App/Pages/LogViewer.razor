@@ -14,8 +14,8 @@
             <div class="log-console" @ref="scrollContainer">
                 @foreach (var item in logEvents.OrderBy(e => e.Timestamp))
                 {
-                    <div>
-                        [@item.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")] <MChip Color="@GetLevelColor(item.Level)" Dense Class="mr-1">@item.Level</MChip> - @item.RenderMessage()
+                    <div class="mb-2">
+                        [@item.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")] <MChip Color="@GetLevelColor(item.Level)" Dense Class="mr-1" Label>@item.Level</MChip> - @item.RenderMessage()
                         @if (item.Exception != null)
                         {
                             <br />
@@ -96,7 +96,7 @@
     {
         return level switch
         {
-            LogEventLevel.Information => "info",
+            LogEventLevel.Information => "success",
             LogEventLevel.Warning => "warning",
             LogEventLevel.Error => "error",
             _ => "default"

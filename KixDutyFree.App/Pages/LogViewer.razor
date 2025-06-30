@@ -14,8 +14,8 @@
             <div class="log-console" @ref="scrollContainer">
                 @foreach (var item in logEvents.OrderBy(e => e.Timestamp))
                 {
-                    <div class="@GetLevelClass(item.Level)">
-                        [@item.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")] @item.Level - @item.RenderMessage()
+                    <div>
+                        [@item.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss:fff")] <MChip Color="@GetLevelColor(item.Level)" Dense Class="mr-1">@item.Level</MChip> - @item.RenderMessage()
                         @if (item.Exception != null)
                         {
                             <br />
@@ -39,17 +39,6 @@
         padding: 10px;
     }
 
-    .log-info {
-        color: #dcdcdc;
-    }
-
-    .log-warning {
-        color: #ffcc00;
-    }
-
-    .log-error {
-        color: #ff5555;
-    }
 </style>
 
 @code {
@@ -99,18 +88,18 @@
     }
 
     /// <summary>
-    /// 获取日志级别样式
+    /// 获取日志级别对应的颜色
     /// </summary>
     /// <param name="level">日志级别</param>
-    /// <returns>样式名称</returns>
-    private string GetLevelClass(LogEventLevel level)
+    /// <returns>用于 MChip 的颜色名称</returns>
+    private string GetLevelColor(LogEventLevel level)
     {
         return level switch
         {
-            LogEventLevel.Information => "log-info",
-            LogEventLevel.Warning => "log-warning",
-            LogEventLevel.Error => "log-error",
-            _ => string.Empty
+            LogEventLevel.Information => "info",
+            LogEventLevel.Warning => "warning",
+            LogEventLevel.Error => "error",
+            _ => "default"
         };
     }
 

@@ -30,24 +30,25 @@
 
 <style>
     .log-console {
-        height: 400px;
+        min-height: 75vh;
         overflow-y: auto;
         font-family: monospace;
-        background-color: #1e1e1e;
-        color: #ffffff;
+        font-size: 0.875rem;
+        background-color: #272822;
+        color: #e0e0e0;
         padding: 10px;
     }
 
     .log-info {
-        color: #00ff00;
+        color: #4caf50;
     }
 
     .log-warning {
-        color: #ffff00;
+        color: #ff9800;
     }
 
     .log-error {
-        color: #ff5555;
+        color: #f44336;
     }
 </style>
 
@@ -92,8 +93,8 @@
         logEvents = data.List.OrderBy(e => e.Timestamp).ToList();
         InvokeAsync(async () =>
         {
-            await JSRuntime.InvokeVoidAsync("scrollToBottom", scrollContainer);
             StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("scrollToBottom", scrollContainer);
         });
     }
 

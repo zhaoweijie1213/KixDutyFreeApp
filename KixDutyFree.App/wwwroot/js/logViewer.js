@@ -1,5 +1,7 @@
 function scrollToBottom(element) {
     if (element) {
-        element.scrollTop = element.scrollHeight;
+        setTimeout(() => {
+            element.scrollTop = element.scrollHeight;
+        }, 0);
     }
 }
